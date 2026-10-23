@@ -27,7 +27,7 @@ Example report (PDF) of the same load, .308 Win. with a 165 grain bullet: [R8_AE
 - **Low fill ratio:** below about 90 % the calculated pressure is too low (60 to 70 %: about 32 % too low). The
   app shows a warning from a fill ratio below 90 %.
 - **Velocity** deviates about 4 to 5 % (rms) from the makers' measured loads, **pressure** about 12 % (magnum) to
-  21 % (standard) rms, for Vihtavuori powders the pressure is not measured (no accuracy is stated). Checked on
+  20 % (standard) rms, for Vihtavuori powders the pressure is not measured (no accuracy is stated). Checked on
   loads the model was not fitted to, the velocity holds ([docs/MODEL.md](docs/MODEL.md#accuracy)). The pressure
   is not a safety margin.
 - **Powders:** 40 models of Reload Swiss (9), Vihtavuori (19), Norma (7) and Rottweil (5), fitted to makers'

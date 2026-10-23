@@ -94,9 +94,9 @@ slightly optimistic; the velocity sets of other makers are independent.
 
 | class | loads | V0 mean | V0 rms | loads with pressure | Pmax mean | Pmax rms |
 |---|---|---|---|---|---|---|
-| standard rifle | 7109 | −0.3 % | 4.0 % | 1041 | −3.1 % | 20.9 % |
-| magnum rifle (case > 5 cm³) | 2488 | −0.2 % | 4.0 % | 499 | +1.2 % | 12.4 % |
-| handgun | 56 | −2.5 % | 9.3 % | — | — | — |
+| standard rifle | 7847 | −0.4 % | 4.1 % | 1161 | −3.0 % | 19.9 % |
+| magnum rifle (case > 5 cm³) | 2690 | −0.2 % | 4.0 % | 585 | +1.1 % | 11.8 % |
+| handgun | 59 | −2.9 % | 9.4 % | — | — | — |
 
 **Cross-validation.** `pnpm fit-powders --cv` fits every powder three times, each time without a third of the
 calibers, and checks it on the calibers left out (at most 40 loads per powder, all three folds together). The
@@ -111,8 +111,8 @@ an effect of the fit:
 | Vihtavuori (velocity only, with the handgun powders) | 998 | 7.6 % (6.8 %) | — |
 
 **Systematic deviation (rifles, `pnpm accuracy --by`).** The error depends on the fill ratio: at 60 … 70 % the
-model is 5 % low in V0 and 32 % low in Pmax, at 90 … 100 % it is unbiased (V0 +0.1 %, Pmax +0.6 %, rms 3.2 % and
-9.6 %), at 100 % and more (compressed charges) it is 2.7 % high in V0 and 10 % high in Pmax.
+model is 5 % low in V0 and 32 % low in Pmax, at 90 … 100 % it is unbiased (V0 +0.1 %, Pmax +0.7 %, rms 3.2 % and
+9.4 %), at 100 % and more (compressed charges) it is 2.7 % high in V0 and 10 % high in Pmax.
 
 **Direction of the error.** The dangerous direction is the low one: at fill ratios below about 90 % the
 calculated pressure is on average clearly too low (60 … 70 %: 32 %), so the real pressure can be higher than

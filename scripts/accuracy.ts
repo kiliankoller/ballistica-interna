@@ -16,6 +16,8 @@ import { chamberVolume, defaultParams, simulate } from '@ballistica-interna/solv
 import { AUTO_PISTOL, PISTOL_START_PRESSURE, REVOLVER_START_PRESSURE, RIFLE_START_PRESSURE } from '../apps/desktop/src/renderer/src/lib/startPressure';
 
 const root = join(import.meta.dirname, '..');
+// the sets name the makers as the GRT database does; the master data uses the display name (tools/master-data/build_csv.py, DISPLAY_MAKER)
+const maker = (name: unknown) => String(name).replace(/^RWS-Rottweil$/, 'Rottweil').replace(/\s/g, '');
 const csv = readFileSync(join(root, 'data', 'powders.csv'), 'utf8').trim().split('\n');
 const head = csv[0]!.match(/("[^"]*"|[^,]*)(,|$)/g)!.map((x) => x.replace(/,$/, ''));
 const models = new Map<string, Record<string, string>>();
@@ -40,7 +42,7 @@ for (const set of existsSync(runs) ? readdirSync(runs).sort() : []) {
     // monolithic one, seated far too deep): such loads are left out
     if (m.match === 'weight') continue;
     const grt = parseGrtLoad(readFileSync(join(runs, set, 'jobs', `${job}.grtload`), 'utf8'));
-    const model = models.get(`${String(grt.propellant.mname?.value).replace(/\s/g, '')}|${String(grt.propellant.pname?.value).replace(/\s/g, '')}`);
+    const model = models.get(`${maker(grt.propellant.mname?.value)}|${String(grt.propellant.pname?.value).replace(/\s/g, '')}`);
     if (!model) continue;
     const load = toLoadInput(grt);
     // the app's default start pressure: rifle, auto pistol or revolver (lib/startPressure.ts)

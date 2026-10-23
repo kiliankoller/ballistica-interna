@@ -98,7 +98,7 @@ What is in it
 How accurate it is
 - Velocity: about 4 to 5 % rms against the makers' measured loads; 75 % of the loads within 5 %. Checked on
   customer loads of Reload Swiss that were not used for fitting: 5.0 % (standard rifles), 3.6 % (magnum).
-- Pressure: 12 % (magnum) to 21 % (standard) rms. It is no safety margin.
+- Pressure: 12 % (magnum) to 20 % (standard) rms. It is no safety margin.
 - Details: [docs/MODEL.md](https://github.com/kiliankoller/ballistica-interna/blob/main/docs/MODEL.md).
 
 Known limitations (each has an issue)
@@ -106,7 +106,7 @@ Known limitations (each has an issue)
   notarised. Open the app once via System Settings → Privacy & Security → Open Anyway.
 - [#2](https://github.com/kiliankoller/ballistica-interna/issues/2) Windows: not code-signed. SmartScreen: More
   info → Run anyway.
-- [#3](https://github.com/kiliankoller/ballistica-interna/issues/3) Pressure deviates 12 % (magnum) to 21 %
+- [#3](https://github.com/kiliankoller/ballistica-interna/issues/3) Pressure deviates 12 % (magnum) to 20 %
   (standard rifles) rms from measured loads. It is no safety margin.
 - [#4](https://github.com/kiliankoller/ballistica-interna/issues/4) Low fill ratios (below 90 %): velocity and
   pressure are calculated too low.
