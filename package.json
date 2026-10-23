@@ -8,6 +8,7 @@
     "dev": "pnpm --filter @ballistica-interna/desktop dev",
     "build": "pnpm --filter @ballistica-interna/desktop build",
     "test": "vitest run",
+    "audit": "pnpm audit",
     "test:data": "node scripts/py.mjs -m unittest discover tools/master-data && node scripts/py.mjs -m unittest discover tools/reference-data",
     "data": "node scripts/py.mjs tools/master-data/build_db.py",
     "notices": "tsx scripts/third-party-notices.ts",
@@ -24,9 +25,9 @@
     "@ballistica-interna/grtload": "workspace:*",
     "@ballistica-interna/solver": "workspace:*",
     "@types/node": "^22.10.0",
-    "tsx": "^4.19.2",
+    "tsx": "^4.23.15",
     "typescript": "^5.7.2",
-    "vitest": "^2.1.8"
+    "vitest": "^4.1.12"
   },
   "packageManager": "pnpm@8.6.11"
 }
