@@ -23,7 +23,7 @@
     "@element-plus/icons-vue": "2.3.2",
     "@types/better-sqlite3": "9.6.0",
     "@vitejs/plugin-vue": "6.0.10",
-    "electron": "43.7.7",
+    "electron": "45.0.0",
     "electron-builder": "26.15.7",
     "electron-vite": "6.0.0",
     "element-plus": "2.14.7",
