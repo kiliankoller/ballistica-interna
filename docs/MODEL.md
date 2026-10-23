@@ -1,0 +1,160 @@
+# The BallisticaInterna model
+
+BallisticaInterna calculates the interior ballistics of a load with a lumped-parameter model: one gas space, one
+mean pressure, the bullet as a rigid body. This page states the equations, where the parameters come from and
+how close the results come to the powder makers' laboratory measurements. The code is in `packages/solver`.
+
+## Equations
+
+State: bullet travel *x*, velocity *v*, burnt fraction of the charge *z*.
+
+| | |
+|---|---|
+| burn law | dz/dt = Ba(T) · φ(z) · p [bar] |
+| energy (Résal) | p · V_free = f · m_c · z − (κ − 1) · (½ · m · v² + F_f · x) |
+| force of the powder | f = (κ − 1) · Q_ex |
+| free volume (Noble–Abel) | V_free = V₀ + A · x − m_c · (1 − z) / ρ_c − b · m_c · z |
+| momentum | m · dv/dt = A · p,  m = m_p + s · m_c |
+
+*V₀* is the space behind the bullet (case capacity minus the part of the bullet inside the case), *A* the
+effective bore area (C.I.P. Q), *m_c* the charge, *m_p* the bullet mass, *s* the Sebert factor (the share of
+the charge mass moved with the bullet), *ρ_c* the material density of the powder and *b* its covolume. The
+system is integrated with an adaptive Dormand–Prince step until the bullet reaches the muzzle; the reported
+pressure is the space-mean pressure.
+
+**Shot start.** The bullet is held until the gas reaches the start pressure *p_s*; the burnt fraction at that
+moment follows from the energy equation with *x* = 0. Defaults (`apps/desktop/src/renderer/src/lib/startPressure.ts`):
+rifles 250 bar, auto pistol cartridges 290 bar, revolver cartridges 150 bar (the cylinder gap acts like a long
+jump), unless the bullet record gives its own value. With a jump below about 1.5 mm the app advises about
+800 bar (see *Start pressure and jump*).
+
+**Bullet friction.** A force *F_f* = 2.85 MPa · bullet length · bullet diameter does work along the travel and
+takes energy from the gas; it does not act in the bullet's momentum. The coefficient was set during development
+and is checked against the measured loads below.
+
+## Form function
+
+Three phases with *φ(0) = 1*:
+
+| phase | range | φ(z) |
+|---|---|---|
+| progressive | z < z₁ | (1 + a₀ · z)ⁿ, n = 0.3571 |
+| primary degressive | z₁ … z₂ | φ(z₁) + a₁ · (z − z₁) |
+| secondary degressive | z > z₂ | φ(z₂) · ((1 − z) / (1 − z₂))^q, q = 2/3 (shrinking sphere) |
+
+The exponent *n* reproduces the documented progressivity factor Bp = √(2(κ − 1)) · Ba · φ(z₁) · Q_ex / 10⁴
+together with the brisance factor Br = √(2(κ − 1)) · Ba · Q_ex / 10⁴ (Q_ex in kJ/kg).
+
+**Powder temperature.** Ba is scaled by 1 + 5.4·10⁻⁴ / K below and 1.0·10⁻³ / K above 21 °C; a powder with its
+own temperature coefficients uses 1 + 0.0255 · t_cc · |ΔT| (cold) or 1 + 0.0268 · t_ch · |ΔT| (hot).
+
+**Covolume.** b = 1.2 / ρ_c (0.75 cm³/g at 1600 kg/m³), a typical value for nitrocellulose powders.
+
+## Powder models
+
+The master data powders (`data/powders.csv`) carry the burn values Ba, a₀, z₁, z₂ and, where the maker publishes
+none, Q_ex, fitted by `scripts/fit-powders.ts` to the maker's laboratory loads: two thirds of the calibers fit,
+one third checks. Score per load: (ΔPmax / 5 %)² + (ΔV0 / 2 %)². κ = 1.23 and ρ_c = 1600 kg/m³ for all powders;
+Q_ex and the bulk density come from the maker's datasheet where it publishes them. Where a maker gives velocities
+only, a published maximum load is assumed to reach 80 … 105 % of the C.I.P. maximum pressure. The load tables
+themselves are not shipped. `fit_status` in the CSV says what each fit rests on.
+
+The bulk density sets only the fill ratio, not pressure or velocity. Without a datasheet it is estimated from the
+loads a maker marks as compressed (`scripts/estimate-bulk-density.ts`) or set to a typical 950 kg/m³; the app
+says so next to the powder.
+
+## Derived values
+
+- **Case capacity** (where not measured): from the C.I.P. cartridge outline with typical brass thicknesses
+  (`data/README.md`). Measure your own cases.
+- **Optimal barrel time** after C. Long's master model, OBT = (A·N + B)·L + C·N + D with separate coefficient
+  sets for odd and even nodes; the node nearest to the time the pressure first reaches 10 % of its peak is shown.
+- **Free recoil**: momentum of bullet and carried charge at the muzzle plus the remaining gas leaving at
+  √(v² + p₀·V / (3 m_c)).
+- **IPSC factor** m_p [gr] · v [ft/s] / 1000, **MIP** m_p [g] · v [m/s] / 10.
+- **Jump** (free travel to the lands): C.I.P. freebore end (L3 + G) minus the cartridge length plus the bullet's
+  tip length (tip to full diameter).
+
+## Start pressure and jump
+
+A start pressure that does not fit the seating makes a large difference in small and handgun cases with fast
+powders and still several percent in rifles. Rules of thumb found in practice: about 250 bar for bullets jumping
+to the lands; +500 bar or about 650–800 bar for bullets touching the lands or with a jump below about 1.5 mm
+(Styria Arms: otherwise up to 1000 bar more in reality, for every kind of bullet); about 100–150 bar for bullets
+with driving bands or relief grooves. Vaughn reports about 1000 psi less peak pressure per 0.030" of additional
+free run (≈ 90 bar per mm); the measured loads used here show about 1 % per mm in the same direction. The
+classical assumption of instantaneous engraving at the start pressure overestimates the early pressure
+(Zhang et al. 2024); a jump-dependent start pressure is planned once enough bullets carry their tip length.
+
+## Accuracy
+
+The shipped powder models against the makers' measured loads (`pnpm accuracy`, deviation = calculated −
+measured, rms in %). Loads used for fitting are included, so the pressure figures of the fitting sets are
+slightly optimistic; the velocity sets of other makers are independent.
+
+| class | loads | V0 mean | V0 rms | loads with pressure | Pmax mean | Pmax rms |
+|---|---|---|---|---|---|---|
+| standard rifle | 7109 | −0.3 % | 4.0 % | 1041 | −3.1 % | 20.9 % |
+| magnum rifle (case > 5 cm³) | 2488 | −0.2 % | 4.0 % | 499 | +1.2 % | 12.4 % |
+| handgun | 56 | −2.5 % | 9.3 % | — | — | — |
+
+**Cross-validation.** `pnpm fit-powders --cv` fits every powder three times, each time without a third of the
+calibers, and checks it on the calibers left out (at most 40 loads per powder, all three folds together). The
+held-out figures are close to those on the fitting loads, so the deviations are the limit of the model and not
+an effect of the fit:
+
+| set | held-out loads | V0 rms held out (fit) | Pmax rms held out (fit) |
+|---|---|---|---|
+| Reload Swiss | 458 | 5.5 % (4.9 %) | 19.8 % (16.3 %) |
+| Lovex | 440 | 5.0 % (4.6 %) | 16.5 % (13.9 %) |
+| Sax | 708 | 1.6 % (1.3 %) | 6.0 % (5.1 %) |
+| Vihtavuori (velocity only, with the handgun powders) | 998 | 7.6 % (6.8 %) | — |
+
+**Systematic deviation (rifles, `pnpm accuracy --by`).** The error depends on the fill ratio: at 60 … 70 % the
+model is 5 % low in V0 and 32 % low in Pmax, at 90 … 100 % it is unbiased (V0 +0.1 %, Pmax +0.6 %, rms 3.2 % and
+9.6 %), at 100 % and more (compressed charges) it is 2.7 % high in V0 and 10 % high in Pmax.
+
+**Direction of the error.** The dangerous direction is the low one: at fill ratios below about 90 % the
+calculated pressure is on average clearly too low (60 … 70 %: 32 %), so the real pressure can be higher than
+shown. The app warns from a fill ratio below 90 %. For Vihtavuori powders the pressure is not measured: it is
+anchored at the C.I.P. maximum of the published maximum loads, so no pressure accuracy is stated for them and the
+app says "pressure not backed". Bullets of 300 gr and
+more are 2.8 % high in V0. Other weight classes show no trend.
+
+**Independent check.** The customer loads of the Reload Swiss load data guide 2025 (rifles) were not used for
+fitting. Reload Swiss checks them for plausibility only, and their seating depth and pressure are not reliable, so
+only the velocity V5 (at 5 m) is compared, with the bullet seated to the C.I.P. maximum cartridge length and the
+shipped master data (bullets matched by type, 616 loads):
+
+| class | loads | V0 mean | V0 rms | within ±5 % |
+|---|---|---|---|---|
+| standard rifle, customer loads | 518 | −1.8 % | 5.0 % | 75 % |
+| magnum rifle, customer loads | 98 | −1.2 % | 3.6 % | 83 % |
+| same powders, laboratory loads (standard / magnum) | 690 / 275 | −0.3 / +0.4 % | 4.4 / 4.2 % | 75 / 79 % |
+
+The velocity holds up on loads from real rifles with unknown seating: the rms is 0.6 percentage points higher for
+standard rifles and lower for magnums. The model is 1 to 2 % low on average (V5 is a few tenths of a percent below
+V0, so the true bias is a little larger).
+
+Handgun powders are not shipped yet: on handgun loads the model's pressure scatters much more (rms about 26 %),
+mostly per cartridge. The case capacity, the bullet dimensions and the powder lot change the pressure far more
+than the model's error: BallisticaInterna's results are a simulation, not load data.
+
+## Sources
+
+- Gordon's Reloading Tool, published manual (help pages "Formalism", "Burn rate chart") – the definitions of the
+  powder inputs (Ba, a₀, z₁, z₂, Qex, κ) and of the factors Br and Bp, so that `.grtload` files mean the same here.
+  Compatible with the .grtload file format of Gordon's Reloading Tool (not affiliated with, not checked by GRT).
+- B. P. Kneubuehl (ed.), *Ballistik: Theorie und Praxis*, Springer, 2019 – interior ballistics, Résal equation.
+- Rheinmetall, *Waffentechnisches Taschenbuch*, 1980 – form function, powder characteristics.
+- R. E. Kutterer, *Ballistik*, Vieweg, 1959.
+- J. Corner, *Theory of the Interior Ballistics of Guns*, Wiley, 1950 – Lagrange gradient, Noble–Abel equation.
+- R. D. Anderson, K. D. Fickie, *IBHVG2 – A User's Guide*, BRL-TR-2829, 1987 – lumped-parameter interior ballistics.
+- C. Long, *Optimal Barrel Time*, 2003 – OBT master model.
+- H. R. Vaughn, *Rifle Accuracy Facts*, 1998 – pressure and free run.
+- Styria Arms (M. Mayerl), AERO price list and reloading notes – start pressure with a short jump.
+- Zhang et al., Numerical simulation of the coupled dynamics model of the projectile engraving process,
+  *International Journal of Mechanical System Dynamics*, 2024.
+- ChamberSim Reloaded (GPL-3.0): findings compared, no code taken over.
+- Makers' laboratory data used for fitting and checking: Reload Swiss, Lovex, Vihtavuori, Sax; datasheets of
+  Reload Swiss, Vihtavuori, Norma (see `data/sources.csv`).

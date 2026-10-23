@@ -1,0 +1,9 @@
+[
+  {"js": "return document.body.innerText.includes('Sprung nur') ? 'Warnung da' : 'keine Warnung'", "wait": 300},
+  {"js": "const b=[...document.querySelectorAll('button')].find(x=>x.textContent.includes('800 bar')); if(!b) return 'Schaltfläche fehlt'; b.click(); return 'geklickt'", "wait": 1200, "shot": "1-nach-800bar.png"},
+  {"js": "const row=[...document.querySelectorAll('tr')].find(r=>r.textContent.includes('Anfangsgasdruck')); return {anfangsdruck: row?.querySelector('input')?.value, warnung: document.body.innerText.includes('Sprung nur'), tab: document.querySelector('.el-tabs__item.is-active')?.textContent}", "wait": 300},
+  {"js": "document.querySelector('.el-tabs__item.is-active .is-icon-close').click(); return 'Tab schließen geklickt'", "wait": 1200, "shot": "2-schliessen-frage.png"},
+  {"js": "return document.querySelector('.el-message-box')?.innerText", "wait": 300},
+  {"js": "[...document.querySelectorAll('.el-message-box button')].find(x=>x.textContent.includes('Nicht speichern')).click(); return 'Nicht speichern geklickt'", "wait": 1200, "shot": "3-nach-nicht-speichern.png"},
+  {"js": "return {tabs: document.querySelectorAll('.el-tabs__item').length}", "wait": 300}
+]

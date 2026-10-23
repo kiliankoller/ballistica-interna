@@ -1,0 +1,6 @@
+[
+  {"js": "return document.body.innerText.includes('Sprung nur') ? 'Warnung da' : 'keine Warnung'", "wait": 300},
+  {"js": "const b=[...document.querySelectorAll('button')].find(x=>x.textContent.includes('800 bar')); if(!b) return 'Schaltfläche fehlt'; b.click(); return 'geändert (800 bar)'", "wait": 1200},
+  {"close": 1},
+  {"close": 0}
+]

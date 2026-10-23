@@ -1,0 +1,16 @@
+html,
+body {
+  margin: 0;
+  height: 100%;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  background: var(--el-bg-color-page);
+  color: var(--el-text-color-primary);
+}
+* {
+  box-sizing: border-box;
+}
+/* a denser look than the defaults: this is a tool with many values on screen */
+:root {
+  --el-font-size-base: 12px;
+  --el-component-size-small: 22px;
+}

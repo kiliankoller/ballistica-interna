@@ -1,0 +1,11 @@
+# Synthetic catalogue page, right half, `pdftotext -raw` layout (invented numbers), for the parser test
+Some text of the card before the spec line SD.0.260 BC.0.480 OAL.1.600" PART#
+9.3mm
+(.366”)
+50Ct.90010
+240 Gr. Spitzer
+SD.0.270 BC.0.470 OAL.1.480” PART#
+375 Cal
+(.375”)
+50Ct.90011
+250 Gr. Spitzer

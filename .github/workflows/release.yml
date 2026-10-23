@@ -1,0 +1,88 @@
+# Builds the installers for macOS, Windows and Linux: on a version tag (v*) they are attached to a GitHub release,
+# when started by hand they are kept as workflow artifacts. Installers have no certificate (macOS: ad hoc signature).
+name: Installers
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        # windows-2022: node-gyp 9 (inside pnpm 8) finds Visual Studio 2022 but not 2026, which windows-latest has
+        os: [macos-latest, windows-2022, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 8.6.11
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - uses: actions/setup-python@v6
+        with:
+          # node-gyp 9 (inside pnpm 8) still imports distutils, which Python 3.12 has removed
+          python-version: '3.11'
+
+      - name: Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Checks
+        run: |
+          pnpm typecheck
+          pnpm test
+          pnpm test:data
+
+      - name: Master data and licence notices
+        run: |
+          pnpm data
+          pnpm notices
+
+      - name: Installer
+        env:
+          # no certificate: no code signing identity is looked for (macOS is signed ad hoc by electron-builder.yml)
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+        run: |
+          pnpm --filter @ballistica-interna/desktop exec electron-vite build
+          pnpm --filter @ballistica-interna/desktop exec electron-builder --publish never
+
+      - name: Checksums (SHA-256)
+        shell: bash
+        run: |
+          cd apps/desktop/dist
+          if command -v sha256sum >/dev/null 2>&1; then sum='sha256sum'; else sum='shasum -a 256'; fi
+          for f in *.dmg *.exe *.AppImage; do
+            if [ -f "$f" ]; then $sum "$f"; fi
+          done > "SHA256SUMS-${{ matrix.os }}.txt"
+          cat "SHA256SUMS-${{ matrix.os }}.txt"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: installer-${{ matrix.os }}
+          path: |
+            apps/desktop/dist/*.dmg
+            apps/desktop/dist/*.exe
+            apps/desktop/dist/*.AppImage
+            apps/desktop/dist/SHA256SUMS-*.txt
+          if-no-files-found: error
+
+      - name: Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v3
+        with:
+          files: |
+            apps/desktop/dist/*.dmg
+            apps/desktop/dist/*.exe
+            apps/desktop/dist/*.AppImage
+            apps/desktop/dist/SHA256SUMS-*.txt

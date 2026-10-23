@@ -1,0 +1,48 @@
+# Synthetic catalogue page, `pdftotext -raw` layout, card lines only (invented numbers), for the parser test
+BC=BallisticCoefficient
+SD.0.250 BC.0.500 OAL.1.300" PART#
+6.5mm
+(.264”)
+100Ct.90001
+120 Gr. Spitzer
+G1BallisticCoefficient
+0.500
+G7BallisticCoefficient
+0.250
+SD.0.280 BC.0.600 OAL.1.400" PART#
+30Cal
+(.308”)
+100 Ct. 90002
+180Gr.Spitzer
+G1 Ballistic Coefficient
+0.610
+G7 Ballistic Coefficient
+0.300
+SD.0.290 BC.0.590 OAL.1.450" PART#
+30 Cal
+(.308”)
+100Ct.90002
+180 Gr. Spitzer
+G1BallisticCoefficient
+0.590
+G7BallisticCoefficient
+0.290
+SD.0.320 BC.700 OAL.1.500” PART#
+6.5mm
+(.264”)
+100Ct.90003
+140 Gr. Spitzer
+G1BallisticCoefficient
+0.700
+G7BallisticCoefficient
+0.350
+SD.0.300 BC.0.640 OAL.1.520" PART#
+7mm
+(.284”)
+100Ct.90004
+170 Gr. Spitzer
+G1BallisticCoefficient
+0.640
+G7BallisticCoefficient
+0.320
+Minimum1-8”Twist

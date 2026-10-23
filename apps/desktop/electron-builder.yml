@@ -1,0 +1,31 @@
+appId: io.github.ballisticainterna
+productName: BallisticaInterna
+directories:
+  output: dist
+  buildResources: build
+files:
+  - out/**
+  - package.json
+extraResources:
+  # master data, built from data/*.csv by tools/master-data/build_db.py (pnpm data)
+  - from: ../../data/build/ballisticainterna.db
+    to: ballisticainterna.db
+  # licences of the bundled packages (pnpm notices)
+  - from: notices/THIRD_PARTY_NOTICES.txt
+    to: THIRD_PARTY_NOTICES.txt
+asarUnpack:
+  - "**/*.node"
+mac:
+  target: dmg
+  # no developer certificate: sign ad hoc, so that the app bundle has a valid signature (an unsigned arm64 app is
+  # reported as damaged after a download); Gatekeeper still asks for confirmation (see docs/RELEASE.md)
+  identity: '-'
+  hardenedRuntime: false
+  category: public.app-category.utilities
+win:
+  target: nsis
+linux:
+  target: AppImage
+  category: Science
+  # the package name @ballistica-interna/desktop cannot be a file name
+  executableName: ballisticainterna

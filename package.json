@@ -1,0 +1,32 @@
+{
+  "name": "ballistica-interna",
+  "private": true,
+  "license": "GPL-3.0-or-later",
+  "author": "Kilian Koller",
+  "type": "module",
+  "scripts": {
+    "dev": "pnpm --filter @ballistica-interna/desktop dev",
+    "build": "pnpm --filter @ballistica-interna/desktop build",
+    "test": "vitest run",
+    "test:data": "node scripts/py.mjs -m unittest discover tools/master-data && node scripts/py.mjs -m unittest discover tools/reference-data",
+    "data": "node scripts/py.mjs tools/master-data/build_db.py",
+    "notices": "tsx scripts/third-party-notices.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit && pnpm --filter @ballistica-interna/desktop typecheck",
+    "reference": "tsx scripts/reference.ts",
+    "dist": "pnpm --filter @ballistica-interna/desktop dist",
+    "calibrate": "tsx scripts/calibrate.ts",
+    "fit-powders": "tsx scripts/fit-powders.ts",
+    "bulk-density": "tsx scripts/estimate-bulk-density.ts",
+    "accuracy": "tsx scripts/accuracy.ts",
+    "docs:media": "bash scripts/docs-media.sh"
+  },
+  "devDependencies": {
+    "@ballistica-interna/grtload": "workspace:*",
+    "@ballistica-interna/solver": "workspace:*",
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  },
+  "packageManager": "pnpm@8.6.11"
+}

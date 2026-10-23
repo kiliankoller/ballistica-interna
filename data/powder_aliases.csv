@@ -1,0 +1,404 @@
+alias,mname,pname,rule,uses,sources
+A 1680,Accurate,1680,maker,155,sierra
+AA 1680,Accurate,1680,maker,27,barnes sierra
+A 2015,Accurate,2015,maker,180,sierra
+A2015,Accurate,2015,maker,10,sierra
+A 2230,Accurate,2230,maker,138,sierra
+AA 2230,Accurate,2230,maker,1,barnes
+A 2460,Accurate,2460,maker,154,barnes sierra
+A2460,Accurate,2460,maker,36,sierra
+AA 2460,Accurate,2460,maker,1,barnes
+Accurate 2460,Accurate,2460,exact,44,hornady
+A 2495,Accurate,2495,maker,226,sierra
+A 2520,Accurate,2520,maker,502,sierra
+A2520,Accurate,2520,maker,59,sierra
+Accurate 2520,Accurate,2520,exact,152,hornady
+A 3100,Accurate,3100,maker,147,sierra
+A 4064,Accurate,4064,maker,261,sierra
+ACCURATE 4064,Accurate,4064,exact,4,hornady
+A 4350,Accurate,4350,maker,453,sierra
+ACCURATE 4350,Accurate,4350,exact,6,hornady
+Accurate 4350,Accurate,4350,exact,10,hornady
+A 5744,Accurate,5744,maker,48,sierra
+LT 32,Accurate,LT-32,exact,85,sierra
+LT-32,Accurate,LT-32,exact,8,barnes sierra
+A #2,Accurate,No 2,manual,5,sierra
+A#2,Accurate,No 2,manual,25,sierra
+A-No.2 (Accurate),Accurate,No 2,name,2,barnes
+No. 2,Accurate,No 2,exact,2,barnes
+A #5,Accurate,No 5,manual,64,sierra
+A#5,Accurate,No 5,manual,145,sierra
+A-No.5 (Accurate),Accurate,No 5,name,10,barnes
+No. 5,Accurate,No 5,exact,2,barnes
+A #7,Accurate,No 7,manual,92,sierra
+A#7,Accurate,No 7,manual,113,sierra
+A-No .7,Accurate,No 7,exact,2,barnes
+A-No. 7,Accurate,No 7,exact,5,barnes
+A-No.7,Accurate,No 7,exact,1,barnes
+A-No.7 (Accurate),Accurate,No 7,name,8,barnes
+No. 7,Accurate,No 7,exact,3,barnes
+*A #9,Accurate,No 9,manual,6,sierra
+A #9,Accurate,No 9,manual,43,sierra
+A No. 9,Accurate,No 9,exact,1,barnes
+A#9,Accurate,No 9,manual,50,sierra
+A-No .9,Accurate,No 9,exact,2,barnes
+A-No. 9,Accurate,No 9,exact,4,barnes
+A-No.9 (Accurate),Accurate,No 9,name,3,barnes
+No. 9,Accurate,No 9,exact,4,barnes
+Solo 1250,Accurate,Solo 1250,exact,1,barnes
+2000 MR,Alliant,2000-MR,exact,13,sierra
+POWER PRO 2000 MR,Alliant,2000-MR,manual,7,hornady
+Power Pro 2000 MR,Alliant,2000-MR,manual,300,sierra
+Power Pro 2000MR,Alliant,2000-MR,manual,6,barnes
+PowerPro 2000MR,Alliant,2000-MR,manual,1,barnes
+Alliant 2400,Alliant,2400,exact,1,hornady
+AR Comp,Alliant,AR-Comp,exact,369,sierra
+AR-Comp,Alliant,AR-Comp,exact,18,barnes
+Ar Comp,Alliant,AR-Comp,exact,23,sierra
+*Blue Dot,Alliant,Blue Dot,exact,16,sierra
+Blue Dot,Alliant,Blue Dot,exact,89,barnes sierra
+Blue Dot (Alliant),Alliant,Blue Dot,name,3,barnes
+Bullseye,Alliant,Bullseye,exact,130,hornady sierra
+Bullseye (Alliant),Alliant,Bullseye,name,4,barnes
+Green Dot,Alliant,Green Dot,exact,9,sierra
+Power Pistol,Alliant,Power Pistol,exact,291,hornady sierra
+Power Pistol (Alliant),Alliant,Power Pistol,name,11,barnes
+R -10x,Alliant,Reloder 10x,maker,11,sierra
+R 10x,Alliant,Reloder 10x,maker,22,sierra
+R-10X,Alliant,Reloder 10x,maker,10,sierra
+R-10x,Alliant,Reloder 10x,maker,30,sierra
+RE 10x,Alliant,Reloder 10x,maker,110,sierra
+RL 10X,Alliant,Reloder 10x,maker,25,barnes
+RL 10X (Alliant),Alliant,Reloder 10x,maker,15,barnes
+RL 10x,Alliant,Reloder 10x,maker,3,barnes
+Re - 10x,Alliant,Reloder 10x,maker,9,sierra
+Re 10x,Alliant,Reloder 10x,maker,5,sierra
+r 10x,Alliant,Reloder 10x,maker,6,sierra
+RE 15,Alliant,Reloder 15,maker,774,sierra
+RE-15,Alliant,Reloder 15,maker,56,sierra
+RL 15,Alliant,Reloder 15,maker,79,barnes
+RL 15 (Alliant),Alliant,Reloder 15,maker,12,barnes
+RL-15,Alliant,Reloder 15,maker,2,hornady
+RL15,Alliant,Reloder 15,maker,2,barnes
+R-16,Alliant,Reloder 16,maker,61,sierra
+RE 16,Alliant,Reloder 16,maker,593,sierra
+RL 16,Alliant,Reloder 16,maker,8,barnes
+RE 17,Alliant,Reloder 17,maker,690,sierra
+RL 17,Alliant,Reloder 17,maker,65,barnes
+RL-17,Alliant,Reloder 17,maker,5,barnes hornady
+RE 19,Alliant,Reloder 19,maker,575,sierra
+RE-19,Alliant,Reloder 19,maker,67,sierra
+RL 19,Alliant,Reloder 19,maker,55,barnes
+RL-19,Alliant,Reloder 19,maker,4,hornady
+RE 22,Alliant,Reloder 22,maker,432,sierra
+RE-22,Alliant,Reloder 22,maker,36,sierra
+RL 22,Alliant,Reloder 22,maker,84,barnes
+RL-22,Alliant,Reloder 22,maker,7,hornady
+R 23,Alliant,Reloder 23,maker,31,sierra
+R-23,Alliant,Reloder 23,maker,82,sierra
+RE 23,Alliant,Reloder 23,maker,334,sierra
+RL 23,Alliant,Reloder 23,maker,11,barnes
+R 26,Alliant,Reloder 26,maker,18,sierra
+R-26,Alliant,Reloder 26,maker,110,sierra
+RE 26,Alliant,Reloder 26,maker,298,sierra
+RL 26,Alliant,Reloder 26,maker,25,barnes
+RL-26,Alliant,Reloder 26,maker,7,hornady
+R-33,Alliant,Reloder 33,maker,5,sierra
+RE 33,Alliant,Reloder 33,maker,169,sierra
+RL 33,Alliant,Reloder 33,maker,3,barnes
+RL-33,Alliant,Reloder 33,maker,3,hornady
+RL33,Alliant,Reloder 33,maker,1,barnes
+R-7,Alliant,Reloder 7,maker,23,sierra
+RE 7,Alliant,Reloder 7,maker,258,sierra
+RL 7,Alliant,Reloder 7,maker,19,barnes
+RL 7 (Alliant),Alliant,Reloder 7,maker,9,barnes
+RL-7,Alliant,Reloder 7,maker,3,hornady
+Re -7,Alliant,Reloder 7,maker,11,sierra
+Unique,Alliant,Unique,exact,282,hornady sierra
+Unique (Alliant),Alliant,Unique,name,7,barnes
+Power Pro Varmint,Alliant,Varmint,manual,228,barnes sierra
+Varmint,Alliant,Varmint,exact,22,barnes sierra
+BL C(2),Hodgdon,BL-C2,exact,68,sierra
+BL-C (2),Hodgdon,BL-C2,exact,12,sierra
+BL-C(2),Hodgdon,BL-C2,exact,68,barnes hodgdon sierra
+Hodgdon BL-C2,Hodgdon,BL-C2,exact,2,sax
+BENCHMARK,Hodgdon,Benchmark,exact,33,hodgdon
+BenchMark,Hodgdon,Benchmark,exact,4,sierra
+Benchmark,Hodgdon,Benchmark,exact,583,barnes sierra
+Benchmark (Hodgdon),Hodgdon,Benchmark,name,2,barnes
+CFE 223,Hodgdon,CFE-223,exact,554,barnes hodgdon hornady sierra
+CFE223,Hodgdon,CFE-223,exact,49,barnes sierra
+­   CFE 223,Hodgdon,CFE-223,exact,1,hodgdon
+CFE BLK,Hodgdon,CFE-BLK,exact,88,hodgdon hornady sierra
+CFE PISTOL,Hodgdon,CFE-Pistol,exact,20,hodgdon
+CFE Pistol,Hodgdon,CFE-Pistol,exact,159,sierra
+H 1000,Hodgdon,H1000,exact,133,sierra
+H1000,Hodgdon,H1000,exact,745,barnes hodgdon hornady sierra
+*H110,Hodgdon,H110,exact,12,sierra
+H110,Hodgdon,H110,exact,216,barnes hodgdon hornady sierra
+H110 (Hodgdon),Hodgdon,H110,name,3,barnes
+H 322,Hodgdon,H322,exact,2,sierra
+H322,Hodgdon,H322,exact,248,barnes hodgdon hornady sierra
+H322 (Hodgdon),Hodgdon,H322,name,2,barnes
+H 335,Hodgdon,H335,exact,118,sierra
+H335,Hodgdon,H335,exact,431,barnes hodgdon sierra
+H335 (Hodgdon),Hodgdon,H335,name,16,barnes
+H 4198,Hodgdon,H4198,exact,22,sierra
+H4198,Hodgdon,H4198,exact,194,barnes hodgdon hornady sierra
+H4198 (Hodgdon),Hodgdon,H4198,name,7,barnes
+H4227,Hodgdon,H4227,exact,105,barnes hodgdon sierra
+H 4350,Hodgdon,H4350,exact,130,sierra
+H4350,Hodgdon,H4350,exact,938,barnes hodgdon hornady sierra
+H 4831sc,Hodgdon,H4831,similar,77,sierra
+H4831,Hodgdon,H4831,exact,149,barnes hodgdon hornady sierra
+H4831 SC,Hodgdon,H4831,similar,238,sierra
+H4831SC,Hodgdon,H4831,similar,44,barnes
+H4831sc,Hodgdon,H4831,similar,551,barnes hornady sierra
+H 4895,Hodgdon,H4895,exact,69,sierra
+H4895,Hodgdon,H4895,exact,728,barnes hodgdon hornady sierra
+H4895 (Hodgdon),Hodgdon,H4895,name,16,barnes
+HP-38,Hodgdon,HP-38,exact,35,hodgdon sierra
+HP38,Hodgdon,HP-38,exact,7,sierra
+HS 6,Hodgdon,HS-6,exact,58,sierra
+HS-6,Hodgdon,HS-6,exact,58,hodgdon sierra
+HS-6 (Hodgdon),Hodgdon,HS-6,name,10,barnes
+HYBRID 100V,Hodgdon,Hybrid 100V,exact,30,hodgdon
+HyBrid 100V,Hodgdon,Hybrid 100V,exact,1,barnes
+Hybrid 100V,Hodgdon,Hybrid 100V,exact,457,barnes hornady sierra
+Hybrid 100v,Hodgdon,Hybrid 100V,exact,10,barnes
+LEVEREVOLUTION,Hodgdon,LeverEvolution,manual,16,hornady
+LEVERevolution,Hodgdon,LeverEvolution,manual,103,barnes hornady
+LVR,Hodgdon,LeverEvolution,manual,3,hodgdon
+LIL' GUN,Hodgdon,Lil Gun,exact,6,hodgdon hornady
+LIL'GUN,Hodgdon,Lil Gun,exact,13,hodgdon
+LiL'Gun,Hodgdon,Lil Gun,exact,3,barnes
+Lil Gun,Hodgdon,Lil Gun,exact,29,sierra
+Lil' Gun,Hodgdon,Lil Gun,exact,4,hornady
+Lil'Gun,Hodgdon,Lil Gun,exact,3,barnes
+Lil'Gun (Hodgdon),Hodgdon,Lil Gun,name,4,barnes
+LONGSHOT,Hodgdon,Longshot,exact,20,hodgdon
+Longshot,Hodgdon,Longshot,exact,72,barnes sierra
+RETUMBO,Hodgdon,Retumbo,exact,5,hodgdon
+Retumbo,Hodgdon,Retumbo,exact,477,barnes sierra
+SUPERFORMANCE,Hodgdon,Superformance,exact,67,hornady
+SUPRFORM,Hodgdon,Superformance,manual,3,hodgdon
+Superformance,Hodgdon,Superformance,exact,75,barnes sierra
+TITEGROUP,Hodgdon,Titegroup,exact,29,hodgdon
+Tite Group,Hodgdon,Titegroup,exact,112,sierra
+Titegroup,Hodgdon,Titegroup,exact,24,barnes sierra
+Titegroup (Hodgdon),Hodgdon,Titegroup,name,4,barnes
+UNIVERSAL,Hodgdon,Universal,exact,26,hodgdon
+Univ. Clays,Hodgdon,Universal,manual,81,sierra
+Universal,Hodgdon,Universal,exact,179,sierra
+Universal Clays,Hodgdon,Universal,manual,2,sierra
+Universal Clays (Hodgdon),Hodgdon,Universal,manual,9,barnes
+VARGET,Hodgdon,Varget,exact,73,barnes hodgdon hornady sierra
+Varget,Hodgdon,Varget,exact,1286,barnes hornady sierra
+Varget (Hodgdon),Hodgdon,Varget,name,12,barnes
+­   VARGET,Hodgdon,Varget,exact,1,hodgdon
+IMR 3031,IMR,3031,exact,170,barnes hodgdon sierra
+IMR-3031,IMR,3031,exact,208,sierra
+IMR 4064,IMR,4064,exact,826,barnes hodgdon hornady sierra
+IMR-4064,IMR,4064,exact,296,sierra
+IMR 4166,IMR,4166,exact,139,barnes hodgdon hornady sierra
+IMR 4166 End.,IMR,4166,name,459,sierra
+IMR 4198,IMR,4198,exact,325,barnes hodgdon hornady sierra
+IMR 4198 (IMR),IMR,4198,name,7,barnes
+IMR-4198,IMR,4198,exact,75,sierra
+IMR 4227,IMR,4227,exact,184,barnes hodgdon sierra
+IMR 4227 (IMR),IMR,4227,name,5,barnes
+IMR-4227,IMR,4227,exact,31,sierra
+IMR 4350,IMR,4350,exact,943,barnes hodgdon hornady sierra
+IMR-4350,IMR,4350,exact,181,sierra
+IMR 4451,IMR,4451,exact,126,barnes hodgdon hornady sierra
+IMR 4451 End.,IMR,4451,name,642,sierra
+IMR 4831,IMR,4831,exact,425,barnes hodgdon sierra
+IMR-4831,IMR,4831,exact,94,sierra
+IMR 4895,IMR,4895,exact,530,barnes hodgdon sierra
+IMR 4895 (IMR),IMR,4895,name,16,barnes
+IMR-4895,IMR,4895,exact,307,sierra
+IMR4895,IMR,4895,exact,2,barnes
+IMR 7828 SSC,IMR,7828 SSC,exact,6,barnes hodgdon
+IMR 7828SSC,IMR,7828 SSC,exact,50,barnes
+IMR 7828ssc,IMR,7828 SSC,exact,540,barnes sierra
+7977 end,IMR,7977,name,5,sierra
+IMR 7977,IMR,7977,exact,38,barnes hodgdon hornady
+IMR 7977 End.,IMR,7977,name,412,sierra
+IMR 8133,IMR,8133,exact,238,barnes hodgdon sierra
+8208 XBR,IMR,8208 XBR,exact,43,sierra
+8208XBR,IMR,8208 XBR,exact,8,sierra
+IMR 8208 XBR,IMR,8208 XBR,exact,353,barnes hodgdon hornady sierra
+IMR 8208xbr,IMR,8208 XBR,exact,215,hornady sierra
+Norma 200,Norma,200,exact,10,barnes sax
+Norma 201,Norma,201,exact,33,sax sierra
+NORMA 202,Norma,202,exact,120,hornady
+Norma 202,Norma,202,exact,31,sax
+NORMA 203 B,Norma,203B,exact,86,hornady
+Norma 203B,Norma,203B,exact,20,sax
+NORMA 204,Norma,204,exact,88,hornady
+Norma 204,Norma,204,exact,14,sax
+NORMA 217,Norma,217,exact,26,hornady
+Norma 217,Norma,217,exact,2,barnes
+MRP,Norma,MRP,exact,20,barnes sierra
+NORMA MRP,Norma,MRP,exact,54,hornady
+Norma MRP,Norma,MRP,exact,8,barnes sax
+Norma R123,Norma,R123,exact,1,sax
+NORMA URP,Norma,URP,exact,108,hornady
+Norma URP,Norma,URP,exact,15,sax
+Rottweil R901,RWS-Rottweil,R901,maker,14,sax
+Rottweil R902,RWS-Rottweil,R902,maker,34,sax
+Rottweil R903,RWS-Rottweil,R903,maker,20,sax
+Rottweil R904,RWS-Rottweil,R904,maker,9,sax
+Rottweil R905,RWS-Rottweil,R905,maker,1,sax
+Rottweil R907,RWS-Rottweil,R907,maker,14,sax
+Rottweil R910,RWS-Rottweil,R910,maker,1,sax
+BIG GAME,Ramshot,Big Game,exact,111,hornady
+Big Game,Ramshot,Big Game,exact,378,barnes sierra
+Big game,Ramshot,Big Game,exact,1,barnes
+BigGame,Ramshot,Big Game,exact,48,sierra
+Ramshot Big Game,Ramshot,Big Game,exact,61,ramshot
+HUNTER,Ramshot,Hunter,exact,14,hornady
+Hunter,Ramshot,Hunter,exact,382,barnes hornady sierra
+Ramshot Hunter,Ramshot,Hunter,exact,86,ramshot
+Magnum,Ramshot,Magnum,exact,539,barnes sierra
+RS Magnum,Ramshot,Magnum,manual,120,sierra
+Ramshot Magnum,Ramshot,Magnum,exact,54,ramshot
+Rs Magnum,Ramshot,Magnum,manual,5,sierra
+Ramshot Silhouette,Ramshot,Silhouette,exact,43,ramshot
+Silhouette,Ramshot,Silhouette,exact,141,barnes sierra
+Silhouette (Ramshot),Ramshot,Silhouette,name,10,barnes
+Ramshot TAC,Ramshot,TAC,exact,49,ramshot
+TAC,Ramshot,TAC,exact,479,barnes hornady sierra
+TAC (Ramshot),Ramshot,TAC,name,24,barnes
+Tac,Ramshot,TAC,exact,129,barnes sierra
+Ramshot True Blue,Ramshot,True Blue,exact,63,ramshot
+True Blue,Ramshot,True Blue,exact,174,barnes sierra
+True Blue (Ramshot),Ramshot,True Blue,name,8,barnes
+Exterminator,Ramshot,X-Terminator,manual,130,sierra
+Ramshot X-Terminator,Ramshot,X-Terminator,exact,118,ramshot
+X - terminator,Ramshot,X-Terminator,manual,7,sierra
+X Terminator,Ramshot,X-Terminator,manual,55,sierra
+X-Terminator,Ramshot,X-Terminator,manual,108,barnes sierra
+X-Terminator (Ramshot),Ramshot,X-Terminator,manual,8,barnes
+X-terminator,Ramshot,X-Terminator,manual,26,sierra
+RS 40,ReloadSwiss,RS 40,exact,13,sax
+RS 52,ReloadSwiss,RS 52,exact,8,sax
+RS 60,ReloadSwiss,RS 60,exact,11,sax
+RS 70,ReloadSwiss,RS 70,exact,4,sax
+SW AR PLUS,Shooters World,AR Plus (D073-04),manual,40,hornady
+SW LONGRIFLE,Shooters World,Long Rifle (S065-01),manual,55,hornady
+SW Long Rifle,Shooters World,Long Rifle (S065-01),manual,79,sierra
+S W MATCH,Shooters World,Match Rifle (D073-06),manual,30,hornady
+SW Match,Shooters World,Match Rifle (D073-06),manual,183,sierra
+SW PRECISION,Shooters World,Precision (S062-02),manual,4,hornady
+SW Precision,Shooters World,Precision (S062-02),manual,224,hornady sierra
+SW 4350,Shooters World,SW4350 (S070-02),manual,52,hornady sierra
+SW4350,Shooters World,SW4350 (S070-02),manual,4,hornady
+SW Tactical Rifle,Shooters World,Tactical Rifle (D073-08),manual,121,sierra
+Sw Tactical Rifle,Shooters World,Tactical Rifle (D073-08),manual,12,sierra
+20N29,Vihtavuori,20N29,exact,10,vihtavuori
+24N 41,Vihtavuori,24N41,exact,3,sierra
+24N41,Vihtavuori,24N41,exact,66,sierra vihtavuori
+3N37,Vihtavuori,3N37,exact,111,sierra
+Viht 3N37,Vihtavuori,3N37,maker,101,sierra
+3N38,Vihtavuori,3N38,exact,51,sierra
+Viht 3N38,Vihtavuori,3N38,maker,19,sierra
+N105,Vihtavuori,N105,exact,65,sax sierra vihtavuori
+N110,Vihtavuori,N110,exact,158,sax sierra vihtavuori
+Viht N110,Vihtavuori,N110,maker,77,barnes sierra
+VihtaVuori N110,Vihtavuori,N110,exact,2,barnes
+N 120,Vihtavuori,N120,exact,15,sierra
+N120,Vihtavuori,N120,exact,131,sax sierra vihtavuori
+Viht N120,Vihtavuori,N120,maker,24,sierra
+N 130,Vihtavuori,N130,exact,16,sierra
+N-130,Vihtavuori,N130,exact,1,barnes
+N130,Vihtavuori,N130,exact,263,sax sierra vihtavuori
+Viht N130,Vihtavuori,N130,maker,58,barnes sierra
+N 133,Vihtavuori,N133,exact,10,sierra
+N-133,Vihtavuori,N133,exact,1,barnes
+N133,Vihtavuori,N133,exact,257,sax sierra vihtavuori
+VIHT N-133,Vihtavuori,N133,maker,4,hornady
+Viht N133,Vihtavuori,N133,maker,89,sierra
+N 135,Vihtavuori,N135,exact,26,sierra
+N135,Vihtavuori,N135,exact,376,sax sierra vihtavuori
+VIHT N-135,Vihtavuori,N135,maker,54,hornady
+Viht N 135,Vihtavuori,N135,maker,1,barnes
+Viht N135,Vihtavuori,N135,maker,148,barnes sierra
+N 140,Vihtavuori,N140,exact,109,sierra
+N-140,Vihtavuori,N140,exact,1,barnes
+N140,Vihtavuori,N140,exact,703,sax sierra vihtavuori
+VIHT N-140,Vihtavuori,N140,maker,148,hornady
+Viht N140,Vihtavuori,N140,maker,169,barnes sierra
+N 150,Vihtavuori,N150,exact,8,sierra
+N150,Vihtavuori,N150,exact,549,sax vihtavuori
+VIHT N-150,Vihtavuori,N150,maker,37,hornady
+Viht N150,Vihtavuori,N150,maker,100,sierra
+N160,Vihtavuori,N160,exact,475,sax vihtavuori
+VIHT N-160,Vihtavuori,N160,maker,81,hornady
+Viht N160,Vihtavuori,N160,maker,66,sierra
+N 165,Vihtavuori,N165,exact,79,sierra
+N-165,Vihtavuori,N165,exact,2,barnes
+N165,Vihtavuori,N165,exact,414,sax sierra vihtavuori
+VIHT N-165,Vihtavuori,N165,maker,30,hornady
+Viht N165,Vihtavuori,N165,maker,90,sierra
+N 170,Vihtavuori,N170,exact,32,sierra
+N170,Vihtavuori,N170,exact,116,sierra vihtavuori
+VIHT N-170,Vihtavuori,N170,maker,32,hornady
+Viht N170,Vihtavuori,N170,maker,9,sierra
+N310,Vihtavuori,N310,exact,53,vihtavuori
+N320,Vihtavuori,N320,exact,157,sierra vihtavuori
+Viht N320,Vihtavuori,N320,maker,2,sierra
+N330,Vihtavuori,N330,exact,129,sierra vihtavuori
+Viht N330,Vihtavuori,N330,maker,18,sierra
+N340,Vihtavuori,N340,exact,246,sierra vihtavuori
+Viht N340,Vihtavuori,N340,maker,29,sierra
+N350,Vihtavuori,N350,exact,211,sierra vihtavuori
+Viht N350,Vihtavuori,N350,maker,13,sierra
+N530,Vihtavuori,N530,exact,95,sax vihtavuori
+Vihtavuori N530,Vihtavuori,N530,exact,60,hornady
+N 540,Vihtavuori,N540,exact,216,sierra
+N540,Vihtavuori,N540,exact,973,sax sierra vihtavuori
+VIHT N-540,Vihtavuori,N540,maker,152,hornady
+Viht N540,Vihtavuori,N540,maker,14,sierra
+N550,Vihtavuori,N550,exact,550,sax vihtavuori
+VIHT N-550,Vihtavuori,N550,maker,146,hornady
+Viht N550,Vihtavuori,N550,maker,69,barnes sierra
+N555,Vihtavuori,N555,exact,294,vihtavuori
+VIHT N-555,Vihtavuori,N555,maker,60,hornady
+N 560,Vihtavuori,N560,exact,67,sierra
+N-560,Vihtavuori,N560,exact,2,barnes
+N560,Vihtavuori,N560,exact,935,sax sierra vihtavuori
+VIHT N-560,Vihtavuori,N560,maker,110,hornady
+Viht N560,Vihtavuori,N560,maker,5,barnes
+N 565,Vihtavuori,N565,exact,98,sierra
+N565,Vihtavuori,N565,exact,260,sierra vihtavuori
+VIHT N-565,Vihtavuori,N565,maker,48,hornady
+N568,Vihtavuori,N568,exact,63,vihtavuori
+N 570,Vihtavuori,N570,exact,64,sierra
+N570,Vihtavuori,N570,exact,196,sierra vihtavuori
+VIHT N-570,Vihtavuori,N570,maker,14,hornady
+231,Winchester,231,exact,18,hodgdon
+Win 231,Winchester,231,maker,105,sierra
+Win 231 (Winchester),Winchester,231,maker,11,barnes
+244,Winchester,244,exact,22,hodgdon
+296,Winchester,296,exact,15,hodgdon
+Win 296,Winchester,296,maker,79,barnes sierra
+748,Winchester,748,exact,12,hodgdon
+W 748,Winchester,748,maker,76,sierra
+W748,Winchester,748,maker,55,sierra
+Win 748,Winchester,748,maker,98,barnes sierra
+Win 748 (Winchester),Winchester,748,maker,6,barnes
+Win748,Winchester,748,maker,1,barnes
+Winchester 748,Winchester,748,exact,1,sax
+760,Winchester,760,exact,36,hodgdon
+W 760,Winchester,760,maker,21,sierra
+WIN 760,Winchester,760,maker,31,hornady
+Win 760,Winchester,760,maker,188,barnes sierra
+Winchester 760,Winchester,760,exact,2,barnes
+AUTOCOMP,Winchester,AutoComp,exact,23,hodgdon
+Auto Comp,Winchester,AutoComp,exact,166,sierra
+Auto-Comp,Winchester,AutoComp,exact,10,sierra
+STABALL 6.5,Winchester,StaBall 6.5,manual,59,hornady
+"StaBALL 6,5",Winchester,StaBall 6.5,manual,49,hornady
+StaBALL 6.5,Winchester,StaBall 6.5,manual,49,hornady
+StaBall 6.5,Winchester,StaBall 6.5,manual,13,barnes

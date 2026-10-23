@@ -1,0 +1,39 @@
+{
+  "name": "@ballistica-interna/desktop",
+  "version": "0.2.0",
+  "private": true,
+  "license": "GPL-3.0-or-later",
+  "description": "Interior ballistics for handloaders",
+  "main": "out/main/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "preview": "electron-vite preview",
+    "typecheck": "vue-tsc --noEmit -p tsconfig.json",
+    "rebuild": "electron-builder install-app-deps",
+    "dist": "electron-vite build && electron-builder"
+  },
+  "dependencies": {
+    "better-sqlite3": "13.0.3"
+  },
+  "devDependencies": {
+    "@element-plus/icons-vue": "2.3.2",
+    "@ballistica-interna/grtload": "workspace:*",
+    "@ballistica-interna/solver": "workspace:*",
+    "@types/better-sqlite3": "9.6.0",
+    "@vitejs/plugin-vue": "6.0.9",
+    "electron": "43.7.7",
+    "electron-builder": "26.15.7",
+    "electron-vite": "5.0.0",
+    "element-plus": "2.14.7",
+    "pinia": "4.0.3",
+    "uplot": "1.6.32",
+    "vite": "7.3.6",
+    "vue": "3.5.43",
+    "vue-i18n": "11.4.13",
+    "vue-tsc": "3.3.12"
+  },
+  "productName": "BallisticaInterna",
+  "author": "Kilian Koller"
+}

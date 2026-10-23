@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<GordonsReloadingTool version='2021.2030-NIGHTLY'>
+  <InnerBallistikInput>
+    <title>308%20Win.%20%28308%20Winchester%2C%207%2C62%20x%2051%29%20Styria%20Arms%2C%20AERO%20SB%20165%20gr%2C%20.308%2C%20165.00%20grain%20Reload%20Swiss%20RS52</title>
+    <config name="CurveFocusIdx" value="0" unit="" type="integer" descr="selected ladder curve for display" />
+    <caliber>
+      <input name="CaliberName" value="308%20Win.%20%28308%20Winchester%2C%207%2C62%20x%2051%29" unit="" type="string" descr="caliber name" />
+      <input name="oal" value="69.67" unit="mm" type="decimal" descr="cartridge overall length" />
+      <input name="caselen" value="51" unit="mm" type="decimal" descr="case length" />
+      <input name="casevol" value="3.62172665311" unit="cm3" type="decimal" descr="case volume" />
+      <input name="Dz" value="7.82" unit="mm" type="decimal" descr="groove caliber" />
+      <input name="Aeff" value="47.51" unit="mm2" type="decimal" descr="effektive area" />
+      <input name="pMaxZul" value="4150" unit="bar" type="decimal" descr="maximum allowed pressure" />
+      <input name="method" value="Piezo CIP" unit="" type="string" descr="cartridge test method" />
+      <input name="sebert" value="0.5" unit="" type="decimal" descr="Sebert factor" />
+      <input name="ps" value="200" unit="bar" type="decimal" descr="initial gas pressure" />
+      <input name="shotshell" value="false" unit="" type="boolean" descr="true if shotshell" />
+    </caliber>
+    <caliberfile>
+      <var name="cipname" value="308%20Win." />
+      <var name="altname" value="308%20Winchester%2C%207%2C62%20x%2051" />
+      <var name="tab" value="1.00" />
+      <var name="country" value="United%20states" />
+      <var name="cipdate" value="1984-06-14" />
+      <var name="ciprevdate" value="2008-09-23" />
+      <var name="L1" value="39.62" />
+      <var name="L2" value="43.48" />
+      <var name="L3" value="51.18" />
+      <var name="L6" value="71.12" />
+      <var name="L3G" value="58.16" />
+      <var name="R" value="1.37" />
+      <var name="R1" value="12.01" />
+      <var name="E" value="3.85" />
+      <var name="E1" value="10.39" />
+      <var name="P1" value="11.96" />
+      <var name="P2" value="11.53" />
+      <var name="alpha" value="40.00" />
+      <var name="H1" value="8.72" />
+      <var name="H2" value="8.72" />
+      <var name="G1" value="7.85" />
+      <var name="Pmax" value="4150.00" />
+      <var name="PK" value="4773.00" />
+      <var name="PE" value="5190.00" />
+      <var name="EE" value="3920.00" />
+      <var name="M" value="25.00" />
+      <var name="c_L3" value="51.44" />
+      <var name="c_P1" value="11.99" />
+      <var name="c_P2" value="11.56" />
+      <var name="c_H1" value="8.79" />
+      <var name="c_H2" value="8.74" />
+      <var name="c_G1" value="7.87" />
+      <var name="c_G" value="6.98" />
+      <var name="c_alpha1" value="71.43" />
+      <var name="c_F" value="7.62" />
+      <var name="c_Z" value="7.82" />
+      <var name="c_Q" value="47.51" />
+      <var name="c_N" value="4.00" />
+      <var name="c_b_" value="4.47" />
+      <var name="c_u_" value="305.00" />
+      <var name="V" value="57.80" />
+      <var name="V_estimated" value="yes" />
+      <var name="source" value="cip-tdcc" />
+      <var name="status" value="" />
+      <var name="source_name" value="C.I.P.%20tables%20of%20dimensions%20of%20cartridges%20and%20chambers%20%28TDCC%29%2C%20public%20part" />
+    </caliberfile>
+    <gun>
+      <input name="GunName" value="" unit="" type="string" descr="gun name" />
+      <input name="xe" value="520" unit="mm" type="decimal" descr="barrel length" />
+      <input name="twistlen" value="279" unit="mm" type="decimal" descr="twist length" />
+      <input name="mgun" value="4.2" unit="kg" type="decimal" descr="gun weight" />
+      <input name="gjump" value="0" unit="mm" type="decimal" descr="bullet jump distance" />
+      <input name="gjumpUnlock" value="false" unit="" type="boolean" descr="unlocked bullet jump" />
+    </gun>
+    <projectile>
+      <input name="ProjectileName" value="Styria%20Arms%2C%20AERO%20SB%20165%20gr%2C%20.308%2C%20165.00%20grain" unit="" type="string" descr="projectile name" />
+      <input name="mname" value="Styria%20Arms" unit="" type="string" descr="projectile manufacturer" />
+      <input name="pname" value="AERO%20SB%20165%20gr" unit="" type="string" descr="projectile product name" />
+      <input name="lotid" value="" unit="" type="string" descr="projectile lot-id" />
+      <input name="Dbul" value="7.82" unit="mm" type="decimal" descr="projectile diameter" />
+      <input name="mp" value="10.69182015" unit="g" type="decimal" descr="projectile weight" />
+      <input name="gdepth" value="15.98" unit="mm" type="decimal" descr="bullet seating depth" />
+      <input name="glen" value="34.65" unit="mm" type="decimal" descr="projectile overall length" />
+      <input name="gpressure" value="200" unit="bar" type="decimal" descr="initial gas pressure" />
+      <input name="gtailh" value="0" unit="mm" type="decimal" descr="projectile tail length" />
+      <input name="gTailDiaA" value="0" unit="mm" type="decimal" descr="projectile tail diameter A" />
+      <input name="gTailDiaB" value="0" unit="mm" type="decimal" descr="projectile tail diameter B" />
+      <input name="gTailType" value="0" unit="" type="decimal" descr="projectile base type" />
+      <input name="g1bc" value="0.44" unit="" type="decimal" descr="G1 ballistic coefficient" />
+      <input name="g7bc" value="0" unit="" type="decimal" descr="G7 ballistic coefficient" />
+      <input name="gUBCS" value="" unit="" type="string" descr="UBCS-Code (Universal Bullet Classification Scheme)" />
+      <input name="gtip" value="16.5" unit="mm" type="decimal" descr="bullet tip length (tip to full diameter)" />
+      <input name="gfriction" value="0" unit="bar" type="decimal" descr="special bullet resistance inside the barrel" />
+      <input name="gfrictionUnlock" value="false" unit="" type="boolean" descr="unlocked friction" />
+      <input name="mode" value="0" unit="" type="string" descr="" />
+    </projectile>
+    <propellant>
+      <input name="mname" value="Reload%20Swiss" unit="" type="string" descr="propellant manufacturer" />
+      <input name="pname" value="RS52" unit="" type="string" descr="propellant product name" />
+      <input name="lotid" value="" unit="" type="string" descr="propellant lot-id" />
+      <input name="Ba" value="0.533817" unit="" type="decimal" descr="vivacity coefficient" />
+      <input name="Qex" value="3900" unit="kJ/kg" type="decimal" descr="specific explosive heat" />
+      <input name="k" value="1.23" unit="" type="decimal" descr="ratio of the specific heat of the powder gases" />
+      <input name="a0" value="1.38301" unit="" type="decimal" descr="prog/deg coefficient" />
+      <input name="a1" value="0" unit="" type="decimal" descr="prog/deg coefficient" />
+      <input name="z1" value="0.470706" unit="" type="decimal" descr="burn-up limit z1" />
+      <input name="z2" value="0.747612" unit="" type="decimal" descr="burn-up limit z2" />
+      <input name="eta" value="0" unit="cm3/kg" type="decimal" descr="covolume of the powder gases" />
+      <input name="pc" value="1600" unit="kg/m3" type="decimal" descr="material density" />
+      <input name="pcd" value="950" unit="kg/m3" type="decimal" descr="bulk density" />
+      <input name="pt" value="21" unit="Cel" type="decimal" descr="temperature normal" />
+      <input name="tcc" value="0" unit="" type="decimal" descr="cold temperature coefficient" />
+      <input name="tch" value="0" unit="" type="decimal" descr="hot temperature coefficient" />
+      <input name="mc" value="2.7902410646" unit="g" type="decimal" descr="propellant mass" />
+      <input name="laddercnt" value="5" unit="" type="decimal" descr="ladder steps (1 to 10, below 2: disabled)" />
+      <input name="laddermc" value="0.019439672999926" unit="g" type="decimal" descr="ladder step propellant mass" />
+      <input name="imageUuid" value="" unit="" type="string" descr="propellant picture uuid" />
+      <input name="imageDetailUuid" value="" unit="" type="string" descr="propellant detail picture uuid" />
+    </propellant>
+    <appendix>
+    </appendix>
+  </InnerBallistikInput>
+</GordonsReloadingTool>
