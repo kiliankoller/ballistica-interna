@@ -26,7 +26,7 @@
     "@ballistica-interna/solver": "workspace:*",
     "@types/node": "^22.20.5",
     "tsx": "^4.23.15",
-    "typescript": "^5.7.2",
+    "typescript": "^5.9.3",
     "vitest": "^5.0.5"
   },
   "packageManager": "pnpm@8.6.11"
