@@ -71,9 +71,10 @@ limit). The Sax-based sets (Norma, Rottweil) and Reload Swiss were refitted with
 Lower exponents help at low fill but make the maximum loads too low, the dangerous side; 0.9 is the compromise.
 The error at low fill is not removed by the exponent.
 
-**Fit files.** `tools/master-data/build_csv.py` takes the newest fit per powder from `fixtures/calibration`. A test
-run on one powder (`--powders N110`) therefore replaces that powder's shipped values; keep test fits out of that folder
-(not yet guarded in the script).
+**Shipped fits.** `data/fits-shipped.json` holds the burn values that `tools/master-data/build_csv.py` writes to
+`data/powders.csv`, per measured set and powder, with the fit file each one came from (`source`). Fits in
+`fixtures/calibration` are not read by the build, so a test run (e.g. `--powders N110`) cannot change the master
+data. To ship a new fit: run `fit-powders`, copy the fitted values of the approved fit into that file, rebuild.
 
 ## Powder models
 

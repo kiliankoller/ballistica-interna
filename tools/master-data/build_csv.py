@@ -193,18 +193,11 @@ DISPLAY_MAKER = {'RWS-Rottweil': 'Rottweil', 'ReloadSwiss': 'Reload Swiss'}
 
 
 def newest_fits():
-    """{set: {powder: fitted values}}: per measured set and powder the newest fit that used the datasheets (any fit
-    for Lovex and for makers without a datasheet)."""
-    out = {}
-    for f in sorted(glob.glob(os.path.join(FIX, 'calibration', 'powders-*.json'))):
-        d = json.load(open(f))
-        if d.get('set') not in FIT_SETS or d.get('class') == 'handgun' or d.get('params'):
-            continue  # fits on handgun loads only or with other model parameters: model work, not shipped
-        for name, v in d['fitted'].items():
-            maker = v.get('maker') or LEGACY_MAKER.get(d['set'], '')
-            if d.get('datasheet') or d['set'] == 'lovex' or maker in NO_DATASHEET_MAKERS:
-                out.setdefault(d['set'], {})[name] = v
-    return out
+    """{set: {powder: fitted values}}: the shipped fits, read from data/fits-shipped.json. Written by hand from a
+    fit in fixtures/calibration (its file name is kept in `source`), so a test run never reaches the master data.
+    Refit: run fit-powders, then copy the fitted values of the approved fit into that file and rebuild."""
+    with open(os.path.join(ROOT, 'data', 'fits-shipped.json'), encoding='utf-8') as f:
+        return json.load(f)['fits']
 
 
 def estimated_bulk():

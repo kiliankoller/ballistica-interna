@@ -1,5 +1,6 @@
 """Tests of the master data pipeline:  python3 -m unittest discover tools/master-data  (pnpm test:data)"""
 import csv
+import json
 import os
 import subprocess
 import sys
@@ -147,3 +148,32 @@ class MergeBullets(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class ShippedFitsTest(unittest.TestCase):
+    """A test fit in fixtures/calibration must not change the shipped powder values."""
+
+    def test_newest_fits_come_from_the_manifest(self):
+        before = build_csv.newest_fits()
+        with tempfile.TemporaryDirectory() as tmp:
+            os.makedirs(os.path.join(tmp, 'calibration'))
+            # a single-powder test fit, newer than all others, with a deliberately wrong value
+            fake = {'set': 'rs', 'class': None, 'params': {}, 'datasheet': True, 'fitted': {'RS50': {'Ba': 99.0}}}
+            with open(os.path.join(tmp, 'calibration', 'powders-2099-01-01T00-00-00-000Z.json'), 'w') as f:
+                json.dump(fake, f)
+            saved = build_csv.FIX
+            build_csv.FIX = tmp
+            try:
+                after = build_csv.newest_fits()
+            finally:
+                build_csv.FIX = saved
+        self.assertEqual(before, after)
+        self.assertNotEqual(after['rs']['RS50']['Ba'], 99.0)
+
+    def test_manifest_covers_every_powder_with_its_source(self):
+        with open(os.path.join(build_csv.ROOT, 'data', 'fits-shipped.json'), encoding='utf-8') as f:
+            manifest = json.load(f)
+        for set_, fitted in manifest['fits'].items():
+            for name in fitted:
+                self.assertIn(name, manifest['source'][set_], f'{set_} {name} has no source fit')
+
