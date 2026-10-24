@@ -29,10 +29,10 @@ describe('warnings next to the result', () => {
   });
 
   it('gives the worst case of the tests by fill ratio', () => {
-    expect(pressureMargin(0.8)).toBe(0.8);
-    expect(pressureMargin(0.9)).toBe(0.45);
-    expect(pressureMargin(0.99)).toBe(0.45);
-    expect(pressureMargin(1.05)).toBe(0.31);
+    expect(pressureMargin(0.8)).toBe(0.76);
+    expect(pressureMargin(0.9)).toBe(0.42);
+    expect(pressureMargin(0.99)).toBe(0.42);
+    expect(pressureMargin(1.05)).toBe(0.3);
     expect(pressureMargin(undefined)).toBeUndefined();
   });
 

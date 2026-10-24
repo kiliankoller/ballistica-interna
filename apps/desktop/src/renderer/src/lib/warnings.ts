@@ -17,15 +17,15 @@ export const SLOW_BA = 0.55;
 
 /**
  * Worst case of the tests: how far the measured peak pressure exceeded the calculated one, by fill ratio (the
- * lower bound of the band, as a fraction). Held-out loads of the cross-validation of 2026-10-23 (1220 rifle loads
- * of Reload Swiss and Sax with measured pressure, docs/MODEL.md#accuracy): below 90 % fill 3402 bar measured
- * against 1889 calculated, 90 to 100 % 2814 against 1939, above 100 % 2613 against 1988. Not rerun with the pressure
- * exponent 0.9, whose cross-validation is less low below 80 % fill (−13.9 % against −16.5 %).
+ * lower bound of the band, as a fraction). Held-out loads of the cross-validation of 2026-10-24 (pressure exponent
+ * 0.9, split of the shipped fits; 1096 rifle loads of Reload Swiss and Sax with measured pressure,
+ * docs/MODEL.md#accuracy): below 90 % fill 3402 bar measured against 1937 calculated, 90 to 100 % 42 % above, above
+ * 100 % 30 % above.
  */
 export const PRESSURE_MARGIN: { from: number; margin: number }[] = [
-  { from: 0, margin: 0.8 },
-  { from: LOW_FILL, margin: 0.45 },
-  { from: 1.0, margin: 0.31 },
+  { from: 0, margin: 0.76 },
+  { from: LOW_FILL, margin: 0.42 },
+  { from: 1.0, margin: 0.3 },
 ];
 
 const valid = (fill: number | undefined): fill is number => fill !== undefined && Number.isFinite(fill) && fill > 0;

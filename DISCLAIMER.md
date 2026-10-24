@@ -7,7 +7,7 @@ Version 2026-10-24.
 
 **BallisticaInterna is a simulation and does NOT provide load data.** The calculated pressure can be too **low**: at
 low fill ratios (below about 90 %) the model calculates the gas pressure on average clearly too low (below 80 %
-by about 17 %, single loads by up to 44 %), so the real pressure can be higher than shown.
+by about 14 %, single loads by up to 43 %), so the real pressure can be higher than shown.
 
 - A calculation is never evidence that a load is safe. **Never load on the basis of this app alone.** Use only
   the published load data of the powder and bullet makers, start with their starting load, work up carefully
@@ -30,7 +30,7 @@ or Gordon's Reloading Tool. All names are trademarks of their owners and are use
 
 **BallisticaInterna ist eine Simulation und liefert KEINE Ladedaten.** Der berechnete Druck kann zu **niedrig** sein:
 Bei niedrigem Füllgrad (unter etwa 90 %) berechnet das Modell den Gasdruck im Mittel deutlich zu niedrig (unter
-80 % etwa 17 %, einzelne Ladungen bis 44 %); der tatsächliche Druck kann höher sein als angezeigt.
+80 % etwa 14 %, einzelne Ladungen bis 43 %); der tatsächliche Druck kann höher sein als angezeigt.
 
 - Eine Rechnung ist nie ein Beleg dafür, dass eine Ladung sicher ist. **Lade nie allein aufgrund dieser App.**
   Verwende ausschließlich die veröffentlichten Ladedaten der Pulver- und Geschosshersteller, beginne mit deren
