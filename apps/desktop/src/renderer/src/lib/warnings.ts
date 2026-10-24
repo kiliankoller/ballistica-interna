@@ -9,16 +9,18 @@ export const LOW_FILL = 0.9;
 /** Fill ratio below which the warning is shown as a danger. */
 export const VERY_LOW_FILL = 0.85;
 /**
- * Powders at or below this vivacity Ba count as slow (about N160, RS70 and H4350 and slower): loosely filled they
- * risk the secondary explosion effect (SEE). Ba also depends on the form function, so the bound is approximate.
+ * Powders at or below this vivacity Ba count as slow (N160, RS62, Norma 204 and slower): loosely filled they risk
+ * the secondary explosion effect (SEE). Ba also depends on the form function and changes with every refit, so the
+ * bound is approximate; warnings.test.ts checks it against the shipped powders. A bound too high only warns more.
  */
-export const SLOW_BA = 0.47;
+export const SLOW_BA = 0.55;
 
 /**
  * Worst case of the tests: how far the measured peak pressure exceeded the calculated one, by fill ratio (the
  * lower bound of the band, as a fraction). Held-out loads of the cross-validation of 2026-10-23 (1220 rifle loads
  * of Reload Swiss and Sax with measured pressure, docs/MODEL.md#accuracy): below 90 % fill 3402 bar measured
- * against 1889 calculated, 90 to 100 % 2814 against 1939, above 100 % 2613 against 1988.
+ * against 1889 calculated, 90 to 100 % 2814 against 1939, above 100 % 2613 against 1988. Not rerun with the pressure
+ * exponent 0.9, whose cross-validation is less low below 80 % fill (−13.9 % against −16.5 %).
  */
 export const PRESSURE_MARGIN: { from: number; margin: number }[] = [
   { from: 0, margin: 0.8 },

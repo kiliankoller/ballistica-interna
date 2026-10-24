@@ -34,6 +34,32 @@ class CapacityEstimate(unittest.TestCase):
     def test_without_length_or_diameter_no_estimate(self):
         self.assertIsNone(build_csv.capacity_estimate(dict(P1='11.96', G1='7.85')))
 
+    def test_missing_derived_capacities_stop_the_build(self):
+        fix = build_csv.FIX
+        try:
+            with tempfile.TemporaryDirectory() as tmp:
+                build_csv.FIX = tmp
+                with self.assertRaises(SystemExit):
+                    build_csv.reload_swiss_capacities()
+        finally:
+            build_csv.FIX = fix
+
+
+# Derived capacities further than this from the outline estimate (before CAPACITY_FACTOR) are suspect.
+DERIVED_TOLERANCE = 0.08
+# Known open: 7 mm-08 is the .308 Win. case necked down (about 56 grains of water), the derived value is 51.1.
+SUSPECT_DERIVED = {'7 mm - 08 Rem.'}
+
+
+class DerivedCapacities(unittest.TestCase):
+    def test_derived_capacities_agree_with_the_outline(self):
+        with open(os.path.join(DATA, 'calibers.csv'), newline='') as f:
+            rows = [r for r in csv.DictReader(f) if r['V_source'] == 'reload-swiss-fill']
+        self.assertTrue(rows)
+        off = {r['cipname'] for r in rows
+               if abs(float(r['V']) / build_csv.capacity_estimate(r) - 1) > DERIVED_TOLERANCE}
+        self.assertEqual(off, SUSPECT_DERIVED, 'fixed or new suspects: update SUSPECT_DERIVED')
+
 
 class Checks(unittest.TestCase):
     def test_good_caliber_passes(self):

@@ -91,8 +91,7 @@ says so next to the powder.
 
 ## Derived values
 
-- **Case capacity** (where not measured): from the C.I.P. cartridge outline with typical brass thicknesses
-  (`data/README.md`). Measure your own cases.
+- **Case capacity** (where not measured): see *Case capacity* below. Measure your own cases.
 - **Optimal barrel time** after C. Long's master model, OBT = (A·N + B)·L + C·N + D with separate coefficient
   sets for odd and even nodes; the node nearest to the time the pressure first reaches 10 % of its peak is shown.
 - **Free recoil**: momentum of bullet and carried charge at the muzzle plus the remaining gas leaving at
@@ -100,6 +99,33 @@ says so next to the powder.
 - **IPSC factor** m_p [gr] · v [ft/s] / 1000, **MIP** m_p [g] · v [m/s] / 10.
 - **Jump** (free travel to the lands): C.I.P. freebore end (L3 + G) minus the cartridge length plus the bullet's
   tip length (tip to full diameter).
+
+### Case capacity
+
+The C.I.P. tables give no case capacity, so `V` in `data/calibers.csv` (grains of water) comes from one of two
+sources, named in `V_source`:
+
+- `reload-swiss-fill` (35 calibers, all rifle): derived from the fill ratios of the Reload Swiss load data guide
+  2025 (charge, bulk density, fill ratio and the seated bullet of the master data), for calibers with at least 4
+  charges. The derivation (`local/scripts/derive-capacity.ts`) and its result
+  (`fixtures/calibration/capacity-rs.json`) are not in the repository; `build_csv.py` stops without that file.
+  Reload Swiss's brass is one maker's brass: other makers and lots differ by a few percent.
+- `estimate` (451 calibers, all handgun calibers among them): from the C.I.P. cartridge outline with typical brass
+  thicknesses (`data/README.md`), times `CAPACITY_FACTOR` = 0.966. The outline estimate was on average 3.5 % larger
+  than the derived capacities of the 35 calibers; leave-one-out over them, the factor lowers the rms deviation
+  from 4.5 to 3.0 % (2026-10-23).
+
+Limits, open:
+
+- The factor is fitted on rifle calibers only. For the handgun calibers (C.I.P. Tab. IV) no derived capacity
+  checks the estimate or the factor, and the leave-one-out figure says nothing about them.
+- The derived capacities are not independent of the Reload Swiss sets: the same guide is fitted and checked with
+  them. How much that flatters the Reload Swiss pressure figures has not been measured.
+- `test_master_data.py` checks every derived capacity against the outline estimate (8 %). 7 mm-08 Rem. fails it:
+  51.1 grains derived, while its case is the .308 Win. case necked down (55.8 grains derived, about 56 published).
+  It is listed as suspect in the test until the derivation is checked.
+- The app marks an estimated capacity next to the caliber and the result (`lib/capacity.ts`); a capacity derived
+  from load data is named as such.
 
 ## Start pressure and jump
 
@@ -156,10 +182,24 @@ model is 5 % low in V0 and 32 % low in Pmax, at 90 … 100 % it is unbiased (V0 
 
 **Direction of the error.** The dangerous direction is the low one: at fill ratios below about 90 % the
 calculated pressure is on average clearly too low (60 … 70 %: 32 %), so the real pressure can be higher than
-shown. The app warns from a fill ratio below 90 %. For Vihtavuori powders the pressure is not measured: it is
-anchored at the C.I.P. maximum of the published maximum loads, so no pressure accuracy is stated for them and the
-app says "pressure not backed". Bullets of 300 gr and
-more are 2.8 % high in V0. Other weight classes show no trend.
+shown. Bullets of 300 gr and more are 2.8 % high in V0. Other weight classes show no trend.
+
+**Warnings of the app** (`lib/warnings.ts`). Their figures come from the held-out loads of the cross-validation
+of 2026-10-23 (1220 rifle loads of Reload Swiss and Sax with measured pressure, pressure exponent 1) and have not
+been rerun with n = 0.9; the cross-validation of n = 0.9 is less low below 80 % fill (−13.9 % against −16.5 %, see
+*Pressure exponent*), so the old figures stay on the safe side.
+
+- Fill ratio below 90 %: the calculated pressure was on average 6 % too low at 80 … 90 % and 17 % below 80 %,
+  single loads up to 44 %. Below 85 % the warning is shown as a danger.
+- Slow powder (Ba ≤ 0.55, N160, RS62, Norma 204 and slower) below 85 % fill: risk of the secondary explosion
+  effect, which no model calculates. The bound is checked against the shipped powders by a test, as Ba changes
+  with every refit.
+- Worst case next to every result: the measured pressure exceeded the calculated one by up to 80 % below 90 %
+  fill, 45 % at 90 … 100 % and 31 % above.
+- Estimated case capacity (see *Case capacity*).
+
+The Vihtavuori powders are fitted to Vihtavuori's velocities together with Sax's measured pressures (`fit_status`),
+so the app no longer marks their pressure as not backed.
 
 **Independent check.** The customer loads of the Reload Swiss load data guide 2025 (rifles) were not used for
 fitting. Reload Swiss checks them for plausibility only, and their seating depth and pressure are not reliable, so

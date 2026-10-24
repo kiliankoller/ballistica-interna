@@ -71,10 +71,11 @@ def write(name, columns, rows):
 def reload_swiss_capacities():
     """{C.I.P. name: grains of water} derived from the fill ratios of the Reload Swiss load data guide 2025 (charge,
     bulk density, fill ratio and the seated bullet of the master data; local/scripts/derive-capacity.ts), calibers with
-    at least 4 charges."""
+    at least 4 charges. Without that file the build stops: falling back to the outline estimate would silently
+    change the capacities of data/calibers.csv."""
     path = os.path.join(FIX, 'calibration', 'capacity-rs.json')
     if not os.path.exists(path):
-        return {}
+        sys.exit(f'{path} missing: run local/scripts/derive-capacity.ts first (docs/MODEL.md#case-capacity)')
     return {k.split(' (')[0]: v['capacity_gr'] for k, v in json.load(open(path)).items() if v['charges'] >= 4}
 
 
@@ -111,8 +112,9 @@ def calibers():
 
 
 GRAINS_PER_CM3 = 1 / 0.0647989  # water
-# The outline estimate is about 3.5 % larger than the capacities derived from Reload Swiss's fill ratios (35 calibers);
-# one factor removes that (leave-one-out over the calibers: rms 4.5 → 3.0 %; 2026-10-23, local/MODEL.md).
+# The outline estimate is about 3.5 % larger than the capacities derived from Reload Swiss's fill ratios (35 rifle
+# calibers); one factor removes that (leave-one-out over the calibers: rms 4.5 → 3.0 %; 2026-10-23). It is applied to
+# the handgun calibers too, for which no derived capacity checks it (docs/MODEL.md#case-capacity).
 CAPACITY_FACTOR = 0.966
 
 

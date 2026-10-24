@@ -42,8 +42,9 @@ name. Each row carries `url` and `retrieved`. `flags`:
 Checked against the makers that publish lengths, the matched JBM length is within 3 % of the maker's value
 for about 90 % of Berger and Nosler bullets and three quarters of Speer and Barnes bullets.
 
-**Case capacity `V`** (grains of water) is not part of the C.I.P. tables. Where `V_estimated` is `yes` it is
-computed from the C.I.P. cartridge outline with typical brass values (head 9 % of the case length for bottleneck
+**Case capacity `V`** (grains of water) is not part of the C.I.P. tables. Where `V_source` is
+`reload-swiss-fill` it is derived from the fill ratios of the Reload Swiss load data guide; where it is `estimate`
+it is computed from the C.I.P. cartridge outline with typical brass values (head 9 % of the case length for bottleneck
 cases, 20 % for straight cases; wall 0.6 / 0.5 mm above the head thinning to the neck wall; where an old sheet
 lacks the shoulder, it is put 3 mm before the neck). The estimate can be several percent off, most for very short old revolver cases. The user should replace it by the measured capacity of
 fired cases (own copy).
