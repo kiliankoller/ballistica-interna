@@ -151,15 +151,22 @@ with defined case capacities only, see *Pressure exponent*):
 |---|---|---|---|---|---|---|
 | standard rifle | 6317 | +0.1 % | 3.7 % | 988 | −1.4 % | 13.2 % |
 | magnum rifle (case > 5 cm³) | 1321 | −0.5 % | 3.6 % | 278 | 0.0 % | 11.6 % |
-| handgun (barrel < 300 mm) | 38 | +5.2 % | 10.5 % | — | — | — |
+| handgun (barrel < 300 mm) | 38 | +3.0 % | 8.6 % | — | — | — |
+
+The measured sets (rs, rsk, sax, v-vihtavuori, v-barnes, v-sierra) were rebuilt on 2026-10-24 from the current
+master data, so the jobs carry the case capacities of `data/calibers.csv`. The rifle rows are unchanged by the
+rebuild: the rifle jobs already had these capacities. The handgun jobs had capacities 3.3 … 3.5 % too small (the
+correction factor 0.966 still applied to them); with the outline estimates the handgun row went from +5.2 % /
+10.5 % to +3.0 % / 8.6 %.
 
 **Handguns are not supported.** The app says so for every load with a barrel below 300 mm. The handgun row is
 the model with rifle powders in handgun cartridges, which is what the app would calculate if asked. Its V0 is
-too high on average (+5 %), and it is worse than the previous fit in mean (+0.5 %) and only slightly in rms (10.0
-to 10.5 %). This comes from the Vihtavuori fit: its maximum loads anchor the pressure through the C.I.P. limit,
-and the case capacities of most handgun calibers are estimated (see *Pressure exponent*). The rifle rows improved in
-every column against the previous fit. The earlier handgun figures (59 loads, −2.9 % / 9.4 %) came from an
-older run and are not reproduced; why the row now has 38 loads is still to be checked.
+too high on average (+3 %). This comes from the Vihtavuori fit: its maximum loads anchor the pressure through the
+C.I.P. limit, and the case capacities of most handgun calibers are estimated (see *Pressure exponent*). The rifle
+rows improved in every column against the previous fit. The 38 loads are the handgun loads of the sets with a
+shipped powder (54) less those whose bullet matched by weight only (16), which `pnpm accuracy` leaves out; the
+fill-ratio check of the set builder plays no part, since the handgun sources state no fill ratio. The earlier
+handgun figures (59 loads, −2.9 % / 9.4 %) came from an older run and are not reproduced.
 
 Since 2026-10-24 the handgun row is for information only: a change of the model or of the fits is judged by the
 rifle rows, and "no class gets worse" applies to them only. Handgun support would be a project of its own, with
