@@ -34,6 +34,15 @@ class CapacityEstimate(unittest.TestCase):
     def test_without_length_or_diameter_no_estimate(self):
         self.assertIsNone(build_csv.capacity_estimate(dict(P1='11.96', G1='7.85')))
 
+    def test_factor_for_rifle_calibers_only(self):
+        self.assertEqual(build_csv.capacity_factor(dict(tab='1')), build_csv.CAPACITY_FACTOR)
+        self.assertEqual(build_csv.capacity_factor(dict(tab=4)), 1)
+        with open(os.path.join(DATA, 'calibers.csv'), newline='') as f:
+            for r in csv.DictReader(f):
+                if r['V_source'] == 'estimate':
+                    v = build_csv.capacity_estimate(r) * build_csv.capacity_factor(r)
+                    self.assertEqual(float(r['V']), round(v, 1), r['cipname'])
+
     def test_missing_derived_capacities_stop_the_build(self):
         fix = build_csv.FIX
         try:
@@ -195,6 +204,15 @@ class ShippedFitsTest(unittest.TestCase):
                 build_csv.FIX = saved
         self.assertEqual(before, after)
         self.assertNotEqual(after['rs']['RS50']['Ba'], 99.0)
+
+    def test_manifest_note_reaches_fit_status(self):
+        with open(os.path.join(build_csv.ROOT, 'data', 'fits-shipped.json'), encoding='utf-8') as f:
+            notes = {n: v['note'] for fitted in json.load(f)['fits'].values() for n, v in fitted.items() if v.get('note')}
+        self.assertIn('24N41', notes)
+        with open(os.path.join(DATA, 'powders.csv'), newline='') as f:
+            status = {r['pname']: r['fit_status'] for r in csv.DictReader(f)}
+        for name, note in notes.items():
+            self.assertIn(note, status[name])
 
     def test_manifest_covers_every_powder_with_its_source(self):
         with open(os.path.join(build_csv.ROOT, 'data', 'fits-shipped.json'), encoding='utf-8') as f:

@@ -19,6 +19,10 @@ describe('notes on master records', () => {
     expect(recordNotes({ pname: 'R902', fit_status: 'fitted: …; bulk density not published: typical value 950 kg/m³' })).toEqual(['source.bulkEstimated']);
   });
 
+  it('names a powder fit that differs from the others of its maker', () => {
+    expect(recordNotes({ pname: '24N41', fit_status: 'fitted: …; fitted with all calibers, unlike the other Vihtavuori powders' })).toEqual(['source.fitAllCalibers']);
+  });
+
   it('leaves the length of a bullet without one empty instead of 0', () => {
     const f = newGrtLoad();
     applyProjectile(f, { mname: 'Hornady', pname: '10mm 180 gr FMJ-FP', caliber: '.400', gdia: 10.16, gmass: 180, glen: null });

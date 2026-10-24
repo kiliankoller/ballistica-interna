@@ -111,14 +111,14 @@ sources, named in `V_source`:
   (`fixtures/calibration/capacity-rs.json`) are not in the repository; `build_csv.py` stops without that file.
   Reload Swiss's brass is one maker's brass: other makers and lots differ by a few percent.
 - `estimate` (451 calibers, all handgun calibers among them): from the C.I.P. cartridge outline with typical brass
-  thicknesses (`data/README.md`), times `CAPACITY_FACTOR` = 0.966. The outline estimate was on average 3.5 % larger
-  than the derived capacities of the 35 calibers; leave-one-out over them, the factor lowers the rms deviation
-  from 4.5 to 3.0 % (2026-10-23).
+  thicknesses (`data/README.md`); for rifle calibers (C.I.P. Tab. I to III) times `CAPACITY_FACTOR` = 0.966. The
+  outline estimate was on average 3.5 % larger than the derived capacities of the 35 calibers; leave-one-out over
+  them, the factor lowers the rms deviation from 4.5 to 3.0 % (2026-10-23).
 
 Limits, open:
 
-- The factor is fitted on rifle calibers only. For the handgun calibers (C.I.P. Tab. IV) no derived capacity
-  checks the estimate or the factor, and the leave-one-out figure says nothing about them.
+- The factor is fitted on rifle calibers only, so it is not applied to the handgun calibers (Tab. IV, decided
+  2026-10-24): no derived capacity checks their estimate, and its error is not known.
 - The derived capacities are not independent of the Reload Swiss sets: the same guide is fitted and checked with
   them. How much that flatters the Reload Swiss pressure figures has not been measured.
 - `test_master_data.py` checks every derived capacity against the outline estimate (8 %). 7 mm-08 Rem. fails it:
@@ -159,7 +159,11 @@ too high on average (+5 %), and it is worse than the previous fit in mean (+0.5 
 to 10.5 %). This comes from the Vihtavuori fit: its maximum loads anchor the pressure through the C.I.P. limit,
 and the case capacities of most handgun calibers are estimated (see *Pressure exponent*). The rifle rows improved in
 every column against the previous fit. The earlier handgun figures (59 loads, −2.9 % / 9.4 %) came from an
-older run and are not reproduced.
+older run and are not reproduced; why the row now has 38 loads is still to be checked.
+
+Since 2026-10-24 the handgun row is for information only: a change of the model or of the fits is judged by the
+rifle rows, and "no class gets worse" applies to them only. Handgun support would be a project of its own, with
+handgun powders, measured case capacities and its own acceptance figures.
 
 The earlier analyses below (systematic deviation by fill ratio, direction of the error, independent check) were
 made on the fits of 2026-10-21 and 2026-10-23 and have not been rerun on these fits.

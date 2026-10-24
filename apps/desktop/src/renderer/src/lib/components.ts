@@ -41,6 +41,7 @@ export function recordNotes(r: DbRecord): string[] {
   const notes: string[] = [];
   const flags = String(r.flags ?? '');
   if (/bulk density (estimated|not published)/.test(String(r.fit_status ?? ''))) notes.push('source.bulkEstimated');
+  if (/fitted with all calibers/.test(String(r.fit_status ?? ''))) notes.push('source.fitAllCalibers');
   if (/length_missing|length_ambiguous/.test(flags) || (r.glen !== undefined && !(Number(r.glen) > 0) && 'gdia' in r)) {
     notes.push('source.lengthMissing');
   } else if (r.length_source === 'jbm-litz') notes.push('source.lengthJbmLitz');

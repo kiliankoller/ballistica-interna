@@ -319,7 +319,8 @@
     "handgun_share": 0,
     "score_check": 7.72283278183153,
     "loads_fit": 22,
-    "loads_check": 14
+    "loads_check": 14,
+    "note": "fitted with all calibers, unlike the other Vihtavuori powders (only 14 loads with a defined case capacity)"
    },
    "N110": {
     "Ba": 1.151038164083111,

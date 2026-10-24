@@ -11,10 +11,9 @@ Example report (PDF) of the same load, .308 Win. with a 165 grain bullet: [R8_AE
 (the load file: [R8_AERO_V2_OR.grtload](docs/examples/R8_AERO_V2_OR.grtload); `pnpm docs:media` makes screenshot and report from it)
 
 > **Warning: simulation, not load data.** The calculated pressure can be too **low**: at low fill ratios (below
-> about 90 %) the model calculates the gas pressure on average clearly too low (fill ratio 60 to 70 %: Pmax about
-> 32 % too low, [docs/MODEL.md](docs/MODEL.md#accuracy)), so the real pressure can be higher than shown. For
-> Vihtavuori powders the pressure is assumed (anchored at the C.I.P. maximum), not measured. A calculation is
-> never evidence that a load is safe: **never load on the basis of this app alone.** Use only the load data
+> about 90 %) the model calculates the gas pressure on average clearly too low (fill ratio below 80 %: Pmax about
+> 17 % too low, single loads up to 44 %, [docs/MODEL.md](docs/MODEL.md#accuracy)), so the real pressure can be
+> higher than shown. A calculation is never evidence that a load is safe: **never load on the basis of this app alone.** Use only the load data
 > published by the powder and bullet makers, start with their starting load and never exceed their maximum load.
 > Reloading is dangerous and can cause serious injury or death. The software is provided free of charge and
 > without warranty; liability is excluded to the extent permitted by law (liability for intent, injury to life,
@@ -23,18 +22,19 @@ Example report (PDF) of the same load, .308 Win. with a 165 grain bullet: [R8_AE
 ## Scope and limits (version 0.2)
 
 - **Rifles only.** Handgun cartridges are in the caliber list, but there are no handgun powders and the model
-  is not backed for them: the calculated pressure is on average about 13 % too low. The app says so.
-- **Low fill ratio:** below about 90 % the calculated pressure is too low (60 to 70 %: about 32 % too low). The
-  app shows a warning from a fill ratio below 90 %.
-- **Velocity** deviates about 4 to 5 % (rms) from the makers' measured loads, **pressure** about 12 % (magnum) to
-  20 % (standard) rms, for Vihtavuori powders the pressure is not measured (no accuracy is stated). Checked on
-  loads the model was not fitted to, the velocity holds ([docs/MODEL.md](docs/MODEL.md#accuracy)). The pressure
+  is not backed for them (velocity about ±10 %, pressure not measured). The app says so.
+- **Low fill ratio:** below about 90 % the calculated pressure is too low (below 80 %: about 17 % on average,
+  single loads up to 44 %). The app warns from a fill ratio below 90 %, below 85 % as a danger, and for slow
+  powders below 85 % of the secondary explosion effect.
+- **Velocity** deviates about 4 % (rms) from the makers' measured loads, **pressure** about 12 % (magnum) to 13 %
+  (standard) rms, about 14 % on loads held out of the fit ([docs/MODEL.md](docs/MODEL.md#accuracy)). The pressure
   is not a safety margin.
-- **Powders:** 40 models of Reload Swiss (9), Vihtavuori (19), Norma (7) and Rottweil (5), fitted to makers'
-  published laboratory loads. Powders of other makers can be added as own entries.
+- **Powders:** 39 models of Reload Swiss (9), Vihtavuori (19), Norma (6) and Rottweil (5), fitted to makers'
+  published laboratory loads (Vihtavuori: its velocities with Sax's measured pressures). Powders of other makers
+  can be added as own entries.
 - **Bullets:** about 1560 from the makers' published data. A bullet length that no maker or JBM publishes stays
-  empty and is marked: measure it yourself. Case capacities are estimated from the C.I.P. outline unless you
-  enter the measured value of your cases.
+  empty and is marked: measure it yourself. Case capacities are derived from Reload Swiss's load data (35 rifle
+  calibers) or estimated from the C.I.P. outline, and the app says which; enter the measured value of your cases.
 
 ## Features
 
@@ -44,7 +44,9 @@ Example report (PDF) of the same load, .308 Win. with a 165 grain bullet: [R8_AE
 - Missing or wrong inputs are listed with the name of their field and marked in the input panels
 - The jump of the bullet to the lands (C.I.P. freebore, cartridge length, tip length): below 1.5 mm the results
   warn to raise the start pressure to about 800 bar
-- Warnings next to the result: fill ratio below 90 % (pressure too low), Vihtavuori powders (pressure not backed)
+- Warnings next to the result: fill ratio below 90 % (pressure too low), slow powder loosely filled (secondary
+  explosion effect), estimated case capacity, and how far the measured pressure exceeded the calculation in the
+  tests at this fill ratio
 - Notes on taken data: bullet length missing or taken from JBM's list, estimated bulk density of a powder
 - Accuracy stated per caliber class against the makers' measured loads ([docs/MODEL.md](docs/MODEL.md#accuracy))
 - Asks before closing a load with unsaved changes; switched display units hold for every load

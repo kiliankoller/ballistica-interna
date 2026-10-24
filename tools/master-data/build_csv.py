@@ -103,7 +103,7 @@ def calibers():
                 r['source'] += '; reload-swiss-guide-2025'
             else:
                 v = capacity_estimate(r)
-                r['V'], r['V_source'] = (round(v * CAPACITY_FACTOR, 1), 'estimate') if v else (None, '')
+                r['V'], r['V_source'] = (round(v * capacity_factor(r), 1), 'estimate') if v else (None, '')
             rows.append(r)
         else:
             skipped.append(name)
@@ -114,8 +114,15 @@ def calibers():
 GRAINS_PER_CM3 = 1 / 0.0647989  # water
 # The outline estimate is about 3.5 % larger than the capacities derived from Reload Swiss's fill ratios (35 rifle
 # calibers); one factor removes that (leave-one-out over the calibers: rms 4.5 → 3.0 %; 2026-10-23). It is applied to
-# the handgun calibers too, for which no derived capacity checks it (docs/MODEL.md#case-capacity).
+# rifle calibers only: for the handgun calibers (C.I.P. Tab. IV) no derived capacity checks it (decided 2026-10-24,
+# docs/MODEL.md#case-capacity).
 CAPACITY_FACTOR = 0.966
+HANDGUN_TAB = '4'
+
+
+def capacity_factor(r):
+    """CAPACITY_FACTOR for rifle calibers, 1 for handgun calibers (C.I.P. Tab. IV)."""
+    return 1 if str(r.get('tab')) == HANDGUN_TAB else CAPACITY_FACTOR
 
 
 def capacity_estimate(r):
@@ -245,7 +252,7 @@ def powders(_fit_file=None):
                 continue  # another maker's powder in the set (e.g. Vihtavuori in Sax's data): checked only
             basis, sheet_source, load_source = FIT_SETS[set_][maker]
             q, bulk, kind = sheet.get((maker.replace(' ', ''), name), (None, None, ''))
-            notes = []
+            notes = [v['note']] if v.get('note') else []  # a remark on the fit kept in the manifest
             if not kind:
                 kind = 'rifle' if v.get('handgun_share', 1) < 0.5 else 'handgun'
             if kind not in ('langwaffen', 'rifle'):
