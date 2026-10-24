@@ -64,7 +64,7 @@ Example report (PDF) of the same load, .308 Win. with a 165 grain bullet: [R8_AE
 | `apps/desktop` | Electron app (Vue 3, Element Plus, uPlot) |
 | `data/` | master data as CSV, with sources ([data/README.md](data/README.md)) |
 | `tools/master-data` | builds `data/*.csv` into the app's SQLite database and checks every row |
-| `tools/reference-data` | reads makers' published data (datasheets, catalogues) into `fixtures/`; steps for sources whose terms do not allow shipping or processing the data are local-only and not in the repository |
+| `tools/reference-data` | reads makers' published data (datasheets, catalogues) into `fixtures/`; steps for sources whose terms do not allow shipping or processing the data, and the scrapers of makers' web pages, are local-only and not in the repository |
 | `scripts/` | model checks: `reference` (model vs. measured loads), `accuracy` (per caliber class), `fit-powders`, `calibrate`, `estimate-bulk-density` |
 | `fixtures/` | local reference data: own loads, makers' load data (not in git, not redistributed) |
 
