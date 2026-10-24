@@ -2,6 +2,8 @@
 // calibers not used for fitting.
 //
 //   pnpm fit-powders [--set rs] [--iter 150] [--powders RS50,RS52] [--datasheet] [--regularise 0.5]
+//     --set a,b: several sets together (e.g. v-vihtavuori,sax: velocities of the maker and another source's pressures);
+//       --sample applies per set, the cross-validation reports every set as well
 //     [--start-pressure 250]
 //     --start-pressure bar: start pressure of every bullet; default the app's by gun (rifle 250, auto pistol 290,
 //       revolver 150 bar); the bullet records of the measured sets carry values up to 750 bar (monolithic
@@ -9,6 +11,8 @@
 //     --start-pressure-scale x: the start pressure by gun times x (model work)
 //     --pressure-weight w: weight of the pressure deviation in the score (default 1: ΔPmax/5 %; w 2.5: as strict as V0)
 //     --class handgun|rifle: only the loads of handguns (barrel below 300 mm) or of rifles
+//     --defined-capacity: only the loads of calibers whose case capacity is not an estimate (data/calibers.csv,
+//       V_source other than "estimate")
 //     --params name=value,…: model parameters other than the defaults (model work, e.g. engravingResistance=3e7)
 //     --sample n: at most n loads per powder (evenly spread), for speed with large sets
 //     --fold k: the third of the calibers (0, 1 or 2; default 2) held out for the check
@@ -32,6 +36,7 @@ import { chamberVolume, simulate, withParams, type LoadInput } from '@ballistica
 import { AUTO_PISTOL, PISTOL_START_PRESSURE, REVOLVER_START_PRESSURE, RIFLE_START_PRESSURE } from '../apps/desktop/src/renderer/src/lib/startPressure';
 
 interface Case {
+  set: string;
   job: string;
   caliber: string;
   maker: string;
@@ -50,12 +55,14 @@ for (let i = 2; i < process.argv.length; i++) {
   if (value === undefined || value.startsWith('--')) args.set(key, '');
   else args.set(key, value), i++;
 }
-const set = args.get('set') ?? 'rs';
+const sets = (args.get('set') ?? 'rs').split(',');
+const set = sets.join('+');
 const iterations = Number(args.get('iter') ?? 150);
 const only = args.get('powders')?.split(',');
 const useDatasheet = args.has('datasheet');
 const regularise = Number(args.get('regularise') ?? 0);
 const onlyClass = args.get('class');
+const definedCapacity = args.has('defined-capacity');
 const crossValidate = args.has('cv');
 const foldArg = Number(args.get('fold') ?? 2);
 const pressureWeight = Number(args.get('pressure-weight') ?? 1);
@@ -78,26 +85,47 @@ if (useDatasheet && existsSync(sheetDb)) {
   }
 }
 
-const dir = join(import.meta.dirname, '..', 'fixtures', 'runs', set);
-const measured = JSON.parse(readFileSync(join(dir, 'measured.json'), 'utf8')) as Record<
-  string,
-  { maxPressure_bar: number | null; muzzleVelocity_ms: number; fill_pct?: number | null; match?: string }
->;
+// the folds go by caliber, so the same caliber must have the same name in every set
+const caliberKey = (name: string) => decodeURIComponent(name).toLowerCase().replace(/,/g, '.').replace(/[^a-z0-9]/g, '');
+// calibers with a case capacity that is not an estimate; the loads name them "cipname (altname)"
+const capacityDefined = new Set<string>();
+if (definedCapacity) {
+  const lines = readFileSync(join(import.meta.dirname, '..', 'data', 'calibers.csv'), 'utf8').trim().split('\n');
+  const head = lines[0]!.split(',');
+  for (const l of lines.slice(1)) {
+    const f = l.match(/("[^"]*"|[^,]*)(,|$)/g)!.map((x) => x.replace(/,$/, '').replace(/^"|"$/g, ''));
+    const r = Object.fromEntries(head.map((h, i) => [h, f[i] ?? ''])) as Record<string, string>;
+    if (r.V && r.V_source && r.V_source !== 'estimate') capacityDefined.add(caliberKey(r.cipname!));
+  }
+}
 const byPowder = new Map<string, Case[]>();
-for (const [job, m] of Object.entries(measured)) {
-  // a bullet matched by its weight alone may be quite another bullet (a lead bullet replaced by a long
-  // monolithic one, seated far too deep): such loads are left out
-  if (m.match === 'weight') continue;
-  const file = parseGrtLoad(readFileSync(join(dir, 'jobs', `${job}.grtload`), 'utf8'));
-  const powder = String(file.propellant.pname?.value ?? '').replace(/\s/g, '');
-  if (only && !only.includes(powder)) continue;
-  const list = byPowder.get(powder) ?? [];
-  const load = toLoadInput(file);
-  if (onlyClass && (load.gun.barrelLength < 0.3 ? 'handgun' : 'rifle') !== onlyClass) continue;
-  const caliber = String(file.caliber.CaliberName?.value ?? '');
-  load.projectile.startPressure = fixedStartPressure ?? gunStartPressure(load, caliber) * startPressureScale;
-  list.push({ job, caliber, maker: String(file.propellant.mname?.value ?? ''), load, p: m.maxPressure_bar ?? null, v: m.muzzleVelocity_ms, fill: m.fill_pct ?? null, max: job.endsWith('_max') });
-  byPowder.set(powder, list);
+for (const one of sets) {
+  const dir = join(import.meta.dirname, '..', 'fixtures', 'runs', one);
+  const measured = JSON.parse(readFileSync(join(dir, 'measured.json'), 'utf8')) as Record<
+    string,
+    { maxPressure_bar: number | null; muzzleVelocity_ms: number; fill_pct?: number | null; match?: string }
+  >;
+  const ofSet = new Map<string, Case[]>();
+  for (const [job, m] of Object.entries(measured)) {
+    // a bullet matched by its weight alone may be quite another bullet (a lead bullet replaced by a long
+    // monolithic one, seated far too deep): such loads are left out
+    if (m.match === 'weight') continue;
+    const file = parseGrtLoad(readFileSync(join(dir, 'jobs', `${job}.grtload`), 'utf8'));
+    const powder = decodeURIComponent(String(file.propellant.pname?.value ?? '')).replace(/\s/g, '');
+    if (only && !only.includes(powder)) continue;
+    const list = ofSet.get(powder) ?? [];
+    const load = toLoadInput(file);
+    if (onlyClass && (load.gun.barrelLength < 0.3 ? 'handgun' : 'rifle') !== onlyClass) continue;
+    const caliber = decodeURIComponent(String(file.caliber.CaliberName?.value ?? ''));
+    if (definedCapacity && !capacityDefined.has(caliberKey(caliber.replace(/ \(.*$/, '')))) continue;
+    load.projectile.startPressure = fixedStartPressure ?? gunStartPressure(load, caliber) * startPressureScale;
+    list.push({ set: one, job, caliber: caliberKey(caliber), maker: decodeURIComponent(String(file.propellant.mname?.value ?? '')), load, p: m.maxPressure_bar ?? null, v: m.muzzleVelocity_ms, fill: m.fill_pct ?? null, max: job.endsWith('_max') });
+    ofSet.set(powder, list);
+  }
+  for (const [powder, all] of ofSet) {
+    const cases = sample > 0 && all.length > sample ? Array.from({ length: sample }, (_, i) => all[Math.floor((i * all.length) / sample)]!) : all;
+    byPowder.set(powder, [...(byPowder.get(powder) ?? []), ...cases]);
+  }
 }
 
 type Stats = { n: number; failed: number; score: number; pp: number; vv: number; p: number; v: number; pn: number; anchor: number[] };
@@ -185,7 +213,7 @@ const shapePenalty = (v: { a0: number; z1: number; z2: number }) =>
 const withPowder = (values: Partial<LoadInput['propellant']>) => (l: LoadInput): LoadInput => ({ ...l, propellant: { ...l.propellant, ...values } });
 
 const report: string[] = [
-  `# Own powder models (${set}, ${new Date().toISOString()}${useDatasheet ? ', Qex from datasheets' : ''}${regularise ? `, regularised ${regularise}` : ''}${onlyClass ? `, ${onlyClass} loads` : ''}${Object.keys(modelOverrides).length ? `, ${args.get('params')}` : ''}, start pressure ${fixedStartPressure === null ? `by gun${startPressureScale !== 1 ? ` × ${startPressureScale}` : ''}` : `${fixedStartPressure / 1e5} bar`})`,
+  `# Own powder models (${set}, ${new Date().toISOString()}${useDatasheet ? ', Qex from datasheets' : ''}${regularise ? `, regularised ${regularise}` : ''}${onlyClass ? `, ${onlyClass} loads` : ''}${definedCapacity ? ', defined case capacities only' : ''}${Object.keys(modelOverrides).length ? `, ${args.get('params')}` : ''}, start pressure ${fixedStartPressure === null ? `by gun${startPressureScale !== 1 ? ` × ${startPressureScale}` : ''}` : `${fixedStartPressure / 1e5} bar`})`,
   '',
   'Checked on calibers not used for fitting. Δ = model − measured; score = mean (ΔPmax/5 %)² + (ΔV0/2 %)².',
   '',
@@ -228,7 +256,8 @@ function fitFold(powder: string, cases: Case[], fold: number) {
   }
   const x = nelderMead((y) => mean(evaluate(train, withPowder(own(y, pcd, qex)))) + shapePenalty(own(y, pcd, qex)), x0, iterations);
   const values = own(x, pcd, qex);
-  return { train, test, pcd, values, mine: evaluate(test, withPowder(values)), inSample: evaluate(train, withPowder(values)) };
+  const bySet = new Map(sets.map((one) => [one, evaluate(test.filter((c) => c.set === one), withPowder(values))]));
+  return { train, test, pcd, values, mine: evaluate(test, withPowder(values)), inSample: evaluate(train, withPowder(values)), bySet };
 }
 
 const sum = (a: Stats, b: Stats): Stats => ({
@@ -237,10 +266,12 @@ const sum = (a: Stats, b: Stats): Stats => ({
 });
 const empty = (): Stats => ({ n: 0, failed: 0, score: 0, pp: 0, vv: 0, p: 0, v: 0, pn: 0, anchor: [] });
 const cv = { held: empty(), fit: empty() };
+const cvBySet = new Map(sets.map((one) => [one, empty()]));
 const rms = (ss: number, n: number) => (n ? Math.sqrt(ss / n).toFixed(1) : '–');
+// every held-out load of the cross-validation, for the distribution of the deviations (powders-cv-<time>.loads.json)
+const heldLoads: { set: string; job: string; powder: string; caliber: string; max: boolean; cip_bar: number; p_bar: number | null; p_calc_bar: number; v: number; v_calc: number; fill_pct: number | null }[] = [];
 
-for (const [powder, all] of [...byPowder].sort()) {
-  const cases = sample > 0 && all.length > sample ? Array.from({ length: sample }, (_, i) => all[Math.floor((i * all.length) / sample)]!) : all;
+for (const [powder, cases] of [...byPowder].sort()) {
   if (useDatasheet && datasheetQex.get(powder) === undefined) {
     console.log(`${powder}: no datasheet, left out`);
     continue;
@@ -253,6 +284,15 @@ for (const [powder, all] of [...byPowder].sort()) {
       const r = fitFold(powder, cases, fold);
       if (!r) continue;
       held = sum(held, r.mine);
+      for (const c of r.test) {
+        const one = simulate(withPowder(r.values)(c.load), modelParams);
+        if (one.status !== 'ok') continue;
+        heldLoads.push({
+          set: c.set, job: c.job, powder: `${c.maker} ${powder}`, caliber: c.caliber, max: c.max, cip_bar: c.load.cartridge.maxPressure / 1e5,
+          p_bar: c.p, p_calc_bar: one.maxPressure / 1e5, v: c.v, v_calc: one.muzzleVelocity, fill_pct: c.fill,
+        });
+      }
+      for (const [one, st] of r.bySet) cvBySet.set(one, sum(cvBySet.get(one)!, st));
       fit = sum(fit, r.inSample);
       folds++;
     }
@@ -283,11 +323,15 @@ for (const [powder, all] of [...byPowder].sort()) {
 }
 if (crossValidate) {
   report.push('', `All powders: held out V0 mean ${(cv.held.v / cv.held.n).toFixed(1)} %, rms ${rms(cv.held.vv, cv.held.n)} % (fit ${rms(cv.fit.vv, cv.fit.n)} %)${cv.held.pn ? `; Pmax mean ${(cv.held.p / cv.held.pn).toFixed(1)} %, rms ${rms(cv.held.pp, cv.held.pn)} % (fit ${rms(cv.fit.pp, cv.fit.pn)} %)` : ''}; ${cv.held.n} loads.`);
+  if (sets.length > 1)
+    for (const [one, st] of cvBySet)
+      report.push(`- ${one}: held out ${st.n} loads, V0 mean ${(st.v / st.n).toFixed(1)} %, rms ${rms(st.vv, st.n)} %${st.pn ? `; Pmax mean ${(st.p / st.pn).toFixed(1)} %, rms ${rms(st.pp, st.pn)} % (${st.pn} loads)` : ''}`);
 } else report.push('', `Overall score on the check loads: ${(total.score / total.n).toFixed(2)}.`);
 
 const outDir = join(import.meta.dirname, '..', 'fixtures', 'calibration');
 mkdirSync(outDir, { recursive: true });
 const file = join(outDir, `powders-${crossValidate ? 'cv-' : ''}${new Date().toISOString().replace(/[:.]/g, '-')}.md`);
 writeFileSync(file, report.join('\n'));
+if (crossValidate) writeFileSync(file.replace(/\.md$/, '.loads.json'), JSON.stringify(heldLoads));
 if (!crossValidate) writeFileSync(file.replace(/\.md$/, '.json'), JSON.stringify({ set, class: onlyClass ?? null, params: { ...modelOverrides, ...(pressureWeight !== 1 ? { pressureWeight } : {}), ...(startPressureScale !== 1 ? { startPressureScale } : {}) }, datasheet: useDatasheet, regularise, startPressure_bar: fixedStartPressure === null ? 'by gun' : fixedStartPressure / 1e5, fitted }, null, 1));
-console.log(report.slice(-1)[0], `\nreport: ${file}`);
+console.log(report.slice(crossValidate && sets.length > 1 ? -1 - sets.length : -1).join('\n'), `\nreport: ${file}`);

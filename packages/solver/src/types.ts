@@ -92,6 +92,11 @@ export interface ModelParams {
   vivacityReference: number;
   /** Exponent of the phase-3 decay φ ∝ ((1 − z)/(1 − z2))^q (2/3: surface of a shrinking sphere). */
   phase3Exponent: number;
+  /**
+   * Pressure exponent n of the burn rate (Vieille: rate ∝ pⁿ), taken relative to 1000 bar so that Ba keeps its
+   * meaning: dz/dt = Ba · φ(z) · 1000 bar · (p / 1000 bar)ⁿ. 1 = rate proportional to the pressure; default 0.9.
+   */
+  burnPressureExponent: number;
   /** Share of the chemical energy lost as heat to the walls (constant fraction). */
   heatLoss: number;
   /** Covolume of the powder gas = covolumeFactor / material density pc (1.2: 0.75 cm³/g at pc 1600 kg/m³). */

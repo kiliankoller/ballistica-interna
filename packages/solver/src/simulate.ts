@@ -56,6 +56,9 @@ export function simulate(load: LoadInput, params: ModelParams = defaultParams): 
   const friction = params.bulletFriction * pr.length * pr.diameter;
   const Ba = vivacityAt(pw) * Math.pow(pw.Ba / params.vivacityReference, params.vivacityExponent);
   const ps = pr.startPressure;
+  // burn rate pressure term [bar]: p itself for n = 1, else 1000 bar · (p / 1000 bar)ⁿ
+  const n = params.burnPressureExponent;
+  const burnPressure = (p: number) => (n === 1 ? p / BAR : 1000 * Math.pow(p / (1000 * BAR), n));
 
   const freeVolume = (x: number, z: number) => V0 + A * x - (mc * (1 - z)) / rhoC - b * mc * z;
   const meanPressure = (y: State) => {
@@ -73,7 +76,7 @@ export function simulate(load: LoadInput, params: ModelParams = defaultParams): 
     const p = meanPressure(y);
     let a = (A * (p - pr0)) / m;
     if (v <= 0 && a < 0) a = 0;
-    const dz = z >= 1 ? 0 : Ba * formFunction(z, pw, params) * (p / BAR);
+    const dz = z >= 1 ? 0 : Ba * formFunction(z, pw, params) * burnPressure(p);
     return [v, a, dz];
   };
 

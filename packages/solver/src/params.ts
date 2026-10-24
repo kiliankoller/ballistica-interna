@@ -7,6 +7,8 @@ export const defaultParams: ModelParams = {
   vivacityExponent: 0,
   vivacityReference: 0.5,
   phase3Exponent: 2 / 3,
+  // cross-validated 2026-10-24 (docs/MODEL.md): 0.9 matches the rise of the peak pressure from start to maximum load
+  burnPressureExponent: 0.9,
   heatLoss: 0,
   // covolume b = covolumeFactor / pc (0.75 cm³/g at pc 1600 kg/m³), a typical value for nitrocellulose powders
   covolumeFactor: 1.2,
