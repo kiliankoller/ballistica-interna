@@ -6,7 +6,8 @@ import { selectedStep, type LoadDoc } from '../stores/loads';
 import { cartridgeSvg, cipTable } from './drawing';
 import { chartSvg, type ChartLabels } from './svgChart';
 import { fmt } from './units';
-import { loadWarnings } from './warnings';
+import { capacitySource } from './capacity';
+import { loadWarnings, pressureMargin } from './warnings';
 
 type T = (key: string, args?: Record<string, unknown>) => string;
 
@@ -18,7 +19,9 @@ export function reportHtml(doc: LoadDoc, t: T, locale: string): string {
   const step = selectedStep(doc);
   const r = step?.result;
   const d = step?.derived;
-  const warn = loadWarnings(d?.fill, file.propellant.mname?.value);
+  const capacitySrc = capacitySource(file);
+  const warn = loadWarnings(d?.fill, load?.propellant.Ba, capacitySrc);
+  const margin = pressureMargin(d?.fill);
   const date = new Date().toLocaleDateString(locale, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
   const charge = step ? step.charge / GRAIN : NaN;
   const powder = [file.propellant.mname?.value, file.propellant.pname?.value].filter(Boolean).join(' ');
@@ -36,7 +39,7 @@ export function reportHtml(doc: LoadDoc, t: T, locale: string): string {
     [t('report.ladderStep'), ladderSteps > 1 ? `${fmt(ladderStep, 2)} grain × ${ladderSteps}` : fmt(0, 2)],
     [t('report.seatingDepth'), mm(load?.projectile.seatingDepth)],
     [t('report.bulletLength'), mm(load?.projectile.length)],
-    [t('report.caseCapacity'), `${fmt(capacity, 2)} grain H2O`],
+    [t('report.caseCapacity'), `${fmt(capacity, 2)} grain H2O (${t(`report.capacitySource.${capacitySrc}`)})`],
     [t('report.caseLength'), mm(load?.cartridge.caseLength)],
     [t('report.overallLength'), `${fmt(Number(file.caliber.oal?.value), 2)} mm`],
     [t('report.cbto'), ''],
@@ -150,9 +153,11 @@ footer .note{font-style:italic}
   </div>
 </div>
 ${chart}
-<div class="warn">${esc(t(warn.pressureNotBacked ? 'report.warningNoAccuracy' : 'report.warning'))}${
+<div class="warn">${esc(t('report.warning'))}${
   warn.lowFill ? ` ${esc(t('result.lowFill', { fill: fmt((d?.fill ?? 0) * 100, 0) }))}` : ''
-}${warn.pressureNotBacked ? ` ${esc(t('result.pressureNotBacked'))}` : ''}</div>
+}${warn.slowPowderLowFill ? ` ${esc(t('result.slowPowderLowFill'))}` : ''}${
+  warn.estimatedCapacity ? ` ${esc(t('result.capacityEstimated'))}` : ''
+}${margin !== undefined && r?.status === 'ok' ? ` ${esc(t('result.pressureMargin', { pct: fmt(margin * 100, 0), bar: fmt((r.maxPressure * (1 + margin)) / 1e5, 0) }))}` : ''}</div>
 <footer><span class="note">${esc(t('report.disclaimer'))}</span><span>${esc(t('report.page'))} 1</span></footer>
 </div>`;
 }

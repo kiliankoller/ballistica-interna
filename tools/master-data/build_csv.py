@@ -5,14 +5,15 @@ follow the C.I.P. designations (and so the field names the app already reads); e
   python3 tools/master-data/build_csv.py [--powder-fit fixtures/calibration/powders-<time>.json]
 
 Calibers: C.I.P. Tab I–IV (centre-fire rifle and handgun), cartridge maximum dimensions as L1 … H2, G1, chamber
-minimum dimensions and barrel as c_*. The case capacity V (grains of water) is not part of the C.I.P. tables;
-until it is estimated (V_estimated) it stays empty.
+minimum dimensions and barrel as c_*. The case capacity V (grains of water) is not part of the C.I.P. tables: derived
+from the fill ratios of the Reload Swiss load data guide where it has enough loads, else estimated from the outline (V_source).
 Bullets: maker data (Styria Arms AERO price list; Berger, Nosler, Hornady, Sierra, Barnes, Speer), lengths from
 the maker or else from the JBM length list, checked and flagged by merge_bullets.py; the report goes to
 logs/bullet-report.md.
 Powders: datasheet values (Qex, bulk density) and own fitted burn values (newest fit per measured set: Reload
-Swiss, Lovex, Norma (Sax's loads), Hodgdon, IMR, Winchester and Ramshot with measured pressure, Vihtavuori with
-velocities, the pressure anchored at the C.I.P. maximum of the maximum loads). Makers without a datasheet: the
+Swiss, Lovex, Norma and Rottweil (Sax's loads), Hodgdon, IMR, Winchester and Ramshot with measured pressure,
+Vihtavuori with its own velocities together with Sax's measured pressures). The measured sets are built from the
+master data's components (local/scripts/make-set.ts), so the fit uses the case capacities the app uses. Makers without a datasheet: the
 fitted Qex and a bulk density estimated from compressed loads (scripts/estimate-bulk-density.ts), marked in
 fit_status. Rifle powders only (handgun powders are left out until the model is better for handguns).
 """
@@ -36,7 +37,7 @@ CALIBER_COLUMNS = ['cipname', 'altname', 'tab', 'country', 'cipdate', 'ciprevdat
                    'L1', 'L2', 'L3', 'L6', 'L3G', 'R', 'R1', 'E', 'E1', 'P1', 'P2', 'alpha', 'H1', 'H2', 'G1',
                    'Pmax', 'PK', 'PE', 'EE', 'M',
                    'c_L3', 'c_P1', 'c_P2', 'c_H1', 'c_H2', 'c_G1', 'c_G', 'c_alpha1', 'c_F', 'c_Z', 'c_Q', 'c_N',
-                   'c_b_', 'c_u_', 'V', 'V_estimated', 'source']
+                   'c_b_', 'c_u_', 'V', 'V_source', 'source']
 BULLET_COLUMNS = ['mname', 'pname', 'caliber', 'gdia', 'gmass', 'glen', 'gtip', 'gdepthmax', 'g1bc', 'g7bc',
                   'gtailtype', 'gtailh', 'gtaildiaA', 'gtaildiaB', 'note', 'source',
                   'part_number', 'product_line', 'gdia_in', 'glen_in', 'length_source', 'url', 'retrieved', 'flags']
@@ -67,8 +68,19 @@ def write(name, columns, rows):
     print(f'{name}: {len(rows)} rows', file=sys.stderr)
 
 
+def reload_swiss_capacities():
+    """{C.I.P. name: grains of water} derived from the fill ratios of the Reload Swiss load data guide 2025 (charge,
+    bulk density, fill ratio and the seated bullet of the master data; local/scripts/derive-capacity.ts), calibers with
+    at least 4 charges."""
+    path = os.path.join(FIX, 'calibration', 'capacity-rs.json')
+    if not os.path.exists(path):
+        return {}
+    return {k.split(' (')[0]: v['capacity_gr'] for k, v in json.load(open(path)).items() if v['charges'] >= 4}
+
+
 def calibers():
     db = sqlite3.connect(os.path.join(FIX, 'cip', 'cip.db'))
+    rs_capacities = reload_swiss_capacities()
     rows, skipped = [], []
     for cid, tab, name, alt, country, created, revised, ptmax, pk, pe, ee, m in db.execute(
             'select id, tab, name, alt_names, country, created, revised, ptmax, pk, pe, ee, m from cartridge '
@@ -84,8 +96,13 @@ def calibers():
             if col in CALIBER_COLUMNS and col not in r:
                 r[col] = number
         if all(r.get(k) for k in ('L3', 'L6', 'G1', 'Pmax')):
-            r['V'] = capacity_estimate(r)
-            r['V_estimated'] = 'yes' if r['V'] else ''
+            derived = rs_capacities.get(name)
+            if derived:
+                r['V'], r['V_source'] = derived, 'reload-swiss-fill'
+                r['source'] += '; reload-swiss-guide-2025'
+            else:
+                v = capacity_estimate(r)
+                r['V'], r['V_source'] = (round(v * CAPACITY_FACTOR, 1), 'estimate') if v else (None, '')
             rows.append(r)
         else:
             skipped.append(name)
@@ -94,6 +111,9 @@ def calibers():
 
 
 GRAINS_PER_CM3 = 1 / 0.0647989  # water
+# The outline estimate is about 3.5 % larger than the capacities derived from Reload Swiss's fill ratios (35 calibers);
+# one factor removes that (leave-one-out over the calibers: rms 4.5 → 3.0 %; 2026-10-23, local/MODEL.md).
+CAPACITY_FACTOR = 0.966
 
 
 def capacity_estimate(r):
@@ -172,11 +192,13 @@ def correct_bullets(rows):
 FIT_SETS = {
     'rs': {'ReloadSwiss': ('pressure and velocity measured', 'reload-swiss-products', None),
            'Reload Swiss': ('pressure and velocity measured', 'reload-swiss-products', None)},
-    'v-vihtavuori': {'Vihtavuori': ('velocity measured, pressure anchored at the C.I.P. maximum of maximum loads',
-                                    'vihtavuori-guide-2026', None)},
+    # Vihtavuori's velocities together with Sax's measured pressures (decision 2026-10-23)
+    'v-vihtavuori+sax': {'Vihtavuori': ('velocity measured (Vihtavuori), pressure and velocity measured (Sax)',
+                                        'vihtavuori-guide-2026', 'sax-load-data-2014')},
     'lovex': {'Lovex': ('pressure and velocity measured', 'lovex-guide-2019', None)},
     'sax': {'Norma': ('pressure and velocity measured (Sax)', 'norma-products', 'sax-load-data-2014'),
-            'RWS-Rottweil': ('pressure and velocity measured (Sax)', None, 'sax-load-data-2014')},
+            'RWS-Rottweil': ('pressure and velocity measured (Sax)', None, 'sax-load-data-2014'),
+            'Rottweil': ('pressure and velocity measured (Sax)', None, 'sax-load-data-2014')},
 }
 # Hodgdon, IMR, Winchester and Ramshot are fitted locally as a check only: their terms forbid using the load data
 # in apps or derived works (decided 2026-10-20), so they are not listed here.
@@ -186,7 +208,7 @@ SHEET_DOCUMENTS = {'Vihtavuori industrial powders brochure 2022': 'vihtavuori-ip
 LEGACY_MAKER = {'rs': 'Reload Swiss', 'v-vihtavuori': 'Vihtavuori', 'lovex': 'Lovex'}
 # makers without a datasheet: the fit's own Qex; the bulk density estimated from compressed loads, else a typical
 # value (it sets the fill ratio only), both marked in fit_status
-NO_DATASHEET_MAKERS = {'RWS-Rottweil'}
+NO_DATASHEET_MAKERS = {'RWS-Rottweil', 'Rottweil'}
 TYPICAL_BULK_DENSITY = 950
 # maker names as the master data shows them (the measured sets use the component database's spelling)
 DISPLAY_MAKER = {'RWS-Rottweil': 'Rottweil', 'ReloadSwiss': 'Reload Swiss'}

@@ -4,7 +4,8 @@ import { useI18n } from 'vue-i18n';
 import { GRAIN, caseCapacityGrainsH2O, obtNodeLabel } from '@ballistica-interna/solver';
 import { fmt } from '../lib/units';
 import { SHORT_JUMP, SHORT_JUMP_START_PRESSURE } from '../lib/jump';
-import { loadWarnings } from '../lib/warnings';
+import { capacitySource } from '../lib/capacity';
+import { loadWarnings, pressureMargin } from '../lib/warnings';
 import { selectedStep, useLoads, type LoadDoc } from '../stores/loads';
 
 const props = defineProps<{ doc: LoadDoc }>();
@@ -50,8 +51,16 @@ const slowTwist = computed(() => {
   const min = props.doc.minTwist;
   return min && twist > 0 && twist * 1e3 > min + 0.5 ? { twist: twist / 0.0254, min: min / 25.4 } : null;
 });
-/** Low fill ratio (pressure too low) and Vihtavuori powders (pressure not backed), see lib/warnings.ts. */
-const warnings = computed(() => loadWarnings(d.value?.fill, f.value.propellant.mname?.value));
+/** Source of the case capacity (estimated, from load data, own), see lib/capacity.ts. */
+const capacity = computed(() => capacitySource(f.value));
+/** Low fill ratio, a slow powder loosely filled and an estimated case capacity, see lib/warnings.ts. */
+const warnings = computed(() => loadWarnings(d.value?.fill, load.value?.propellant.Ba, capacity.value));
+/** How far the measured pressure exceeded the calculation in the tests at this fill ratio. */
+const margin = computed(() => {
+  const m = pressureMargin(d.value?.fill);
+  const p = r.value?.status === 'ok' ? r.value.maxPressure : NaN;
+  return m !== undefined && Number.isFinite(p) ? { pct: fmt(m * 100, 0), bar: fmt((p * (1 + m)) / 1e5, 0) } : null;
+});
 const setStartPressure = () => loads.setSI(props.doc, 'projectile', 'gpressure', SHORT_JUMP_START_PRESSURE);
 
 const left = computed<[string, string, string?][]>(() => {
@@ -112,15 +121,17 @@ const right = computed<[string, string][]>(() => {
         </tr>
       </table>
     </div>
+    <p v-if="margin" class="sub">{{ t('result.pressureMargin', margin) }} {{ t(`result.capacitySource.${capacity}`) }}</p>
+    <div v-if="warnings.estimatedCapacity" class="jump">{{ t('result.capacityEstimated') }}</div>
     <div v-if="shortJump !== null" class="jump">
       {{ t('result.shortJump', { jump: fmt(shortJump * 1e3, 1) }) }}
       <el-button size="small" type="warning" plain @click="setStartPressure">{{ t('result.setStartPressure') }}</el-button>
     </div>
-    <div v-if="warnings.lowFill" class="jump">{{ t('result.lowFill', { fill: fmt((d?.fill ?? 0) * 100, 0) }) }}</div>
-    <div v-if="warnings.pressureNotBacked" class="jump">{{ t('result.pressureNotBacked') }}</div>
+    <div v-if="warnings.lowFill" class="jump" :class="{ danger: warnings.veryLowFill }">{{ t('result.lowFill', { fill: fmt((d?.fill ?? 0) * 100, 0) }) }}</div>
+    <div v-if="warnings.slowPowderLowFill" class="jump danger">{{ t('result.slowPowderLowFill') }}</div>
     <div v-if="handgun" class="jump">{{ t('result.handgun') }}</div>
     <div v-if="slowTwist" class="jump">{{ t('result.slowTwist', { twist: fmt(slowTwist.twist, 1), min: fmt(slowTwist.min, 1) }) }}</div>
-    <p class="note">{{ t(warnings.pressureNotBacked ? 'result.uncalibratedNoAccuracy' : 'result.uncalibrated') }}</p>
+    <p class="note">{{ t('result.uncalibrated') }}</p>
   </div>
 </template>
 
@@ -167,6 +178,12 @@ tr.velocity th {
   margin: 4px 0 0;
   padding-left: 18px;
   font-size: 12.5px;
+}
+/* red: the pressure may be far higher than calculated */
+.jump.danger {
+  border-color: var(--el-color-danger);
+  color: var(--el-color-danger-dark-2);
+  background: var(--el-color-danger-light-9);
 }
 .jump {
   margin: 10px 0 0;

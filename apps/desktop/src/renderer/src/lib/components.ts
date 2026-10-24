@@ -2,6 +2,7 @@
 import { toSI, type GrtLoadFile, type GrtSection } from '@ballistica-interna/grtload';
 import { GRAIN, WATER_DENSITY } from '@ballistica-interna/solver';
 import type { ComponentKind, DbRecord } from '../../../shared/api';
+import { capacitySource } from './capacity';
 import { defaultStartPressure } from './startPressure';
 
 const str = (v: unknown) => (v === null || v === undefined ? '' : String(v));
@@ -33,7 +34,8 @@ export function fitsCaliber(bulletDiameter: number, g1: number): boolean {
 
 /**
  * i18n keys of the notes a master record needs next to it: an estimated bulk density (powders), a bullet length
- * missing or ambiguous, taken from JBM's length list (measured by Bryan Litz), or an implausible maker value.
+ * missing or ambiguous, taken from JBM's length list (measured by Bryan Litz), an implausible maker value, or the
+ * source of a caliber's case capacity (estimated from the outline or derived from load data).
  */
 export function recordNotes(r: DbRecord): string[] {
   const notes: string[] = [];
@@ -44,6 +46,8 @@ export function recordNotes(r: DbRecord): string[] {
   } else if (r.length_source === 'jbm-litz') notes.push('source.lengthJbmLitz');
   else if (r.length_source === 'jbm') notes.push('source.lengthJbm');
   if (/implausible_/.test(flags)) notes.push('source.implausible');
+  if (r.V_source === 'estimate' || r.V_estimated === 'yes') notes.push('source.capacityEstimated');
+  else if (r.V_source === 'reload-swiss-fill') notes.push('source.capacityLoadData');
   return notes;
 }
 
@@ -146,6 +150,9 @@ export function recordFromLoad(kind: ComponentKind, file: GrtLoadFile, label: st
       altname: '',
       L3: field(c, 'caselen', 1e-3),
       V: Number(((field(c, 'casevol', 1) * WATER_DENSITY) / GRAIN).toPrecision(12)),
+      // the master value's source stays only while the copy keeps that value (lib/capacity.ts)
+      V_source: { estimate: 'estimate', loadData: 'reload-swiss-fill', own: 'own' }[capacitySource(file)],
+      V_estimated: '',
       c_Z: field(c, 'Dz', 1e-3),
       c_Q: field(c, 'Aeff', 1e-6),
       Pmax: field(c, 'pMaxZul', 1e5),

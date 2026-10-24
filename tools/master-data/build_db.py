@@ -13,7 +13,7 @@ import sys
 DATA = os.path.join(os.path.dirname(__file__), '..', '..', 'data')
 TABLES = {'calibers.csv': 'caliber', 'bullets.csv': 'projectile', 'powders.csv': 'propellant'}
 TEXT = {'cipname', 'altname', 'country', 'cipdate', 'ciprevdate', 'source', 'mname', 'pname', 'caliber', 'note',
-        'fit_status', 'V_estimated', 'part_number', 'product_line', 'length_source', 'url', 'retrieved', 'flags'}
+        'fit_status', 'V_source', 'part_number', 'product_line', 'length_source', 'url', 'retrieved', 'flags'}
 
 
 def num(r, k):
