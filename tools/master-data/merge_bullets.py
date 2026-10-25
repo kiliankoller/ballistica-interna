@@ -35,6 +35,8 @@ NOSE_TYPES = {'hp', 'sp', 'fmj', 'rn', 'fn', 'fp', 'spitzer', 'hc'}
 GENERIC = NOSE_TYPES | {'bt', 'fb', 'jacketed', 'wc', 'tip', 'bonded', 'match', 'point', 'nose', 'hollow', 'soft'}
 # diameters JBM gives rounded
 JBM_DIAMETER = {0.2: 0.204}
+# JBM's spelling of a maker → the maker as in maker_bullet
+JBM_MAKER = {'Sellier and Bellot': 'Sellier & Bellot'}
 CONFLICT = 0.03  # accepted deviation between sources (decided 2026-10-20)
 
 
@@ -102,7 +104,7 @@ def load(db_path):
     for r in db.execute('select * from jbm_length'):
         r = dict(r)
         r['diameter_in'] = JBM_DIAMETER.get(r['diameter_in'], r['diameter_in'])
-        jbm.setdefault(r['maker'], []).append(r)
+        jbm.setdefault(JBM_MAKER.get(r['maker'], r['maker']), []).append(r)
     return makers, jbm
 
 
