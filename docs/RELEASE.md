@@ -37,8 +37,8 @@ Open (the maintainer decides how far to go; the points are accepted risks, not f
 
 - [ ] Name BallisticaInterna: check TMview/DPMA/EUIPO and GitHub.
 - [ ] Run each installer once on its platform (Windows and Linux were not checked after the release).
-- [ ] Per maker: terms of service and robots.txt read and noted in `data/sources.csv`; still to confirm for Norma,
-      Reload Swiss and Vihtavuori.
+- [ ] Per maker: terms of service and robots.txt read and noted in `data/sources.csv`; still to confirm for Norma and
+      Vihtavuori.
 - [x] Repository settings (checked 2026-10-22): description and topics set, Issues enabled, private vulnerability
       reporting enabled (SECURITY.md points to it). Still to look at: no Sponsors button, no donation links
       (CONTRIBUTING.md).
