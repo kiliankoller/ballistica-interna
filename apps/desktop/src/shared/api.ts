@@ -4,7 +4,7 @@
 export const APP_NAME = 'BallisticaInterna';
 
 /** Version of the disclaimer text; a new version is shown again on the next start. */
-export const DISCLAIMER_VERSION = '2026-10-24';
+export const DISCLAIMER_VERSION = '2026-10-25';
 
 export interface Settings {
   language: 'de' | 'en';

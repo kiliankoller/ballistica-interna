@@ -7,8 +7,8 @@ Norma,204,0.524953,3852,1.23,-0.348387,0,0.512149,0.788147,1600,900,21,0,0,fitte
 Norma,URP,0.505602,4017,1.23,0.192803,0,0.492608,0.782213,1600,895,21,0,0,fitted: pressure and velocity measured (Sax),2.77314,18,norma-products; sax-load-data-2014; ballisticainterna-fit
 Reload Swiss,RS36,0.708512,3950,1.23,3.09697,0,0.441992,0.744758,1600,910,21,0,0,fitted: pressure and velocity measured,24.6067,24,reload-swiss-products; ballisticainterna-fit
 Reload Swiss,RS40,0.58123,3950,1.23,2.5269,0,0.360536,0.782446,1600,940,21,0,0,fitted: pressure and velocity measured,16.1822,72,reload-swiss-products; ballisticainterna-fit
-Reload Swiss,RS50,0.597171,3750,1.23,0.0638129,0,0.495692,0.776544,1600,950,21,0,0,fitted: pressure and velocity measured,7.00662,96,reload-swiss-products; ballisticainterna-fit
-Reload Swiss,RS52,0.553715,3900,1.23,0.971772,0,0.45503,0.77203,1600,950,21,0,0,fitted: pressure and velocity measured,15.3567,110,reload-swiss-products; ballisticainterna-fit
+Reload Swiss,RS50,0.602945,3750,1.23,0.07177,0,0.497435,0.777589,1600,950,21,0,0,fitted: pressure and velocity measured,6.69202,94,reload-swiss-products; ballisticainterna-fit
+Reload Swiss,RS52,0.555663,3900,1.23,1.11835,0,0.439075,0.76649,1600,950,21,0,0,fitted: pressure and velocity measured,14.0096,106,reload-swiss-products; ballisticainterna-fit
 Reload Swiss,RS60,0.53665,4000,1.23,-0.416695,0,0.511878,0.794815,1600,970,21,0,0,fitted: pressure and velocity measured,10.7719,146,reload-swiss-products; ballisticainterna-fit
 Reload Swiss,RS62,0.534618,3750,1.23,-0.228943,0,0.499669,0.784276,1600,960,21,0,0,fitted: pressure and velocity measured,32.7199,130,reload-swiss-products; ballisticainterna-fit
 Reload Swiss,RS70,0.480207,3900,1.23,-0.187971,0,0.50306,0.784348,1600,990,21,0,0,fitted: pressure and velocity measured,2.7834,106,reload-swiss-products; ballisticainterna-fit

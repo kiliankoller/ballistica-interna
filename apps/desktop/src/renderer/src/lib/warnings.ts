@@ -17,8 +17,8 @@ export const SLOW_BA = 0.55;
 
 /**
  * Worst case of the tests: how far the measured peak pressure exceeded the calculated one, by fill ratio (the
- * lower bound of the band, as a fraction). Held-out loads of the cross-validation of 2026-10-24 (pressure exponent
- * 0.9, split of the shipped fits; 1096 rifle loads of Reload Swiss and Sax with measured pressure,
+ * lower bound of the band, as a fraction). Held-out loads of the cross-validations of 2026-10-24 and, for Reload
+ * Swiss after the refit of RS50 and RS52, 2026-10-25 (pressure exponent 0.9, split of the shipped fits; 1090 rifle loads of Reload Swiss and Sax with measured pressure,
  * docs/MODEL.md#accuracy): below 90 % fill 3402 bar measured against 1937 calculated, 90 to 100 % 42 % above, above
  * 100 % 30 % above.
  */

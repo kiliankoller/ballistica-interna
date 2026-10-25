@@ -84,7 +84,7 @@ const en: typeof de = {
     shortJump: 'Jump only about {jump} mm (below 1.5 mm): set the start pressure to about 800 bar, else the real pressure can be up to 1000 bar above the calculated one (note of Styria Arms).',
     handgun: 'Handguns are not supported in this version: there are no handgun powders in the master data, and the model is not backed for them. Against laboratory measurements the velocity deviates by about ±10 %, the pressure is not backed by measurements. The calculated pressure is no safety margin.',
     setStartPressure: 'Set to 800 bar',
-    lowFill: 'Load ratio {fill} % (below 90 %): loosely filled, the model calculates the pressure systematically too LOW, in our tests on average by 4 % (load ratio 80 to 90 %) or 14 % (below 80 %), single loads by up to 43 %. The real pressure can be clearly higher than shown.',
+    lowFill: 'Load ratio {fill} % (below 90 %): loosely filled, the model calculates the pressure systematically too LOW, in our tests on average by 4 % (load ratio 80 to 90 %) or 15 % (below 80 %), single loads by up to 43 %. The real pressure can be clearly higher than shown.',
     slowPowderLowFill: 'Slow powder at a load ratio below 85 %: risk of erratic, very high pressure spikes (secondary explosion effect), which no model calculates. Do not go below the powder maker\'s minimum charge.',
     capacityEstimated: 'Case capacity only estimated: it is the largest single uncertainty. 3 % too much volume gives, depending on the load, about 5 to 10 % too little pressure. Measure it: fill at least 5 fired cases (not resized) with the spent primer in place with water up to the mouth, weigh them full and empty, enter the mean in grains of water.',
     pressureMargin: 'In our tests the measured pressure at this load ratio exceeded the calculation by up to {pct} % (here up to about {bar} bar); for most loads by clearly less.',
@@ -168,7 +168,7 @@ const en: typeof de = {
   },
   disclaimer: {
     title: 'Important notice',
-    lead: 'BallisticaInterna is a simulation and does NOT provide load data. The calculated pressure can be too LOW: at low fill ratios (below about 90 %) the model calculates the gas pressure on average clearly too low (below 80 % by about 14 %, single loads by up to 43 %), so the real pressure can be higher than shown.',
+    lead: 'BallisticaInterna is a simulation and does NOT provide load data. The calculated pressure can be too LOW: at low fill ratios (below about 90 %) the model calculates the gas pressure on average clearly too low (below 80 % by about 15 %, single loads by up to 43 %), so the real pressure can be higher than shown.',
     points: [
       'A calculation is never evidence that a load is safe. Never load on the basis of this app alone. Use only the published load data of the powder and bullet makers, start with their starting load, work up carefully watching for pressure signs and never exceed the maximum load.',
       'Calculated values differ from reality, in single cases considerably. Against the makers\' laboratory measurements typically: rifle ±4 % in velocity, ±12 to ±15 % in pressure; handgun ±10 % in velocity, pressure not backed by measurements.',

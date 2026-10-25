@@ -64,7 +64,8 @@ most 60 loads per powder and set):
 | 0.85 | 1096 | −2.4 % | 13.8 % | −12.7 % | −3.8 % | +41 / +10 % | 4.2 % |
 | 0.8 | 1096 | −2.4 % | 14.0 % | −11.7 % | −4.6 % | +38 / +9 % | 4.2 % |
 
-Shipped powders refitted with n = 0.9 on 2026-10-24. The Vihtavuori fit uses only the calibers with a defined
+Shipped powders refitted with n = 0.9 on 2026-10-24; RS50 and RS52 again on 2026-10-25 after the case capacity of
+7 mm-08 Rem. was corrected (see *Case capacity*). The Vihtavuori fit uses only the calibers with a defined
 case capacity (`--defined-capacity`): with all calibers, the maximum loads of the handgun calibers (estimated
 capacities) pull the burn law to the edge of its range (a₀ = 5 for N110, the maximum loads at 48 % of the C.I.P.
 limit). The Sax-based sets (Norma, Rottweil) and Reload Swiss were refitted with all calibers.
@@ -156,13 +157,13 @@ The shipped powder models against the makers' measured loads (`pnpm accuracy`, d
 measured, rms in %). Loads used for fitting are included, so the pressure figures of the fitting sets are
 slightly optimistic; the velocity sets of other makers are independent.
 
-Figures of 2026-10-25, with the shipped master data (n = 0.9, the powder fits of 2026-10-24; the Vihtavuori fit
+Figures of 2026-10-25, with the shipped master data (n = 0.9, the powder fits of 2026-10-24, RS50 and RS52 of 2026-10-25; the Vihtavuori fit
 with defined case capacities only, see *Pressure exponent*; 7 mm-08 Rem. with the outline estimate):
 
 | class | loads | V0 mean | V0 rms | loads with pressure | Pmax mean | Pmax rms |
 |---|---|---|---|---|---|---|
-| standard rifle | 6311 | +0.1 % | 3.7 % | 982 | −1.6 % | 13.0 % |
-| magnum rifle (case > 5 cm³) | 1321 | −0.5 % | 3.6 % | 278 | 0.0 % | 11.6 % |
+| standard rifle | 6311 | +0.1 % | 3.7 % | 982 | −1.3 % | 12.9 % |
+| magnum rifle (case > 5 cm³) | 1321 | −0.5 % | 3.6 % | 278 | +0.1 % | 11.6 % |
 | handgun (barrel < 300 mm) | 38 | +3.0 % | 8.6 % | — | — | — |
 
 The measured sets (rs, rsk, sax, v-vihtavuori, v-barnes, v-sierra) were rebuilt on 2026-10-24 from the current
@@ -171,7 +172,8 @@ rebuild: the rifle jobs already had these capacities. The handgun jobs had capac
 correction factor 0.966 still applied to them); with the outline estimates the handgun row went from +5.2 % /
 10.5 % to +3.0 % / 8.6 %. With the outline estimate for 7 mm-08 Rem. (see *Case capacity*) the fill-ratio check
 leaves out 6 more of its Reload Swiss charges, and the standard rifle row went from 6317 / 988 loads, Pmax −1.4 % /
-13.2 % to the figures above.
+13.2 % to 6311 / 982 loads, Pmax −1.6 % / 13.0 %; after the refit of RS50 and RS52 (2026-10-25) to the figures
+above.
 
 **Handguns are not supported.** The app says so for every load with a barrel below 300 mm. The handgun row is
 the model with rifle powders in handgun cartridges, which is what the app would calculate if asked. Its V0 is
@@ -187,8 +189,8 @@ rifle rows, and "no class gets worse" applies to them only. Handgun support woul
 handgun powders, measured case capacities and its own acceptance figures.
 
 The analyses below were rerun on the shipped fits (n = 0.9) and the rebuilt measured sets: the cross-validations
-on 2026-10-24, still with the derived 51.1 grains for 7 mm-08 Rem. (12 of 756 Reload Swiss loads), the others on
-2026-10-25.
+of Norma, Rottweil and Vihtavuori on 2026-10-24, that of Reload Swiss and the others on 2026-10-25, after the
+correction of 7 mm-08 Rem. and the refit of RS50 and RS52.
 
 **Cross-validation.** `pnpm fit-powders --cv` fits every powder three times, each time without a third of the
 calibers, and checks it on the calibers left out (all three folds together). The held-out figures are close to
@@ -197,28 +199,28 @@ the shipped fits, see *Pressure exponent*):
 
 | powders (sets) | held-out loads | V0 rms held out (fit) | Pmax rms held out (fit) |
 |---|---|---|---|
-| Reload Swiss (rs) | 756 | 4.7 % (4.2 %) | 15.6 % (13.8 %) |
+| Reload Swiss (rs) | 750 | 4.6 % (4.1 %) | 15.4 % (13.5 %) |
 | Norma (sax) | 140 | 2.0 % (1.7 %) | 9.1 % (8.2 %) |
 | Rottweil (sax) | 108 | 1.9 % (1.8 %) | 8.3 % (7.8 %) |
 | Vihtavuori (v-vihtavuori, pressure from sax), defined capacities | 1092 | 4.2 % (3.5 %) | 7.7 % (6.4 %) |
 | Vihtavuori 24N41 (all calibers, velocity only) | 36 | 4.1 % (4.0 %) | — |
 
 **Systematic deviation (rifles, `pnpm accuracy --by`).** The error depends on the fill ratio (calculated with the
-bullet seated): at 70 … 80 % the model is 1.7 % low in V0 and 12.7 % low in Pmax (68 loads with pressure), at
-80 … 90 % 0.6 % and 3.4 %, at 90 … 100 % it is unbiased (V0 0.0 %, Pmax −0.6 %, rms 3.1 % and 10.7 %), at 100 % and
-more (compressed charges) it is 1.7 % high in V0 and 5.2 % high in Pmax. Below 70 % there is a single load with
+bullet seated): at 70 … 80 % the model is 1.7 % low in V0 and 12.2 % low in Pmax (68 loads with pressure), at
+80 … 90 % 0.5 % and 3.0 %, at 90 … 100 % it is unbiased (V0 0.0 %, Pmax −0.4 %, rms 3.1 % and 10.6 %), at 100 % and
+more (compressed charges) it is 1.8 % high in V0 and 5.5 % high in Pmax. Below 70 % there is a single load with
 pressure.
 
 **Direction of the error.** The dangerous direction is the low one: at fill ratios below about 90 % the
-calculated pressure is on average too low (70 … 80 %: 13 %, held out below 80 %: 14 %), so the real pressure can
+calculated pressure is on average too low (70 … 80 %: 12 %, held out below 80 %: 15 %), so the real pressure can
 be higher than shown. Bullets of 300 gr and more are 3.3 % high in V0. Other weight classes show no trend in V0
-(−0.5 … +0.9 %).
+(−0.5 … +1.0 %).
 
 **Warnings of the app** (`lib/warnings.ts`). Their figures come from the held-out loads of the cross-validation
-of 2026-10-24 (pressure exponent 0.9, split of the shipped fits, 1096 rifle loads of Reload Swiss and Sax with
+of 2026-10-24 and 2026-10-25 (pressure exponent 0.9, split of the shipped fits, 1090 rifle loads of Reload Swiss and Sax with
 measured pressure; fill ratios as published by Reload Swiss, Sax publishes none).
 
-- Fill ratio below 90 %: the calculated pressure was on average 4 % too low at 80 … 90 % and 14 % below 80 %,
+- Fill ratio below 90 %: the calculated pressure was on average 4 % too low at 80 … 90 % and 15 % below 80 %,
   single loads up to 43 %. Below 85 % the warning is shown as a danger.
 - Slow powder (Ba ≤ 0.55, N160, RS62, Norma 204 and slower) below 85 % fill: risk of the secondary explosion
   effect, which no model calculates. The bound is checked against the shipped powders by a test, as Ba changes
@@ -233,17 +235,17 @@ so the app no longer marks their pressure as not backed.
 **Independent check.** The customer loads of the Reload Swiss load data guide 2025 (rifles) were not used for
 fitting. Reload Swiss checks them for plausibility only, and their seating depth and pressure are not reliable, so
 only the velocity V5 (at 5 m) is compared, with the bullet seated to the C.I.P. maximum cartridge length and the
-shipped master data (bullets matched by type or maker, 627 loads; 2026-10-25, `pnpm accuracy`, sets rsk and rs):
+shipped master data (bullets matched by type or maker, 627 loads; 2026-10-25 after the refit, `pnpm accuracy`, sets rsk and rs):
 
 | class | loads | V0 mean | V0 rms | within ±5 % |
 |---|---|---|---|---|
-| standard rifle, customer loads | 534 | −1.5 % | 4.5 % | 79 % |
+| standard rifle, customer loads | 534 | −1.2 % | 4.4 % | 80 % |
 | magnum rifle, customer loads | 93 | −1.3 % | 3.1 % | 89 % |
-| same powders, laboratory loads (standard / magnum) | 606 / 144 | +0.6 / −0.3 % | 4.4 / 3.9 % | 81 / 83 % |
+| same powders, laboratory loads (standard / magnum) | 606 / 144 | +0.8 / −0.2 % | 4.4 / 3.9 % | 81 / 85 % |
 
 The velocity holds up on loads from real rifles with unknown seating: the rms is the same as on the laboratory
-loads for standard rifles and lower for magnums. The model is about 1.5 % low on average against the customers
-(median −2.0 % standard, −1.1 % magnum); V5 is a few tenths of a percent below V0, so the true bias is a little
+loads for standard rifles and lower for magnums. The model is about 1.2 % low on average against the customers
+(median −1.7 % standard, −1.1 % magnum); V5 is a few tenths of a percent below V0, so the true bias is a little
 larger.
 
 Handgun powders are not shipped yet: on handgun loads the model's pressure scatters much more (rms about 26 %),
