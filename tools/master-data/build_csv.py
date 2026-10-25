@@ -240,7 +240,9 @@ FIT_SETS = {
     # Vihtavuori's velocities together with Sax's measured pressures (decision 2026-10-23)
     'v-vihtavuori+sax': {'Vihtavuori': ('velocity measured (Vihtavuori), pressure and velocity measured (Sax)',
                                         'vihtavuori-guide-2026', 'sax-load-data-2014')},
-    'lovex': {'Lovex': ('pressure and velocity measured', 'lovex-guide-2019', None)},
+    # Lovex: pressure of the maximum loads only; no Qex published, so it is fitted (decision 2026-10-25)
+    'lovex': {'Lovex': ('pressure and velocity measured (maximum loads), Qex fitted', 'explosia-catalogue-2023',
+                        'lovex-guide-2019')},
     'sax': {'Norma': ('pressure and velocity measured (Sax)', 'norma-products', 'sax-load-data-2014'),
             'RWS-Rottweil': ('pressure and velocity measured (Sax)', None, 'sax-load-data-2014'),
             'Rottweil': ('pressure and velocity measured (Sax)', None, 'sax-load-data-2014')},
@@ -248,7 +250,8 @@ FIT_SETS = {
 # Hodgdon, IMR, Winchester and Ramshot are fitted locally as a check only: their terms forbid using the load data
 # in apps or derived works (decided 2026-10-20), so they are not listed here.
 # datasheet documents (powder_datasheet.source) other than the set's own → source id
-SHEET_DOCUMENTS = {'Vihtavuori industrial powders brochure 2022': 'vihtavuori-ip-brochure-2022'}
+SHEET_DOCUMENTS = {'Vihtavuori industrial powders brochure 2022': 'vihtavuori-ip-brochure-2022',
+                   'Explosia propellants catalogue 2023': 'explosia-catalogue-2023'}
 # makers of the sets fitted before the fits named their maker
 LEGACY_MAKER = {'rs': 'Reload Swiss', 'v-vihtavuori': 'Vihtavuori', 'lovex': 'Lovex'}
 # makers without a datasheet: the fit's own Qex; the bulk density estimated from compressed loads, else a typical

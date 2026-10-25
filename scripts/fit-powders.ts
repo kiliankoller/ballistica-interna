@@ -77,10 +77,11 @@ const gunStartPressure = (load: LoadInput, caliber: string) =>
 const datasheetQex = new Map<string, number>();
 const datasheetBulk = new Map<string, number>();
 const sheetDb = join(import.meta.dirname, '..', 'fixtures', 'open-db', 'components.db');
-if (useDatasheet && existsSync(sheetDb)) {
+// the datasheet's bulk density always (Lovex: bulk density published, Qex not); its Qex only with --datasheet
+if (existsSync(sheetDb)) {
   const db = new DatabaseSync(sheetDb, { readOnly: true } as ConstructorParameters<typeof DatabaseSync>[1]);
-  for (const r of db.prepare('select name, qex_j_g, bulk_density_g_l from powder_datasheet where qex_j_g is not null').all() as { name: string; qex_j_g: number; bulk_density_g_l: number | null }[]) {
-    datasheetQex.set(r.name.replace(/\s/g, ''), r.qex_j_g * 1e3);
+  for (const r of db.prepare('select name, qex_j_g, bulk_density_g_l from powder_datasheet').all() as { name: string; qex_j_g: number | null; bulk_density_g_l: number | null }[]) {
+    if (useDatasheet && r.qex_j_g) datasheetQex.set(r.name.replace(/\s/g, ''), r.qex_j_g * 1e3);
     if (r.bulk_density_g_l) datasheetBulk.set(r.name.replace(/\s/g, ''), r.bulk_density_g_l);
   }
 }

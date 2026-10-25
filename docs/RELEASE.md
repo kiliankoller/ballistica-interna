@@ -118,8 +118,8 @@ Known limitations (each has an issue)
 - [#4](https://github.com/kiliankoller/ballistica-interna/issues/4) Low fill ratios (below 90 %): the pressure is
   calculated too low.
 - [#5](https://github.com/kiliankoller/ballistica-interna/issues/5) Handguns are not supported.
-- [#10](https://github.com/kiliankoller/ballistica-interna/issues/10) The derived case capacities are not yet
-  compared with measured water capacities.
+- The derived case capacities are not yet compared with measured water capacities
+  ([docs/MODEL.md](https://github.com/kiliankoller/ballistica-interna/blob/main/docs/MODEL.md#case-capacity)).
 - No powders of Hodgdon, Ramshot, IMR, Winchester and Alliant (their terms forbid using the load data).
 
 Compare the SHA-256 checksum (`SHA256SUMS-*.txt`, attached to this release) with your download before you start
