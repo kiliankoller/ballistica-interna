@@ -25,7 +25,7 @@ Published: the repository is public; v0.2.0 (2026-10-23) is the first release. I
 - [ ] What becomes public: `git ls-files` shows no load tables, no databases, no PDFs, no local notes, no
       `fixtures/`, no `local/`, no scripts of restricted sources (they are in `local/`), no catalogue excerpts
       (testdata is synthetic).
-- [ ] The known limitations in the release text and in the open issues (#1 to #5) are still true.
+- [ ] The known limitations in the release text and in the open issues (known-limitation label) are still true.
 
 ## Before telling a wider public
 
@@ -55,7 +55,7 @@ The installers carry no signature of a certificate authority and are not notaris
 The macOS app is signed ad hoc only (`identity: '-'` in electron-builder.yml): without that, an arm64 app is reported
 as damaged after a download, but Gatekeeper still asks for confirmation. The Windows installer is not signed at all.
 Each release therefore carries SHA-256 checksums (`SHA256SUMS-*.txt`), and the release text says so. A Developer ID
-and notarisation are not planned for now (cost); see issues #1 (macOS) and #2 (Windows).
+and notarisation are not planned for now (cost); see issue #12 (until 0.2.0: #1 macOS, #2 Windows).
 
 ## Open questions (for a lawyer, if one is consulted later)
 
@@ -108,15 +108,11 @@ How accurate it is
   were not used for fitting: 4.4 % (standard rifles), 3.1 % (magnum).
 - Pressure: 11.6 % (magnum) to 12.9 % (standard) rms, 13.6 % on loads held out of the fit. It is no safety margin.
 
-Known limitations (each has an issue)
-- [#1](https://github.com/kiliankoller/ballistica-interna/issues/1) macOS: not signed with a Developer ID, not
-  notarised. Open the app once via System Settings → Privacy & Security → Open Anyway.
-- [#2](https://github.com/kiliankoller/ballistica-interna/issues/2) Windows: not code-signed. SmartScreen: More
-  info → Run anyway.
-- [#3](https://github.com/kiliankoller/ballistica-interna/issues/3) Pressure deviates about 12 to 13 % rms from
-  measured loads. It is no safety margin.
-- [#4](https://github.com/kiliankoller/ballistica-interna/issues/4) Low fill ratios (below 90 %): the pressure is
-  calculated too low.
+Known limitations
+- [#12](https://github.com/kiliankoller/ballistica-interna/issues/12) The installers are not signed. macOS: open the
+  app once via System Settings → Privacy & Security → Open Anyway. Windows: SmartScreen: More info → Run anyway.
+- [#13](https://github.com/kiliankoller/ballistica-interna/issues/13) Pressure deviates about 12 to 13 % rms from
+  measured loads, and at fill ratios below 90 % it is calculated too low. It is no safety margin.
 - [#5](https://github.com/kiliankoller/ballistica-interna/issues/5) Handguns are not supported.
 - The derived case capacities are not yet compared with measured water capacities
   ([docs/MODEL.md](https://github.com/kiliankoller/ballistica-interna/blob/main/docs/MODEL.md#case-capacity)).
