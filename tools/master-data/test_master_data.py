@@ -69,6 +69,12 @@ class DerivedCapacities(unittest.TestCase):
                if abs(float(r['V']) / build_csv.capacity_estimate(r) - 1) > DERIVED_TOLERANCE}
         self.assertEqual(off, SUSPECT_DERIVED, 'fixed or new suspects: update SUSPECT_DERIVED')
 
+    def test_styria_arms_names_are_unique(self):
+        with open(os.path.join(DATA, 'bullets.csv'), newline='') as f:
+            names = [(r['pname'], r['gdia']) for r in csv.DictReader(f) if r['mname'] == 'Styria Arms']
+        self.assertEqual(len(names), len(set(names)))
+        self.assertIn(('AERO SB 165 gr HP 1.5', '7.82'), names)
+
     def test_rejected_derived_capacities_are_estimated(self):
         with open(os.path.join(DATA, 'calibers.csv'), newline='') as f:
             rows = {r['cipname']: r for r in csv.DictReader(f)}

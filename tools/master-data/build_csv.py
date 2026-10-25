@@ -18,6 +18,7 @@ fitted Qex and a bulk density estimated from compressed loads (scripts/estimate-
 fit_status. Rifle powders only (handgun powders are left out until the model is better for handguns).
 """
 import argparse
+import collections
 import csv
 import glob
 import json
@@ -171,10 +172,17 @@ def capacity_estimate(r):
 def bullets():
     db = sqlite3.connect(os.path.join(FIX, 'open-db', 'components.db'))
     rows = []
-    for mname, model, btype, din, dmm, gr, length, tip, smax, bc, note in db.execute(
-            'select maker, model, type, diameter_in, diameter_mm, weight_gr, length_mm, tip_mm, smax_mm, bc_g1, twist_note '
-            "from bullet where source = 'Styria Arms AERO price list'"):
-        rows.append(dict(mname=mname, pname=f'{model} {btype} {gr:g} gr'.replace('  ', ' '), caliber=f'.{round(din * 1000):03d}',
+    styria = list(db.execute(
+            'select maker, model, type, diameter_in, diameter_mm, weight_gr, length_mm, tip_mm, smax_mm, bc_g1, twist_note, hollow '
+            "from bullet where source = 'Styria Arms AERO price list'"))
+    # the price list has some bullets twice under the same model, type and weight: the SB with a hollow point of
+    # 1.5 or 2 mm diameter, the SOLR with a short (magazine) or long tip; the name says which
+    same = collections.Counter((r[1], r[2], r[4], r[5]) for r in styria)
+    for mname, model, btype, din, dmm, gr, length, tip, smax, bc, note, hollow in styria:
+        pname = f'{model} {btype} {gr:g} gr'.replace('  ', ' ')
+        if same[(model, btype, dmm, gr)] > 1:
+            pname += f" HP {hollow.split('/')[1].replace(',', '.')}" if hollow else f' tip {tip:.1f}'
+        rows.append(dict(mname=mname, pname=pname, caliber=f'.{round(din * 1000):03d}',
                          gdia=dmm, gmass=gr, glen=length, gtip=tip, gdepthmax=smax, g1bc=bc, gtailtype=0,
                          note=re.sub(r'(\s*\b\d+\b)+\s*$', '', note or '').strip(), source='styria-arms-aero',
                          gdia_in=din, glen_in=round(length / 25.4, 3) if length else None,
