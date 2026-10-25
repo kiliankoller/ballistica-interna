@@ -98,8 +98,9 @@ What is new since 0.2.0
 - The first-start notice states the figures of this version (it is shown again once).
 - Accuracy checked again on measured sets rebuilt from the shipped master data
   ([docs/MODEL.md](https://github.com/kiliankoller/ballistica-interna/blob/main/docs/MODEL.md#accuracy)).
-- 39 powder models (Reload Swiss 9, Vihtavuori 19, Norma 6, Rottweil 5): Norma MRP is no longer shipped.
-  About 1640 bullets (was about 1560).
+- 39 powder models (Reload Swiss 9, Vihtavuori 19, Norma 6, Rottweil 5): Norma MRP (discontinued) is no longer
+  shipped: too few measured loads with a matching bullet to fit it again (4 with pressure; it can be added as an
+  own powder). About 1640 bullets (was about 1560).
 
 How accurate it is
 - Velocity: about 3.7 % rms against the makers' measured loads. Checked on customer loads of Reload Swiss that
