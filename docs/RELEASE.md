@@ -74,6 +74,62 @@ five of the review are in `local/legal-review-2026-10-21.md`. Among them:
 
 Reply template if a maker complains: [CEASE-AND-DESIST-RESPONSE.md](CEASE-AND-DESIST-RESPONSE.md).
 
+## Text of the release v0.3.0 (draft, 2026-10-25)
+
+**BallisticaInterna 0.3.0: interior ballistics for rifle handloads**
+
+It calculates pressure, velocity and energy of a rifle load over the bullet's travel and opens and saves
+`.grtload` files. Compatible with the .grtload file format of Gordon's Reloading Tool (not affiliated with, not
+checked by GRT).
+
+**Warning: this is a simulation, not load data.** The calculated pressure can be too low: at fill ratios below
+about 90 % it is on average too low (below 80 %: about 15 %, single loads up to 43 %), so the real pressure can be
+higher than shown. Never load on the basis of this app alone; use only the makers' published load data, start
+with the starting load and never exceed the maximum load. Reloading is dangerous and can cause serious injury or
+death.
+
+What is new since 0.2.0
+- Burn law: the burn rate grows with p^0.9 (Vieille's law) instead of proportionally to the pressure; all shipped
+  powders are refitted. The rise of the pressure from start to maximum load now matches the measured one.
+- Case capacities: 34 rifle calibers take their capacity from the fill ratios of the Reload Swiss load data guide,
+  the others an estimate from the C.I.P. outline. The app says which, next to the caliber and the result.
+- New warnings: slow powder loosely filled (secondary explosion effect), the worst case of the tests at the load's
+  fill ratio next to every result, and an estimated case capacity.
+- The first-start notice states the figures of this version (it is shown again once).
+- Accuracy checked again on measured sets rebuilt from the shipped master data
+  ([docs/MODEL.md](https://github.com/kiliankoller/ballistica-interna/blob/main/docs/MODEL.md#accuracy)).
+- 39 powder models (Reload Swiss 9, Vihtavuori 19, Norma 6, Rottweil 5): Norma MRP is no longer shipped.
+  About 1640 bullets (was about 1560).
+
+How accurate it is
+- Velocity: about 3.7 % rms against the makers' measured loads. Checked on customer loads of Reload Swiss that
+  were not used for fitting: 4.4 % (standard rifles), 3.1 % (magnum).
+- Pressure: 11.6 % (magnum) to 12.9 % (standard) rms, 13.6 % on loads held out of the fit. It is no safety margin.
+
+Known limitations (each has an issue)
+- [#1](https://github.com/kiliankoller/ballistica-interna/issues/1) macOS: not signed with a Developer ID, not
+  notarised. Open the app once via System Settings → Privacy & Security → Open Anyway.
+- [#2](https://github.com/kiliankoller/ballistica-interna/issues/2) Windows: not code-signed. SmartScreen: More
+  info → Run anyway.
+- [#3](https://github.com/kiliankoller/ballistica-interna/issues/3) Pressure deviates about 12 to 13 % rms from
+  measured loads. It is no safety margin.
+- [#4](https://github.com/kiliankoller/ballistica-interna/issues/4) Low fill ratios (below 90 %): the pressure is
+  calculated too low.
+- [#5](https://github.com/kiliankoller/ballistica-interna/issues/5) Handguns are not supported.
+- [#10](https://github.com/kiliankoller/ballistica-interna/issues/10) The derived case capacities are not yet
+  compared with measured water capacities.
+- No powders of Hodgdon, Ramshot, IMR, Winchester and Alliant (their terms forbid using the load data).
+
+Compare the SHA-256 checksum (`SHA256SUMS-*.txt`, attached to this release) with your download before you start
+an installer: `shasum -a 256 <file>` on macOS, `sha256sum <file>` on Linux, `certutil -hashfile <file> SHA256`
+on Windows.
+
+Provided free of charge and without warranty; liability is excluded to the extent permitted by law
+([DISCLAIMER.md](https://github.com/kiliankoller/ballistica-interna/blob/main/DISCLAIMER.md)). Licences: code
+GPL-3.0-or-later, data (`data/*.csv`) ODbL 1.0 with attribution (NOTICE). Not affiliated with, endorsed by or
+sponsored by any maker, the C.I.P. or GRT. No outside contributions, no donations (see CONTRIBUTING.md). Security
+reports: GitHub private vulnerability reporting (SECURITY.md).
+
 ## Text of the release v0.2.0
 
 **BallisticaInterna 0.2.0: interior ballistics for rifle handloads**

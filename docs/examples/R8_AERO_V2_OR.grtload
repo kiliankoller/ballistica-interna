@@ -6,14 +6,14 @@
     <caliber>
       <input name="CaliberName" value="308%20Win.%20%28308%20Winchester%2C%207%2C62%20x%2051%29" unit="" type="string" descr="caliber name" />
       <input name="oal" value="69.67" unit="mm" type="decimal" descr="cartridge overall length" />
-      <input name="caselen" value="51" unit="mm" type="decimal" descr="case length" />
-      <input name="casevol" value="3.62172665311" unit="cm3" type="decimal" descr="case volume" />
+      <input name="caselen" value="51.18" unit="mm" type="decimal" descr="case length" />
+      <input name="casevol" value="3.62302522846" unit="cm3" type="decimal" descr="case volume" />
       <input name="Dz" value="7.82" unit="mm" type="decimal" descr="groove caliber" />
       <input name="Aeff" value="47.51" unit="mm2" type="decimal" descr="effektive area" />
       <input name="pMaxZul" value="4150" unit="bar" type="decimal" descr="maximum allowed pressure" />
       <input name="method" value="Piezo CIP" unit="" type="string" descr="cartridge test method" />
       <input name="sebert" value="0.5" unit="" type="decimal" descr="Sebert factor" />
-      <input name="ps" value="200" unit="bar" type="decimal" descr="initial gas pressure" />
+      <input name="ps" value="250" unit="bar" type="decimal" descr="initial gas pressure" />
       <input name="shotshell" value="false" unit="" type="boolean" descr="true if shotshell" />
     </caliber>
     <caliberfile>
@@ -57,11 +57,10 @@
       <var name="c_N" value="4.00" />
       <var name="c_b_" value="4.47" />
       <var name="c_u_" value="305.00" />
-      <var name="V" value="57.80" />
-      <var name="V_estimated" value="yes" />
-      <var name="source" value="cip-tdcc" />
+      <var name="V" value="55.80" />
+      <var name="V_source" value="reload-swiss-fill" />
+      <var name="source" value="cip-tdcc%3B%20reload-swiss-guide-2025" />
       <var name="status" value="" />
-      <var name="source_name" value="C.I.P.%20tables%20of%20dimensions%20of%20cartridges%20and%20chambers%20%28TDCC%29%2C%20public%20part" />
     </caliberfile>
     <gun>
       <input name="GunName" value="" unit="" type="string" descr="gun name" />
@@ -78,14 +77,14 @@
       <input name="lotid" value="" unit="" type="string" descr="projectile lot-id" />
       <input name="Dbul" value="7.82" unit="mm" type="decimal" descr="projectile diameter" />
       <input name="mp" value="10.69182015" unit="g" type="decimal" descr="projectile weight" />
-      <input name="gdepth" value="15.98" unit="mm" type="decimal" descr="bullet seating depth" />
+      <input name="gdepth" value="16.16" unit="mm" type="decimal" descr="bullet seating depth" />
       <input name="glen" value="34.65" unit="mm" type="decimal" descr="projectile overall length" />
-      <input name="gpressure" value="200" unit="bar" type="decimal" descr="initial gas pressure" />
+      <input name="gpressure" value="250" unit="bar" type="decimal" descr="initial gas pressure" />
       <input name="gtailh" value="0" unit="mm" type="decimal" descr="projectile tail length" />
       <input name="gTailDiaA" value="0" unit="mm" type="decimal" descr="projectile tail diameter A" />
       <input name="gTailDiaB" value="0" unit="mm" type="decimal" descr="projectile tail diameter B" />
       <input name="gTailType" value="0" unit="" type="decimal" descr="projectile base type" />
-      <input name="g1bc" value="0.44" unit="" type="decimal" descr="G1 ballistic coefficient" />
+      <input name="g1bc" value="0.42" unit="" type="decimal" descr="G1 ballistic coefficient" />
       <input name="g7bc" value="0" unit="" type="decimal" descr="G7 ballistic coefficient" />
       <input name="gUBCS" value="" unit="" type="string" descr="UBCS-Code (Universal Bullet Classification Scheme)" />
       <input name="gtip" value="16.5" unit="mm" type="decimal" descr="bullet tip length (tip to full diameter)" />
@@ -97,13 +96,13 @@
       <input name="mname" value="Reload%20Swiss" unit="" type="string" descr="propellant manufacturer" />
       <input name="pname" value="RS52" unit="" type="string" descr="propellant product name" />
       <input name="lotid" value="" unit="" type="string" descr="propellant lot-id" />
-      <input name="Ba" value="0.533817" unit="" type="decimal" descr="vivacity coefficient" />
+      <input name="Ba" value="0.555663" unit="" type="decimal" descr="vivacity coefficient" />
       <input name="Qex" value="3900" unit="kJ/kg" type="decimal" descr="specific explosive heat" />
       <input name="k" value="1.23" unit="" type="decimal" descr="ratio of the specific heat of the powder gases" />
-      <input name="a0" value="1.38301" unit="" type="decimal" descr="prog/deg coefficient" />
+      <input name="a0" value="1.11835" unit="" type="decimal" descr="prog/deg coefficient" />
       <input name="a1" value="0" unit="" type="decimal" descr="prog/deg coefficient" />
-      <input name="z1" value="0.470706" unit="" type="decimal" descr="burn-up limit z1" />
-      <input name="z2" value="0.747612" unit="" type="decimal" descr="burn-up limit z2" />
+      <input name="z1" value="0.439075" unit="" type="decimal" descr="burn-up limit z1" />
+      <input name="z2" value="0.76649" unit="" type="decimal" descr="burn-up limit z2" />
       <input name="eta" value="0" unit="cm3/kg" type="decimal" descr="covolume of the powder gases" />
       <input name="pc" value="1600" unit="kg/m3" type="decimal" descr="material density" />
       <input name="pcd" value="950" unit="kg/m3" type="decimal" descr="bulk density" />
