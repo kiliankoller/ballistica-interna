@@ -56,8 +56,8 @@ class CapacityEstimate(unittest.TestCase):
 
 # Derived capacities further than this from the outline estimate (before CAPACITY_FACTOR) are suspect.
 DERIVED_TOLERANCE = 0.08
-# Known open: 7 mm-08 is the .308 Win. case necked down (about 56 grains of water), the derived value is 51.1.
-SUSPECT_DERIVED = {'7 mm - 08 Rem.'}
+# Known open: none (7 mm-08 Rem. is in build_csv.REJECTED_DERIVED since 2026-10-24).
+SUSPECT_DERIVED = set()
 
 
 class DerivedCapacities(unittest.TestCase):
@@ -68,6 +68,12 @@ class DerivedCapacities(unittest.TestCase):
         off = {r['cipname'] for r in rows
                if abs(float(r['V']) / build_csv.capacity_estimate(r) - 1) > DERIVED_TOLERANCE}
         self.assertEqual(off, SUSPECT_DERIVED, 'fixed or new suspects: update SUSPECT_DERIVED')
+
+    def test_rejected_derived_capacities_are_estimated(self):
+        with open(os.path.join(DATA, 'calibers.csv'), newline='') as f:
+            rows = {r['cipname']: r for r in csv.DictReader(f)}
+        for name in build_csv.REJECTED_DERIVED:
+            self.assertEqual(rows[name]['V_source'], 'estimate', name)
 
 
 class Checks(unittest.TestCase):

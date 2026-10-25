@@ -106,25 +106,36 @@ says so next to the powder.
 The C.I.P. tables give no case capacity, so `V` in `data/calibers.csv` (grains of water) comes from one of two
 sources, named in `V_source`:
 
-- `reload-swiss-fill` (35 calibers, all rifle): derived from the fill ratios of the Reload Swiss load data guide
+- `reload-swiss-fill` (34 calibers, all rifle): derived from the fill ratios of the Reload Swiss load data guide
   2025 (charge, bulk density, fill ratio and the seated bullet of the master data), for calibers with at least 4
   charges. The derivation (`local/scripts/derive-capacity.ts`) and its result
   (`fixtures/calibration/capacity-rs.json`) are not in the repository; `build_csv.py` stops without that file.
   Reload Swiss's brass is one maker's brass: other makers and lots differ by a few percent.
-- `estimate` (451 calibers, all handgun calibers among them): from the C.I.P. cartridge outline with typical brass
-  thicknesses (`data/README.md`); for rifle calibers (C.I.P. Tab. I to III) times `CAPACITY_FACTOR` = 0.966. The
-  outline estimate was on average 3.5 % larger than the derived capacities of the 35 calibers; leave-one-out over
-  them, the factor lowers the rms deviation from 4.5 to 3.0 % (2026-10-23).
+- `estimate` (452 calibers, all handgun calibers among them): from the C.I.P. cartridge outline with typical brass
+  thicknesses (`data/README.md`); for rifle calibers (C.I.P. Tab. I to III) times `CAPACITY_FACTOR` = 0.966, the
+  median ratio of derived capacity to outline estimate over the 34 calibers. Leave-one-out over them, the factor
+  lowers the rms deviation from 4.0 to 2.6 % (2026-10-24; with 7 mm-08 the median was the same).
+
+**7 mm-08 Rem.** (`REJECTED_DERIVED` in `build_csv.py`, since 2026-10-24) takes the outline estimate, 55.6 grains;
+from the fill ratios it would be 51.1, though its case is the .308 Win. case necked down (55.8 derived). The
+derivation is right, but the guide's fill ratios for this caliber do not follow the bullets: all three bullets
+give the same combustion chamber of about 42 grains, although their seated volumes differ by 2.8 grains, so the
+derived capacity goes from 50.2 to 54.0 grains with the bullet. In consistent data it is the other way round
+(.308 Win.: 54.1 … 54.9 grains for bullets seated 1.3 grains apart). Weaker signs of the same are in 444 Marlin,
+6 XC, 6.5 PRC, .338 Norma Mag. and 7.62 × 54 R; their derived values agree with the outline within 8 % and are kept.
+
+**Circularity.** The derived capacities come from the same guide that is fitted and checked with them. Fitted and
+cross-validated on the Reload Swiss loads once with the outline estimate (× 0.966) instead (same 963 loads, 746
+held out, n = 0.9, 2026-10-24), the held-out Pmax rms is 15.7 % instead of 15.5 % (fit 14.2 instead of 13.7 %), the
+V0 rms 4.8 instead of 4.6 %. The derived capacities flatter the Reload Swiss figures by about 0.2 percentage points;
+the selection of the loads by the fill-ratio check makes no difference.
 
 Limits, open:
 
 - The factor is fitted on rifle calibers only, so it is not applied to the handgun calibers (Tab. IV, decided
   2026-10-24): no derived capacity checks their estimate, and its error is not known.
-- The derived capacities are not independent of the Reload Swiss sets: the same guide is fitted and checked with
-  them. How much that flatters the Reload Swiss pressure figures has not been measured.
-- `test_master_data.py` checks every derived capacity against the outline estimate (8 %). 7 mm-08 Rem. fails it:
-  51.1 grains derived, while its case is the .308 Win. case necked down (55.8 grains derived, about 56 published).
-  It is listed as suspect in the test until the derivation is checked.
+- No published water capacity of these calibers is among the sources yet, so the derived values are checked only
+  against the outline (`test_master_data.py`, 8 %).
 - The app marks an estimated capacity next to the caliber and the result (`lib/capacity.ts`); a capacity derived
   from load data is named as such.
 
@@ -145,12 +156,12 @@ The shipped powder models against the makers' measured loads (`pnpm accuracy`, d
 measured, rms in %). Loads used for fitting are included, so the pressure figures of the fitting sets are
 slightly optimistic; the velocity sets of other makers are independent.
 
-Figures of 2026-10-24, with the shipped master data (n = 0.9, the powder fits of this date; the Vihtavuori fit
-with defined case capacities only, see *Pressure exponent*):
+Figures of 2026-10-25, with the shipped master data (n = 0.9, the powder fits of 2026-10-24; the Vihtavuori fit
+with defined case capacities only, see *Pressure exponent*; 7 mm-08 Rem. with the outline estimate):
 
 | class | loads | V0 mean | V0 rms | loads with pressure | Pmax mean | Pmax rms |
 |---|---|---|---|---|---|---|
-| standard rifle | 6317 | +0.1 % | 3.7 % | 988 | −1.4 % | 13.2 % |
+| standard rifle | 6311 | +0.1 % | 3.7 % | 982 | −1.6 % | 13.0 % |
 | magnum rifle (case > 5 cm³) | 1321 | −0.5 % | 3.6 % | 278 | 0.0 % | 11.6 % |
 | handgun (barrel < 300 mm) | 38 | +3.0 % | 8.6 % | — | — | — |
 
@@ -158,7 +169,9 @@ The measured sets (rs, rsk, sax, v-vihtavuori, v-barnes, v-sierra) were rebuilt 
 master data, so the jobs carry the case capacities of `data/calibers.csv`. The rifle rows are unchanged by the
 rebuild: the rifle jobs already had these capacities. The handgun jobs had capacities 3.3 … 3.5 % too small (the
 correction factor 0.966 still applied to them); with the outline estimates the handgun row went from +5.2 % /
-10.5 % to +3.0 % / 8.6 %.
+10.5 % to +3.0 % / 8.6 %. With the outline estimate for 7 mm-08 Rem. (see *Case capacity*) the fill-ratio check
+leaves out 6 more of its Reload Swiss charges, and the standard rifle row went from 6317 / 988 loads, Pmax −1.4 % /
+13.2 % to the figures above.
 
 **Handguns are not supported.** The app says so for every load with a barrel below 300 mm. The handgun row is
 the model with rifle powders in handgun cartridges, which is what the app would calculate if asked. Its V0 is
@@ -173,7 +186,9 @@ Since 2026-10-24 the handgun row is for information only: a change of the model 
 rifle rows, and "no class gets worse" applies to them only. Handgun support would be a project of its own, with
 handgun powders, measured case capacities and its own acceptance figures.
 
-The analyses below were rerun on 2026-10-24 on the shipped fits (n = 0.9) and the rebuilt measured sets.
+The analyses below were rerun on the shipped fits (n = 0.9) and the rebuilt measured sets: the cross-validations
+on 2026-10-24, still with the derived 51.1 grains for 7 mm-08 Rem. (12 of 756 Reload Swiss loads), the others on
+2026-10-25.
 
 **Cross-validation.** `pnpm fit-powders --cv` fits every powder three times, each time without a third of the
 calibers, and checks it on the calibers left out (all three folds together). The held-out figures are close to
@@ -189,15 +204,15 @@ the shipped fits, see *Pressure exponent*):
 | Vihtavuori 24N41 (all calibers, velocity only) | 36 | 4.1 % (4.0 %) | — |
 
 **Systematic deviation (rifles, `pnpm accuracy --by`).** The error depends on the fill ratio (calculated with the
-bullet seated): at 70 … 80 % the model is 1.7 % low in V0 and 12.6 % low in Pmax (67 loads with pressure), at
-80 … 90 % 0.5 % and 3.2 %, at 90 … 100 % it is unbiased (V0 0.0 %, Pmax −0.4 %, rms 3.2 % and 10.8 %), at 100 % and
-more (compressed charges) it is 1.8 % high in V0 and 5.3 % high in Pmax. Below 70 % there is a single load with
+bullet seated): at 70 … 80 % the model is 1.7 % low in V0 and 12.7 % low in Pmax (68 loads with pressure), at
+80 … 90 % 0.6 % and 3.4 %, at 90 … 100 % it is unbiased (V0 0.0 %, Pmax −0.6 %, rms 3.1 % and 10.7 %), at 100 % and
+more (compressed charges) it is 1.7 % high in V0 and 5.2 % high in Pmax. Below 70 % there is a single load with
 pressure.
 
 **Direction of the error.** The dangerous direction is the low one: at fill ratios below about 90 % the
 calculated pressure is on average too low (70 … 80 %: 13 %, held out below 80 %: 14 %), so the real pressure can
 be higher than shown. Bullets of 300 gr and more are 3.3 % high in V0. Other weight classes show no trend in V0
-(−0.4 … +0.9 %).
+(−0.5 … +0.9 %).
 
 **Warnings of the app** (`lib/warnings.ts`). Their figures come from the held-out loads of the cross-validation
 of 2026-10-24 (pressure exponent 0.9, split of the shipped fits, 1096 rifle loads of Reload Swiss and Sax with
@@ -218,16 +233,16 @@ so the app no longer marks their pressure as not backed.
 **Independent check.** The customer loads of the Reload Swiss load data guide 2025 (rifles) were not used for
 fitting. Reload Swiss checks them for plausibility only, and their seating depth and pressure are not reliable, so
 only the velocity V5 (at 5 m) is compared, with the bullet seated to the C.I.P. maximum cartridge length and the
-shipped master data (bullets matched by type or maker, 627 loads; 2026-10-24, `pnpm accuracy`, sets rsk and rs):
+shipped master data (bullets matched by type or maker, 627 loads; 2026-10-25, `pnpm accuracy`, sets rsk and rs):
 
 | class | loads | V0 mean | V0 rms | within ±5 % |
 |---|---|---|---|---|
-| standard rifle, customer loads | 534 | −1.4 % | 4.5 % | 79 % |
+| standard rifle, customer loads | 534 | −1.5 % | 4.5 % | 79 % |
 | magnum rifle, customer loads | 93 | −1.3 % | 3.1 % | 89 % |
-| same powders, laboratory loads (standard / magnum) | 612 / 144 | +0.7 / −0.3 % | 4.5 / 3.9 % | 79 / 83 % |
+| same powders, laboratory loads (standard / magnum) | 606 / 144 | +0.6 / −0.3 % | 4.4 / 3.9 % | 81 / 83 % |
 
 The velocity holds up on loads from real rifles with unknown seating: the rms is the same as on the laboratory
-loads for standard rifles and lower for magnums. The model is about 1.4 % low on average against the customers
+loads for standard rifles and lower for magnums. The model is about 1.5 % low on average against the customers
 (median −2.0 % standard, −1.1 % magnum); V5 is a few tenths of a percent below V0, so the true bias is a little
 larger.
 

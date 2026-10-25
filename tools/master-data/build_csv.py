@@ -68,15 +68,23 @@ def write(name, columns, rows):
     print(f'{name}: {len(rows)} rows', file=sys.stderr)
 
 
+# Calibers whose derived capacity is not used: the guide's fill ratios do not follow the seating of the bullets.
+# 7 mm-08 Rem.: every bullet gives the same combustion chamber of about 42 grains, although the seated volumes of
+# the three bullets differ by 2.8 grains, so the derived capacity goes from 50.2 to 54.0 grains with the bullet
+# (51.1 median; the case is the .308 Win. case necked down, 55.8 derived). Checked 2026-10-24 (#8).
+REJECTED_DERIVED = {'7 mm - 08 Rem.'}
+
+
 def reload_swiss_capacities():
     """{C.I.P. name: grains of water} derived from the fill ratios of the Reload Swiss load data guide 2025 (charge,
     bulk density, fill ratio and the seated bullet of the master data; local/scripts/derive-capacity.ts), calibers with
-    at least 4 charges. Without that file the build stops: falling back to the outline estimate would silently
-    change the capacities of data/calibers.csv."""
+    at least 4 charges, without REJECTED_DERIVED. Without that file the build stops: falling back to the outline
+    estimate would silently change the capacities of data/calibers.csv."""
     path = os.path.join(FIX, 'calibration', 'capacity-rs.json')
     if not os.path.exists(path):
         sys.exit(f'{path} missing: run local/scripts/derive-capacity.ts first (docs/MODEL.md#case-capacity)')
-    return {k.split(' (')[0]: v['capacity_gr'] for k, v in json.load(open(path)).items() if v['charges'] >= 4}
+    return {k.split(' (')[0]: v['capacity_gr'] for k, v in json.load(open(path)).items()
+            if v['charges'] >= 4 and k.split(' (')[0] not in REJECTED_DERIVED}
 
 
 def calibers():
