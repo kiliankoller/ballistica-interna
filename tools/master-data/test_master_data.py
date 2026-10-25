@@ -56,7 +56,7 @@ class CapacityEstimate(unittest.TestCase):
 
 # Derived capacities further than this from the outline estimate (before CAPACITY_FACTOR) are suspect.
 DERIVED_TOLERANCE = 0.08
-# Known open: none (7 mm-08 Rem. is in build_csv.REJECTED_DERIVED since 2026-10-24).
+# Known open: none (7 mm-08 Rem. is in build_csv.REJECTED_DERIVED).
 SUSPECT_DERIVED = set()
 
 
@@ -69,11 +69,12 @@ class DerivedCapacities(unittest.TestCase):
                if abs(float(r['V']) / build_csv.capacity_estimate(r) - 1) > DERIVED_TOLERANCE}
         self.assertEqual(off, SUSPECT_DERIVED, 'fixed or new suspects: update SUSPECT_DERIVED')
 
-    def test_styria_arms_names_are_unique(self):
+    def test_bullet_names_are_unique(self):
         with open(os.path.join(DATA, 'bullets.csv'), newline='') as f:
-            names = [(r['pname'], r['gdia']) for r in csv.DictReader(f) if r['mname'] == 'Styria Arms']
+            names = [(r['mname'], r['pname'], r['gdia']) for r in csv.DictReader(f)]
         self.assertEqual(len(names), len(set(names)))
-        self.assertIn(('AERO SB 165 gr HP 1.5', '7.82'), names)
+        self.assertIn(('Styria Arms', 'AERO SB 165 gr HP 1.5', '7.82'), names)
+        self.assertIn(('Nosler', '30 Cal 150 gr Spitzer Partition', '7.823'), names)
 
     def test_rejected_derived_capacities_are_estimated(self):
         with open(os.path.join(DATA, 'calibers.csv'), newline='') as f:

@@ -190,9 +190,29 @@ def bullets():
     makers, jbm = merge_bullets.load(os.path.join(FIX, 'open-db', 'components.db'))
     merged, conflicts = merge_bullets.merge(makers, jbm)
     correct_bullets(merged)
+    tell_apart(merged)
     for line in merge_bullets.report(merged, conflicts, os.path.join(ROOT, 'logs', 'bullet-report.md')):
         print(line, file=sys.stderr)
     return rows + merged
+
+
+def tell_apart(rows):
+    """Bullets of one maker that share name and diameter (Nosler's "30 Cal 150 gr Spitzer" is a Partition, an
+    AccuBond and an E-Tip of different lengths): the name gets the product line where that differs, else the part
+    number."""
+    same = collections.defaultdict(list)
+    for r in rows:
+        same[(r['mname'], r['pname'], r['gdia'])].append(r)
+    for group in same.values():
+        if len(group) < 2:
+            continue
+        lines = {r.get('product_line') or '' for r in group}
+        for r in group:
+            line = r.get('product_line') or ''
+            if len(lines) == len(group) and line and line.lower() not in r['pname'].lower():
+                r['pname'] = f"{r['pname']} {line}"
+            elif r.get('part_number'):
+                r['pname'] = f"{r['pname']} #{r['part_number'].split(' / ')[0]}"
 
 
 def correct_bullets(rows):

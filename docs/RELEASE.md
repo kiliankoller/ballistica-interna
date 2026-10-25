@@ -91,7 +91,7 @@ death.
 What is new since 0.2.0
 - Burn law: the burn rate grows with p^0.9 (Vieille's law) instead of proportionally to the pressure; all shipped
   powders are refitted. The rise of the pressure from start to maximum load now matches the measured one.
-- Case capacities: 34 rifle calibers take their capacity from the fill ratios of the Reload Swiss load data guide,
+- Case capacities: 37 rifle calibers take their capacity from the fill ratios of the Reload Swiss load data guide,
   the others an estimate from the C.I.P. outline. The app says which, next to the caliber and the result.
 - New warnings: slow powder loosely filled (secondary explosion effect), the worst case of the tests at the load's
   fill ratio next to every result, and an estimated case capacity.

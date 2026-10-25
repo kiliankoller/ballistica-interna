@@ -107,15 +107,16 @@ says so next to the powder.
 The C.I.P. tables give no case capacity, so `V` in `data/calibers.csv` (grains of water) comes from one of two
 sources, named in `V_source`:
 
-- `reload-swiss-fill` (34 calibers, all rifle): derived from the fill ratios of the Reload Swiss load data guide
+- `reload-swiss-fill` (37 calibers, all rifle): derived from the fill ratios of the Reload Swiss load data guide
   2025 (charge, bulk density, fill ratio and the seated bullet of the master data), for calibers with at least 4
   charges. The derivation (`local/scripts/derive-capacity.ts`) and its result
   (`fixtures/calibration/capacity-rs.json`) are not in the repository; `build_csv.py` stops without that file.
   Reload Swiss's brass is one maker's brass: other makers and lots differ by a few percent.
-- `estimate` (452 calibers, all handgun calibers among them): from the C.I.P. cartridge outline with typical brass
+- `estimate` (449 calibers, all handgun calibers among them): from the C.I.P. cartridge outline with typical brass
   thicknesses (`data/README.md`); for rifle calibers (C.I.P. Tab. I to III) times `CAPACITY_FACTOR` = 0.966, the
-  median ratio of derived capacity to outline estimate over the 34 calibers. Leave-one-out over them, the factor
-  lowers the rms deviation from 4.0 to 2.6 % (2026-10-24; with 7 mm-08 the median was the same).
+  median ratio of derived capacity to outline estimate over the derived calibers (2026-10-24: 34 calibers, 0.966;
+  2026-10-25, with 270 WSM, 300 WSM and 300 PRC: 37 calibers, 0.964; the factor is kept, the difference of 0.2 % is
+  far below the scatter). Leave-one-out over them, the factor lowers the rms deviation from 4.2 to 2.6 %.
 
 **7 mm-08 Rem.** (`REJECTED_DERIVED` in `build_csv.py`, since 2026-10-24) takes the outline estimate, 55.6 grains;
 from the fill ratios it would be 51.1, though its case is the .308 Win. case necked down (55.8 derived). The
@@ -123,7 +124,8 @@ derivation is right, but the guide's fill ratios for this caliber do not follow 
 give the same combustion chamber of about 42 grains, although their seated volumes differ by 2.8 grains, so the
 derived capacity goes from 50.2 to 54.0 grains with the bullet. In consistent data it is the other way round
 (.308 Win.: 54.1 … 54.9 grains for bullets seated 1.3 grains apart). Weaker signs of the same are in 444 Marlin,
-6 XC, 6.5 PRC, .338 Norma Mag. and 7.62 × 54 R; their derived values agree with the outline within 8 % and are kept.
+6 XC, 6.5 PRC, 300 PRC, .338 Norma Mag. and 7.62 × 54 R; their derived values agree with the outline within 8 % and
+are kept.
 
 **Circularity.** The derived capacities come from the same guide that is fitted and checked with them. Fitted and
 cross-validated on the Reload Swiss loads once with the outline estimate (× 0.966) instead (same 963 loads, 746
