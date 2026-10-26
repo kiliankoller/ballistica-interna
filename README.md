@@ -71,7 +71,7 @@ Example report (PDF) of the same load, .308 Win. with a 165 grain bullet: [R8_AE
 
 ## Installation
 
-Installers for macOS, Windows and Linux are attached to each release on GitHub. They are not signed with a certificate yet (macOS: ad hoc signature only, not notarised; see [#1](https://github.com/kiliankoller/ballistica-interna/issues/1) and [#2](https://github.com/kiliankoller/ballistica-interna/issues/2)):
+Installers for macOS, Windows and Linux are attached to each release on GitHub. They are not signed with a certificate yet (macOS: ad hoc signature only, not notarised; see [#12](https://github.com/kiliankoller/ballistica-interna/issues/12); each release carries SHA-256 checksums):
 - macOS: open the `.dmg`, drag the app to Applications and start it. macOS says it cannot check the app for malware: open System Settings → Privacy & Security, scroll down and click "Open Anyway" (once).
 - Windows: Windows may show "Windows protected your PC": More info → Run anyway.
 - Linux: `chmod +x BallisticaInterna-*.AppImage`, then run it.
