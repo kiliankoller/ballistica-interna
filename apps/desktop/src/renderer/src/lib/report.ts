@@ -20,7 +20,7 @@ export function reportHtml(doc: LoadDoc, t: T, locale: string): string {
   const r = step?.result;
   const d = step?.derived;
   const capacitySrc = capacitySource(file);
-  const warn = loadWarnings(d?.fill, load?.propellant.Ba, capacitySrc);
+  const warn = loadWarnings(d?.fill, load?.propellant, capacitySrc);
   const margin = pressureMargin(d?.fill);
   const date = new Date().toLocaleDateString(locale, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
   const charge = step ? step.charge / GRAIN : NaN;

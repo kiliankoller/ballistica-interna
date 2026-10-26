@@ -54,7 +54,7 @@ const slowTwist = computed(() => {
 /** Source of the case capacity (estimated, from load data, own), see lib/capacity.ts. */
 const capacity = computed(() => capacitySource(f.value));
 /** Low fill ratio, a slow powder loosely filled and an estimated case capacity, see lib/warnings.ts. */
-const warnings = computed(() => loadWarnings(d.value?.fill, load.value?.propellant.Ba, capacity.value));
+const warnings = computed(() => loadWarnings(d.value?.fill, load.value?.propellant, capacity.value));
 /** How far the measured pressure exceeded the calculation in the tests at this fill ratio. */
 const margin = computed(() => {
   const m = pressureMargin(d.value?.fill);

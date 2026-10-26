@@ -21,6 +21,7 @@ describe('notes on master records', () => {
 
   it('names a powder fit that differs from the others of its maker', () => {
     expect(recordNotes({ pname: '24N41', fit_status: 'fitted: …; fitted with all calibers, unlike the other Vihtavuori powders' })).toEqual(['source.fitAllCalibers']);
+    expect(recordNotes({ pname: 'S070', fit_status: 'fitted: pressure and velocity measured (maximum loads), Qex fitted' })).toEqual(['source.maxLoadsOnly']);
   });
 
   it('leaves the length of a bullet without one empty instead of 0', () => {

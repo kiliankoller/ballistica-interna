@@ -2,6 +2,7 @@
 // too low, docs/MODEL.md#accuracy), a slow powder loosely filled (secondary explosion effect), a case capacity
 // estimated from the C.I.P. outline instead of measured (lib/capacity.ts), and how far the measured pressure has
 // exceeded the calculation in the tests.
+import { referencePressure, type PropellantInput } from '@ballistica-interna/solver';
 import type { CapacitySource } from './capacity';
 
 /** Fill ratio (bulk volume of the charge over the combustion chamber) below which the pressure is warned about. */
@@ -9,22 +10,30 @@ export const LOW_FILL = 0.9;
 /** Fill ratio below which the warning is shown as a danger. */
 export const VERY_LOW_FILL = 0.85;
 /**
- * Powders at or below this vivacity Ba count as slow (N160, RS62, Norma 204 and slower): loosely filled they risk
- * the secondary explosion effect (SEE). Ba also depends on the form function and changes with every refit, so the
- * bound is approximate; warnings.test.ts checks it against the shipped powders. A bound too high only warns more.
+ * Powders whose peak pressure in the solver's reference load (referencePressure: .308 Win., fixed charge) stays at
+ * or below this count as slow (Vihtavuori N550, Reload Swiss RS60, Norma URP, Rottweil R904, Lovex S070 and slower):
+ * loosely filled they risk the secondary explosion effect (SEE). The model ranks the powders, not Ba alone, since Ba
+ * is comparable only at the same Qex and form function (Lovex: low Qex, high Ba). The bound lies in the gap between
+ * N550 (3188 bar) and Rottweil R903 (3325 bar); warnings.test.ts checks it against the shipped powders.
  */
-export const SLOW_BA = 0.55;
+export const SLOW_PRESSURE = 3250e5;
+
+/** Whether the powder counts as slow (see SLOW_PRESSURE); false without usable burn values. */
+export function slowPowder(powder: Parameters<typeof referencePressure>[0] | undefined): boolean {
+  if (!powder || !(powder.Ba > 0) || !(powder.Qex > 0)) return false;
+  const p = referencePressure(powder);
+  return Number.isFinite(p) && p <= SLOW_PRESSURE;
+}
 
 /**
  * Worst case of the tests: how far the measured peak pressure exceeded the calculated one, by fill ratio (the
- * lower bound of the band, as a fraction). Held-out loads of the cross-validations of 2026-10-24 and, for Reload
- * Swiss after the refit of RS50 and RS52, 2026-10-25 (pressure exponent 0.9, split of the shipped fits; 1090 rifle loads of Reload Swiss and Sax with measured pressure,
- * docs/MODEL.md#accuracy): below 90 % fill 3402 bar measured against 1937 calculated, 90 to 100 % 42 % above, above
- * 100 % 30 % above.
+ * lower bound of the band, as a fraction). Held-out loads of the cross-validations of the shipped fits (refit of
+ * 2026-10-25, pressure exponent 0.9; 1488 rifle loads of Reload Swiss, Sax and Lovex with measured pressure,
+ * docs/MODEL.md#accuracy): below 90 % fill 67 % above, 90 to 100 % 40 % above, above 100 % 30 % above.
  */
 export const PRESSURE_MARGIN: { from: number; margin: number }[] = [
-  { from: 0, margin: 0.76 },
-  { from: LOW_FILL, margin: 0.42 },
+  { from: 0, margin: 0.67 },
+  { from: LOW_FILL, margin: 0.4 },
   { from: 1.0, margin: 0.3 },
 ];
 
@@ -50,13 +59,13 @@ export interface LoadWarnings {
   estimatedCapacity: boolean;
 }
 
-/** fill as a fraction, Ba the powder's vivacity. */
-export function loadWarnings(fill: number | undefined, Ba: number | undefined, capacity: CapacitySource = 'own'): LoadWarnings {
+/** fill as a fraction, powder the burn values of the load's powder. */
+export function loadWarnings(fill: number | undefined, powder: PropellantInput | undefined, capacity: CapacitySource = 'own'): LoadWarnings {
   const veryLowFill = valid(fill) && fill < VERY_LOW_FILL;
   return {
     lowFill: lowFill(fill),
     veryLowFill,
-    slowPowderLowFill: veryLowFill && Ba !== undefined && Ba > 0 && Ba <= SLOW_BA,
+    slowPowderLowFill: veryLowFill && slowPowder(powder),
     estimatedCapacity: capacity === 'estimate',
   };
 }

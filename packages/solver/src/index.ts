@@ -1,6 +1,7 @@
 export * from './types.ts';
 export { defaultParams, withParams } from './params.ts';
 export { simulate } from './simulate.ts';
+export { referencePressure } from './reference.ts';
 export { formFunction, vivacityAt, brisance, progressivity, brisanceProgressivity } from './powder.ts';
 export {
   bulletIntrusion,

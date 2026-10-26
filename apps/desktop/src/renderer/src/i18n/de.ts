@@ -97,7 +97,7 @@ export default {
   },
   disclaimer: {
     title: 'Wichtiger Hinweis',
-    lead: 'BallisticaInterna ist eine Simulation und liefert KEINE Ladedaten. Der berechnete Druck kann zu NIEDRIG sein: Bei niedrigem Füllgrad (unter etwa 90 %) berechnet das Modell den Gasdruck im Mittel deutlich zu niedrig (unter 80 % etwa 15 %, einzelne Ladungen bis 43 %); der tatsächliche Druck kann höher sein als angezeigt.',
+    lead: 'BallisticaInterna ist eine Simulation und liefert KEINE Ladedaten. Der berechnete Druck kann zu NIEDRIG sein: Bei niedrigem Füllgrad (unter etwa 90 %) berechnet das Modell den Gasdruck im Mittel deutlich zu niedrig (unter 80 % etwa 15 %, einzelne Ladungen bis 40 %); der tatsächliche Druck kann höher sein als angezeigt.',
     points: [
       'Eine Rechnung ist nie ein Beleg dafür, dass eine Ladung sicher ist. Lade nie allein aufgrund dieser App. Verwende ausschließlich die veröffentlichten Ladedaten der Pulver- und Geschosshersteller, beginne mit deren Startladung, steigere vorsichtig unter Beachtung von Drucksymptomen und überschreite niemals die Höchstladung.',
       'Berechnete Werte weichen von der Realität ab, im Einzelfall deutlich. Gegenüber Labormessungen der Hersteller typisch: Büchse ±4 % Geschwindigkeit, ±12 bis ±15 % Gasdruck; Kurzwaffe ±10 % Geschwindigkeit, Gasdruck nicht durch Messungen belegt.',
@@ -118,6 +118,7 @@ export default {
     implausible: 'Eine Angabe des Herstellers ist unplausibel (Gewicht, Länge oder BC): Werte prüfen.',
     minTwist: 'Mindestdrall laut Hersteller 1:{twist}″',
     bulkEstimated: 'Schüttdichte vom Hersteller nicht veröffentlicht, geschätzt: Ladeverhältnis unsicher. Druck und Geschwindigkeit hängen nicht davon ab.',
+    maxLoadsOnly: 'Der Hersteller veröffentlicht den Druck nur für Maximalladungen: das Modell ist bei Startladungen und geringer Füllung nicht am Druck geprüft, Qex ist angepasst (kein Datenblattwert).',
     fitAllCalibers: 'Anders als die übrigen Vihtavuori-Pulver mit allen Kalibern angepasst, auch mit geschätzten Hülsenvolumen (zu wenige Ladungen sonst): Ergebnis unsicherer.',
     capacityEstimated: 'Hülsenvolumen aus der C.I.P.-Zeichnung geschätzt (typisch ±3 %, einzelne Kaliber mehr): bitte selbst messen.',
     capacityLoadData: 'Hülsenvolumen aus den Füllgraden der Reload-Swiss-Ladedaten abgeleitet; Hülsen anderer Hersteller und Chargen weichen ab.',
@@ -164,7 +165,7 @@ export default {
     shortJump: 'Sprung nur ca. {jump} mm (unter 1,5 mm): Anfangsgasdruck auf ca. 800 bar setzen, sonst kann der reale Druck bis zu 1000 bar über dem berechneten liegen (Hinweis von Styria Arms).',
     handgun: 'Kurzwaffen werden in dieser Version nicht unterstützt: Es gibt keine Kurzwaffenpulver in den Stammdaten, und das Modell ist dafür nicht belegt. Die Geschwindigkeit weicht gegenüber Labormessungen etwa ±10 % ab, der Gasdruck ist nicht durch Messungen belegt. Der berechnete Druck ist keine Sicherheitsreserve.',
     setStartPressure: 'Auf 800 bar setzen',
-    lowFill: 'Füllgrad {fill} % (unter 90 %): Bei lockerer Füllung berechnet das Modell den Druck systematisch zu NIEDRIG, in unseren Tests im Mittel um 4 % (Füllgrad 80 bis 90 %) bzw. 15 % (unter 80 %), einzelne Ladungen um bis zu 43 %. Der tatsächliche Druck kann deutlich höher sein als angezeigt.',
+    lowFill: 'Füllgrad {fill} % (unter 90 %): Bei lockerer Füllung berechnet das Modell den Druck systematisch zu NIEDRIG, in unseren Tests im Mittel um 4 % (Füllgrad 80 bis 90 %) bzw. 15 % (unter 80 %), einzelne Ladungen um bis zu 40 %. Der tatsächliche Druck kann deutlich höher sein als angezeigt.',
     slowPowderLowFill: 'Langsames Pulver bei Füllgrad unter 85 %: Gefahr unregelmäßiger, sehr hoher Druckspitzen (Secondary Explosion Effect), die kein Modell berechnet. Die Mindestladung des Pulverherstellers nicht unterschreiten.',
     capacityEstimated: 'Hülsenvolumen nur geschätzt: Es ist die größte einzelne Unsicherheit. 3 % zu viel Volumen ergeben je nach Ladung etwa 5 bis 10 % zu wenig Druck. Selbst messen: mindestens 5 abgeschossene Hülsen (nicht kalibriert) mit verbrauchtem Zündhütchen bis zum Mündungsrand mit Wasser füllen, wiegen, leer wiegen, Mittelwert in grain H2O eintragen.',
     pressureMargin: 'In unseren Tests lag der gemessene Druck bei diesem Füllgrad bis zu {pct} % über der Rechnung (hier also bis ca. {bar} bar), bei den meisten Ladungen deutlich weniger.',

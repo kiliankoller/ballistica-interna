@@ -33,7 +33,8 @@ export function fitsCaliber(bulletDiameter: number, g1: number): boolean {
 }
 
 /**
- * i18n keys of the notes a master record needs next to it: an estimated bulk density (powders), a bullet length
+ * i18n keys of the notes a master record needs next to it: an estimated bulk density or a fit on maximum loads only
+ * (powders), a bullet length
  * missing or ambiguous, taken from JBM's length list (measured by Bryan Litz), an implausible maker value, or the
  * source of a caliber's case capacity (estimated from the outline or derived from load data).
  */
@@ -42,6 +43,7 @@ export function recordNotes(r: DbRecord): string[] {
   const flags = String(r.flags ?? '');
   if (/bulk density (estimated|not published)/.test(String(r.fit_status ?? ''))) notes.push('source.bulkEstimated');
   if (/fitted with all calibers/.test(String(r.fit_status ?? ''))) notes.push('source.fitAllCalibers');
+  if (/\(maximum loads\)/.test(String(r.fit_status ?? ''))) notes.push('source.maxLoadsOnly');
   if (/length_missing|length_ambiguous/.test(flags) || (r.glen !== undefined && !(Number(r.glen) > 0) && 'gdia' in r)) {
     notes.push('source.lengthMissing');
   } else if (r.length_source === 'jbm-litz') notes.push('source.lengthJbmLitz');
