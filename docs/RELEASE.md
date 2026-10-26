@@ -7,6 +7,11 @@ Published: the repository is public; v0.2.0 (2026-10-23) is the first release. I
 
 ## Before every tag
 
+- [ ] The shipped powder fits rest on the current data: if anything that goes into a fit changed since the last
+      fit (master data such as calibers, case capacities, bullets, aliases; the measured sets; model defaults in
+      `packages/solver/src/params.ts`), all shipped powders are refitted and `data/fits-shipped.json` updated before
+      the tag. A fit on outdated data is not shipped, whatever its figures: it no longer follows from the data and
+      cannot be reproduced, since the measured sets are rebuilt in place.
 - [ ] `./build.sh` passes (typecheck, unit tests, master data checks, notices, local installer).
 - [ ] The app or the master data changed visibly: `pnpm docs:media` (screenshot and example report), look at
       both, commit them.
