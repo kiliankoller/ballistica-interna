@@ -12,7 +12,7 @@ Example report (PDF) of the same load, .308 Win. with a 165 grain bullet: [R8_AE
 
 > **Warning: simulation, not load data.** The calculated pressure can be too **low**: at low fill ratios (below
 > about 90 %) the model calculates the gas pressure on average clearly too low (fill ratio below 80 %: Pmax about
-> 15 % too low, single loads up to 43 %, [docs/MODEL.md](docs/MODEL.md#accuracy)), so the real pressure can be
+> 15 % too low, single loads up to 40 %, [docs/MODEL.md](docs/MODEL.md#accuracy)), so the real pressure can be
 > higher than shown. A calculation is never evidence that a load is safe: **never load on the basis of this app alone.** Use only the load data
 > published by the powder and bullet makers, start with their starting load and never exceed their maximum load.
 > Reloading is dangerous and can cause serious injury or death. The software is provided free of charge and
@@ -24,13 +24,14 @@ Example report (PDF) of the same load, .308 Win. with a 165 grain bullet: [R8_AE
 - **Rifles only.** Handgun cartridges are in the caliber list, but there are no handgun powders and the model
   is not backed for them (velocity about ±10 %, pressure not measured). The app says so.
 - **Low fill ratio:** below about 90 % the calculated pressure is too low (below 80 %: about 15 % on average,
-  single loads up to 43 %). The app warns from a fill ratio below 90 %, below 85 % as a danger, and for slow
+  single loads up to 40 %). The app warns from a fill ratio below 90 %, below 85 % as a danger, and for slow
   powders below 85 % of the secondary explosion effect.
-- **Velocity** deviates about 4 % (rms) from the makers' measured loads, **pressure** about 12 % (magnum) to 13 %
-  (standard) rms, about 14 % on loads held out of the fit ([docs/MODEL.md](docs/MODEL.md#accuracy)). The pressure
+- **Velocity** deviates about 4 % (rms) from the makers' measured loads, **pressure** about 12 % rms, about 13 %
+  on loads held out of the fit ([docs/MODEL.md](docs/MODEL.md#accuracy)). The pressure
   is not a safety margin.
-- **Powders:** 39 models of Reload Swiss (9), Vihtavuori (19), Norma (6) and Rottweil (5), fitted to makers'
-  published laboratory loads (Vihtavuori: its velocities with Sax's measured pressures). Powders of other makers
+- **Powders:** 46 models of Reload Swiss (9), Vihtavuori (19), Lovex (7), Norma (6) and Rottweil (5), fitted to
+  makers' published laboratory loads (Vihtavuori: its velocities with Sax's measured pressures; Lovex: pressure of
+  the maximum loads only, the app says so). Powders of other makers
   can be added as own entries.
 - **Bullets:** about 1750 from the makers' published data, among them the lead-free bullets of Fox Bullets. A bullet
   length that no maker or JBM publishes stays empty and is marked: measure it yourself. Case capacities are derived

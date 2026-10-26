@@ -7,7 +7,7 @@
       <input name="CaliberName" value="308%20Win.%20%28308%20Winchester%2C%207%2C62%20x%2051%29" unit="" type="string" descr="caliber name" />
       <input name="oal" value="69.67" unit="mm" type="decimal" descr="cartridge overall length" />
       <input name="caselen" value="51.18" unit="mm" type="decimal" descr="case length" />
-      <input name="casevol" value="3.62302522846" unit="cm3" type="decimal" descr="case volume" />
+      <input name="casevol" value="3.6165323517" unit="cm3" type="decimal" descr="case volume" />
       <input name="Dz" value="7.82" unit="mm" type="decimal" descr="groove caliber" />
       <input name="Aeff" value="47.51" unit="mm2" type="decimal" descr="effektive area" />
       <input name="pMaxZul" value="4150" unit="bar" type="decimal" descr="maximum allowed pressure" />
@@ -57,7 +57,7 @@
       <var name="c_N" value="4.00" />
       <var name="c_b_" value="4.47" />
       <var name="c_u_" value="305.00" />
-      <var name="V" value="55.80" />
+      <var name="V" value="55.70" />
       <var name="V_source" value="reload-swiss-fill" />
       <var name="source" value="cip-tdcc%3B%20reload-swiss-guide-2025" />
       <var name="status" value="" />
@@ -71,9 +71,9 @@
       <input name="gjumpUnlock" value="false" unit="" type="boolean" descr="unlocked bullet jump" />
     </gun>
     <projectile>
-      <input name="ProjectileName" value="Styria%20Arms%2C%20AERO%20SB%20165%20gr%2C%20.308%2C%20165.00%20grain" unit="" type="string" descr="projectile name" />
+      <input name="ProjectileName" value="Styria%20Arms%2C%20AERO%20SB%20165%20gr%20HP%202%2C%20.308%2C%20165.00%20grain" unit="" type="string" descr="projectile name" />
       <input name="mname" value="Styria%20Arms" unit="" type="string" descr="projectile manufacturer" />
-      <input name="pname" value="AERO%20SB%20165%20gr" unit="" type="string" descr="projectile product name" />
+      <input name="pname" value="AERO%20SB%20165%20gr%20HP%202" unit="" type="string" descr="projectile product name" />
       <input name="lotid" value="" unit="" type="string" descr="projectile lot-id" />
       <input name="Dbul" value="7.82" unit="mm" type="decimal" descr="projectile diameter" />
       <input name="mp" value="10.69182015" unit="g" type="decimal" descr="projectile weight" />
@@ -96,13 +96,13 @@
       <input name="mname" value="Reload%20Swiss" unit="" type="string" descr="propellant manufacturer" />
       <input name="pname" value="RS52" unit="" type="string" descr="propellant product name" />
       <input name="lotid" value="" unit="" type="string" descr="propellant lot-id" />
-      <input name="Ba" value="0.555663" unit="" type="decimal" descr="vivacity coefficient" />
+      <input name="Ba" value="0.563446" unit="" type="decimal" descr="vivacity coefficient" />
       <input name="Qex" value="3900" unit="kJ/kg" type="decimal" descr="specific explosive heat" />
       <input name="k" value="1.23" unit="" type="decimal" descr="ratio of the specific heat of the powder gases" />
-      <input name="a0" value="1.11835" unit="" type="decimal" descr="prog/deg coefficient" />
+      <input name="a0" value="0.943173" unit="" type="decimal" descr="prog/deg coefficient" />
       <input name="a1" value="0" unit="" type="decimal" descr="prog/deg coefficient" />
-      <input name="z1" value="0.439075" unit="" type="decimal" descr="burn-up limit z1" />
-      <input name="z2" value="0.76649" unit="" type="decimal" descr="burn-up limit z2" />
+      <input name="z1" value="0.44605" unit="" type="decimal" descr="burn-up limit z1" />
+      <input name="z2" value="0.768032" unit="" type="decimal" descr="burn-up limit z2" />
       <input name="eta" value="0" unit="cm3/kg" type="decimal" descr="covolume of the powder gases" />
       <input name="pc" value="1600" unit="kg/m3" type="decimal" descr="material density" />
       <input name="pcd" value="950" unit="kg/m3" type="decimal" descr="bulk density" />

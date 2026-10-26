@@ -79,7 +79,7 @@ five of the review are in `local/legal-review-2026-10-21.md`. Among them:
 
 Reply template if a maker complains: [CEASE-AND-DESIST-RESPONSE.md](CEASE-AND-DESIST-RESPONSE.md).
 
-## Text of the release v0.3.0 (draft, 2026-10-25)
+## Text of the release v0.3.0 (draft, 2026-10-26)
 
 **BallisticaInterna 0.3.0: interior ballistics for rifle handloads**
 
@@ -88,7 +88,7 @@ It calculates pressure, velocity and energy of a rifle load over the bullet's tr
 checked by GRT).
 
 **Warning: this is a simulation, not load data.** The calculated pressure can be too low: at fill ratios below
-about 90 % it is on average too low (below 80 %: about 15 %, single loads up to 43 %), so the real pressure can be
+about 90 % it is on average too low (below 80 %: about 15 %, single loads up to 40 %), so the real pressure can be
 higher than shown. Never load on the basis of this app alone; use only the makers' published load data, start
 with the starting load and never exceed the maximum load. Reloading is dangerous and can cause serious injury or
 death.
@@ -99,24 +99,31 @@ What is new since 0.2.0
 - Case capacities: 37 rifle calibers take their capacity from the fill ratios of the Reload Swiss load data guide,
   the others an estimate from the C.I.P. outline. The app says which, next to the caliber and the result.
 - New warnings: slow powder loosely filled (secondary explosion effect), the worst case of the tests at the load's
-  fill ratio next to every result, and an estimated case capacity.
+  fill ratio next to every result, and an estimated case capacity. A powder counts as slow by its calculated
+  pressure in a fixed reference load, so the rule holds for powders of every maker and for own powders.
 - The first-start notice states the figures of this version (it is shown again once).
 - Accuracy checked again on measured sets rebuilt from the shipped master data
   ([docs/MODEL.md](https://github.com/kiliankoller/ballistica-interna/blob/main/docs/MODEL.md#accuracy)).
-- 39 powder models (Reload Swiss 9, Vihtavuori 19, Norma 6, Rottweil 5): Norma MRP (discontinued) is no longer
+- New powders: Lovex S060, S062, S065, S070, D073.4, D073.5 and D073.6, fitted to the Lovex reloading guide, which
+  gives the pressure of maximum loads only (the app notes this next to the powder).
+- All powders refitted on the measured sets rebuilt from the current master data. The mean calculated pressure is
+  now 2.0 % below the measured one (was 1.3 %), mostly through Reload Swiss RS62 and Vihtavuori N530; the warnings
+  use the figures of these fits.
+- 46 powder models (Reload Swiss 9, Vihtavuori 19, Lovex 7, Norma 6, Rottweil 5): Norma MRP (discontinued) is no longer
   shipped: too few measured loads with a matching bullet to fit it again (4 with pressure; it can be added as an
   own powder). About 1750 bullets (was about 1560), new: the lead-free bullets of Fox Bullets (51,
   with length) and the rifle bullets of Sellier & Bellot (65, most without a published length); same-named Styria Arms bullets now tell hollow point or tip apart.
 
 How accurate it is
-- Velocity: about 3.7 % rms against the makers' measured loads. Checked on customer loads of Reload Swiss that
-  were not used for fitting: 4.4 % (standard rifles), 3.1 % (magnum).
-- Pressure: 11.6 % (magnum) to 12.9 % (standard) rms, 13.6 % on loads held out of the fit. It is no safety margin.
+- Velocity: about 3.5 % rms against the makers' measured loads. Checked on customer loads of Reload Swiss that
+  were not used for fitting: 4.3 % (standard rifles), 3.1 % (magnum).
+- Pressure: 11.5 % (magnum) to 12.3 % (standard) rms, 13.3 % on loads held out of the fit, on average 2 % too low.
+  It is no safety margin.
 
 Known limitations
 - [#12](https://github.com/kiliankoller/ballistica-interna/issues/12) The installers are not signed. macOS: open the
   app once via System Settings → Privacy & Security → Open Anyway. Windows: SmartScreen: More info → Run anyway.
-- [#13](https://github.com/kiliankoller/ballistica-interna/issues/13) Pressure deviates about 12 to 13 % rms from
+- [#13](https://github.com/kiliankoller/ballistica-interna/issues/13) Pressure deviates about 12 % rms from
   measured loads, and at fill ratios below 90 % it is calculated too low. It is no safety margin.
 - [#5](https://github.com/kiliankoller/ballistica-interna/issues/5) Handguns are not supported.
 - The derived case capacities are not yet compared with measured water capacities
