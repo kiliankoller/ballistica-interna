@@ -41,7 +41,7 @@ Done:
 Open (the maintainer decides how far to go; the points are accepted risks, not forgotten):
 
 - [ ] Name BallisticaInterna: check TMview/DPMA/EUIPO and GitHub.
-- [ ] Run each installer once on its platform (Windows and Linux were not checked after the release).
+- [x] Run each installer once on its platform (v0.3.0: macOS, Windows and Linux checked by the maintainer, 2026-10-26).
 - [ ] Per maker: terms of service and robots.txt read and noted in `data/sources.csv`; still to confirm for Norma and
       Vihtavuori.
 - [x] Repository settings (checked 2026-10-22): description and topics set, Issues enabled, private vulnerability
