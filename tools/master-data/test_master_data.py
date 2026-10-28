@@ -137,6 +137,18 @@ class CommittedData(unittest.TestCase):
                                 os.path.join(tmp, 'x.db')], capture_output=True, text=True, encoding='utf-8')
             self.assertEqual(r.returncode, 0, r.stderr)
 
+    def test_names_keep_their_letters(self):
+        # the Windows build (cp1252 as default encoding) once read "Schüler" as "SchÃ¼ler"; runs on every CI platform
+        import sqlite3
+        with tempfile.TemporaryDirectory() as tmp:
+            out = os.path.join(tmp, 'x.db')
+            subprocess.run([sys.executable, os.path.join(os.path.dirname(__file__), 'build_db.py'), '--out', out],
+                           capture_output=True, check=True)
+            db = sqlite3.connect(out)
+            names = [n for (n,) in db.execute("select cipname from caliber where cipname like '%500 Sch%'")]
+            db.close()
+        self.assertEqual(names, ['12,7 x 70 (500 Sch\u00fcler)'])
+
     def test_every_row_names_a_shipped_source(self):
         with open(os.path.join(DATA, 'sources.csv'), newline='', encoding='utf-8') as f:
             ship = {r['id'] for r in csv.DictReader(f) if r['ship'] == 'yes'}
