@@ -106,7 +106,8 @@ export function newGrtLoad(version = '2021.2030-NIGHTLY'): GrtLoadFile {
   };
 }
 
-const attr = (s: string) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+/** XML attribute value (for both quote styles: the root's version stands in single quotes, as GRT writes it). */
+const attr = (s: string) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&apos;').replace(/</g, '&lt;');
 
 /** GRT writes the test method unencoded, every other value URL-encoded. */
 const RAW_VALUES = new Set(['method']);

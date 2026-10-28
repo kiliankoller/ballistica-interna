@@ -230,6 +230,11 @@ export default {
     imported: '{count} Einträge importiert',
   },
   close: { title: 'Ungespeicherte Ladung', message: '„{name}“ hat ungespeicherte Änderungen. Vor dem Schließen speichern?', save: 'Speichern', discard: 'Nicht speichern' },
+  errors: {
+    openFailed: '„{name}“ konnte nicht gelesen werden: {msg}',
+    reportFailed: 'Der Report konnte nicht erstellt werden: {msg}',
+    failed: 'Fehler: {msg}',
+  },
   untitled: 'Neue Ladung',
   unsaved: 'ungespeichert',
 };

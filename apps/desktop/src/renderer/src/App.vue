@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watchEffect } from 'vue';
-import { ElMessageBox } from 'element-plus';
+import { ElMessage, ElMessageBox } from 'element-plus';
 import { useI18n } from 'vue-i18n';
 import { Document, DocumentAdd, FolderOpened, Printer, Setting } from '@element-plus/icons-vue';
 import de from 'element-plus/es/locale/lang/de';
@@ -18,9 +18,23 @@ const loads = useLoads();
 const settingsOpen = ref(false);
 const elLocale = computed(() => (locale.value === 'de' ? de : en));
 
+const fileName = (path: string) => path.replace(/^.*[\\/]/, '');
+const message = (e: unknown) => (e instanceof Error ? e.message : String(e));
+
+/** Opens a load file; one that cannot be read is reported and left closed. */
+function openChecked(f: OpenedFile): boolean {
+  try {
+    loads.openFile(f);
+    return true;
+  } catch (e) {
+    ElMessage.error({ message: t('errors.openFailed', { name: fileName(f.path), msg: message(e) }), duration: 0, showClose: true });
+    return false;
+  }
+}
+
 async function open() {
   const f = await window.api.openLoad();
-  if (f) loads.openFile(f);
+  if (f) openChecked(f);
 }
 
 function newLoad() {
@@ -34,7 +48,11 @@ async function save(saveAs = false) {
 async function report(mode: ReportMode) {
   const doc = loads.active;
   if (!doc) return;
-  await window.api.exportPdf({ title: doc.name, html: reportHtml(doc, t, locale.value) }, mode);
+  try {
+    await window.api.exportPdf({ title: doc.name, html: reportHtml(doc, t, locale.value) }, mode);
+  } catch (e) {
+    ElMessage.error(t('errors.reportFailed', { msg: message(e) }));
+  }
 }
 
 function onKey(e: KeyboardEvent) {
@@ -86,10 +104,11 @@ onMounted(async () => {
   locale.value = s.language;
   loads.units = s.units ?? {};
   disclaimerOpen.value = s.disclaimerAccepted !== DISCLAIMER_VERSION;
-  // reopen the files of the last session that still exist
+  // reopen the files of the last session that still exist; one that cannot be read is reported and, since only the
+  // open loads are remembered, dropped from the list
   for (const path of s.openFiles ?? []) {
     const f = await window.api.readLoad(path);
-    if (f) loads.openFile(f);
+    if (f) openChecked(f);
   }
   const last = loads.docs.find((d) => d.path === s.activeFile);
   if (last) loads.activeId = last.id;

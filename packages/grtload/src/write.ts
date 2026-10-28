@@ -7,6 +7,15 @@ export function grtEncode(value: string): string {
   return encodeURIComponent(value).replace(/[!'()*]/g, (c) => '%' + c.charCodeAt(0).toString(16).toUpperCase());
 }
 
+/** URL decoding; a value that is not valid URL encoding (a literal "%" typed by hand) stays as it is. */
+export function grtDecode(value: string): string {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
 const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 /** Sets the value (in the unit the file uses for it) of one <input> of a section. */
@@ -25,7 +34,7 @@ export function getInput(xml: string, section: GrtSectionName, name: string): st
   const block = new RegExp(`<${section}>([\\s\\S]*?)</${section}>`).exec(xml);
   const field = block && new RegExp(`<input\\s+name="${escapeRe(name)}"\\s+value="([^"]*)"`).exec(block[1]!);
   if (!field) throw new Error(`input "${name}" missing in <${section}>`);
-  return decodeURIComponent(field[1]!);
+  return grtDecode(field[1]!);
 }
 
 export function setTitle(xml: string, title: string): string {

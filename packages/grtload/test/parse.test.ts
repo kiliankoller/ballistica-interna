@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { caseCapacityGrainsH2O, GRAIN, ipscFactor, momentumIndex, simulate } from '@ballistica-interna/solver';
-import { parseGrtLoad, toLoadInput } from '../src/index.ts';
+import { newGrtLoad, parseGrtLoad, serializeGrtLoad, toLoadInput } from '../src/index.ts';
 
 // local reference case (fixtures/ is not part of the repository)
 const fixture = join(import.meta.dirname, '..', '..', '..', 'fixtures', 'r8-aero-v2', 'load.grtload');
@@ -37,5 +37,23 @@ describe.skipIf(!present)('.grtload parsing (R8_AERO_V2)', () => {
     expect(r.status).toBe('ok');
     expect(r.muzzleVelocity).toBeGreaterThan(500);
     expect(r.maxPressure).toBeGreaterThan(1000e5);
+  });
+});
+
+describe('.grtload parsing of hand-edited files', () => {
+  const xml = (title: string) => serializeGrtLoad({ ...newGrtLoad(), title }).replace(/<title>[^<]*<\/title>/, `<title>${title}</title>`);
+
+  it('keeps a value that is not valid URL encoding as it is', () => {
+    expect(parseGrtLoad(xml('50% Ladung')).title).toBe('50% Ladung');
+  });
+
+  it('keeps text values as text (no number conversion)', () => {
+    expect(parseGrtLoad(xml('007')).title).toBe('007');
+    expect(parseGrtLoad(xml('1e3')).title).toBe('1e3');
+  });
+
+  it('writes a version with an apostrophe as valid XML', () => {
+    const file = { ...newGrtLoad("2021 'test'"), title: 'x' };
+    expect(parseGrtLoad(serializeGrtLoad(file)).version).toBe("2021 'test'");
   });
 });

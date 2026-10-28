@@ -82,8 +82,12 @@ export const useLoads = defineStore('loads', () => {
     const doc = docs.value.find((d) => d.id === raw.id);
     if (!doc) return;
     for (const kind of ['projectile', 'propellant'] as const) {
-      const section = doc.file[kind];
-      const record = await window.api.masterFind(kind, section.mname?.value ?? '', section.pname?.value ?? '');
+      const names = () => `${doc.file[kind].mname?.value ?? ''}\n${doc.file[kind].pname?.value ?? ''}`;
+      const asked = names();
+      const [mname, pname] = asked.split('\n') as [string, string];
+      const record = await window.api.masterFind(kind, mname, pname);
+      // another component was chosen meanwhile: its own notes are already set
+      if (names() !== asked) continue;
       const notes = record ? recordNotes(record) : [];
       if (notes.length) doc.notes[kind] = notes;
       if (kind === 'projectile' && record) doc.minTwist = minTwistOf(record);

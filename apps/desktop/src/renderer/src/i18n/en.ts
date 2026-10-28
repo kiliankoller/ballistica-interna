@@ -232,6 +232,11 @@ const en: typeof de = {
     imported: '{count} entries imported',
   },
   close: { title: 'Unsaved load', message: '“{name}” has unsaved changes. Save before closing?', save: 'Save', discard: "Don't save" },
+  errors: {
+    openFailed: '“{name}” could not be read: {msg}',
+    reportFailed: 'The report could not be created: {msg}',
+    failed: 'Error: {msg}',
+  },
   untitled: 'New load',
   unsaved: 'unsaved',
 };

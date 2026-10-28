@@ -1,6 +1,7 @@
 import { XMLParser } from 'fast-xml-parser';
 import type { LoadInput, TailType } from '@ballistica-interna/solver';
 import { toSI } from './units.ts';
+import { grtDecode } from './write.ts';
 
 /** One <input> or <var> entry of a .grtload section, values URL-decoded. */
 export interface GrtField {
@@ -25,7 +26,7 @@ export interface GrtLoadFile {
   propellant: GrtSection;
 }
 
-const decode = (s: unknown) => decodeURIComponent(String(s ?? ''));
+const decode = (s: unknown) => grtDecode(String(s ?? ''));
 const asArray = <T>(v: T | T[] | undefined): T[] => (v === undefined ? [] : Array.isArray(v) ? v : [v]);
 
 function section(node: Record<string, unknown> | undefined, tag: 'input' | 'var'): GrtSection {
@@ -44,7 +45,7 @@ function section(node: Record<string, unknown> | undefined, tag: 'input' | 'var'
 }
 
 export function parseGrtLoad(xml: string): GrtLoadFile {
-  const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: '', parseAttributeValue: false });
+  const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: '', parseAttributeValue: false, parseTagValue: false });
   const doc = parser.parse(xml) as Record<string, any>;
   const root = doc.GordonsReloadingTool;
   const ib = root?.InnerBallistikInput;
