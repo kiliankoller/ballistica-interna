@@ -79,7 +79,7 @@ five of the review are in `local/legal-review-2026-10-21.md`. Among them:
 
 Reply template if a maker complains: [CEASE-AND-DESIST-RESPONSE.md](CEASE-AND-DESIST-RESPONSE.md).
 
-## Text of the release v0.4.1
+## Text of the release v0.4.1 (published 2026-10-28)
 
 **BallisticaInterna 0.4.1: interior ballistics for rifle handloads**
 
