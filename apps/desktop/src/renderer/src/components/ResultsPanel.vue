@@ -40,7 +40,7 @@ const geometry = computed(() => {
 const notices = computed(() => noticeGroups(noticesOf(props.doc)));
 const setStartPressure = () => loads.setSI(props.doc, 'projectile', 'gpressure', SHORT_JUMP_START_PRESSURE);
 
-const left = computed<[string, string, string?][]>(() => {
+const left = computed<[string, string, string?, string?][]>(() => {
   const x = r.value;
   const y = d.value;
   if (!x || !y || x.status !== 'ok') return [];
@@ -51,7 +51,7 @@ const left = computed<[string, string, string?][]>(() => {
     [t('result.muzzleVelocity'), `${fmt(x.muzzleVelocity, 1)} m/s`, 'velocity'],
     [t('result.barrelTime'), `${fmt(x.barrelTime * 1e3, 4)} ms`],
     [t('result.bulletLeadTime'), `${fmt(x.bulletLeadTime * 1e3, 4)} ms`],
-    [t('result.obt'), y.obt ? `${fmt(y.obt.time * 1e3, 4)} ms (${obtNodeLabel(y.obt.node)})` : '—'],
+    [t('result.obt'), y.obt ? `${fmt(y.obt.time * 1e3, 4)} ms (${obtNodeLabel(y.obt.node)})` : '—', undefined, t('result.obtHint')],
   ];
 });
 const right = computed<[string, string][]>(() => {
@@ -86,8 +86,8 @@ const right = computed<[string, string][]>(() => {
     <p v-else-if="r && r.status !== 'ok'" class="warn">{{ t(`result.status.${r.status}`) }}</p>
     <div v-else class="cols">
       <table>
-        <tr v-for="[k, v, tone] in left" :key="k" :class="tone">
-          <th>{{ k }}:</th>
+        <tr v-for="[k, v, tone, hint] in left" :key="k" :class="tone">
+          <th :title="hint">{{ k }}:</th>
           <td>{{ v }}</td>
         </tr>
       </table>

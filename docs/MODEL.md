@@ -121,7 +121,8 @@ says so next to the powder.
 
 - **Case capacity** (where not measured): see *Case capacity* below. Measure your own cases.
 - **Optimal barrel time** after C. Long's master model, OBT = (A·N + B)·L + C·N + D with separate coefficient
-  sets for odd and even nodes; the node nearest to the time the pressure first reaches 10 % of its peak is shown.
+  sets for odd and even nodes; the node nearest to the time the pressure first reaches 10 % of its peak is shown. This is an empirical rule
+  about barrel vibration, not interior ballistics; the app says so next to the value and in the report.
 - **Free recoil**: momentum of bullet and carried charge at the muzzle plus the remaining gas leaving at
   √(v² + p₀·V / (3 m_c)).
 - **IPSC factor** m_p [gr] · v [ft/s] / 1000, **MIP** m_p [g] · v [m/s] / 10.
