@@ -8,6 +8,12 @@ export default defineConfig({
   },
   preload: {
     plugins: [externalizeDepsPlugin()],
+    // CommonJS: a sandboxed renderer (webPreferences.sandbox) cannot load an ES module preload
+    build: {
+      rollupOptions: {
+        output: { format: 'cjs', entryFileNames: '[name].cjs' },
+      },
+    },
   },
   renderer: {
     root: resolve(__dirname, 'src/renderer'),

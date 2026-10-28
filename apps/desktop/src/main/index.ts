@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { basename, dirname, join } from 'node:path';
+import { basename, dirname, join, resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { app, BrowserWindow, dialog, ipcMain, nativeTheme, shell } from 'electron';
 import { APP_NAME, DISCLAIMER_VERSION, type DialogKind, type LibraryExport, type ReportMode, type ReportPayload, type Settings } from '../shared/api';
 import { findMaster, listMaster, masterRecord, masterStatus, openMasterData } from './masterdata';
@@ -17,7 +18,9 @@ let mainWindow: BrowserWindow | null = null;
 /** Some open load has unsaved changes (reported by the window). */
 let dirty = false;
 
-const preload = join(__dirname, '../preload/index.mjs');
+const preload = join(__dirname, '../preload/index.cjs');
+/** The renderer runs sandboxed and isolated; it reaches the system only through the preload's api. */
+const webPreferences = { preload, sandbox: true, contextIsolation: true, nodeIntegration: false };
 const devIcon = join(__dirname, '../../build/icon.png');
 const rendererUrl = (page: 'index' | 'report') =>
   process.env.ELECTRON_RENDERER_URL ? `${process.env.ELECTRON_RENDERER_URL}/${page}.html` : null;
@@ -39,7 +42,7 @@ function createWindow() {
     // window icon in development on Windows and Linux; the installed app carries its own (electron-builder)
     ...(existsSync(devIcon) ? { icon: devIcon } : {}),
     backgroundColor: nativeTheme.shouldUseDarkColors ? '#1b1d21' : '#ffffff',
-    webPreferences: { preload, sandbox: false, contextIsolation: true },
+    webPreferences,
   });
   void load(mainWindow, 'index');
   guardClose(mainWindow);
@@ -67,7 +70,8 @@ function guardClose(win: BrowserWindow, ask: Ask = (w, o) => dialog.showMessageB
 
 /** Renders the report HTML in a hidden window and prints it to A4 PDF. */
 async function renderPdf(html: string): Promise<Buffer> {
-  const win = new BrowserWindow({ show: false, webPreferences: { preload, sandbox: false, contextIsolation: true } });
+  // the report page needs no api: no preload
+  const win = new BrowserWindow({ show: false, webPreferences: { sandbox: true, contextIsolation: true, nodeIntegration: false } });
   try {
     await load(win, 'report');
     await win.webContents.executeJavaScript(`window.renderReport(${JSON.stringify(html)})`);
@@ -76,6 +80,17 @@ async function renderPdf(html: string): Promise<Buffer> {
     win.destroy();
   }
 }
+
+/**
+ * Load files the window may read or overwrite by path: those the user chose in a dialog and those of the last
+ * session (settings.openFiles). Any other path from the renderer is refused.
+ */
+const allowedPaths = new Set<string>();
+const allow = (path: string) => allowedPaths.add(resolve(path));
+const allowed = (path: string) => allowedPaths.has(resolve(path));
+
+/** A file name without the characters Windows and macOS do not allow. */
+const safeFileName = (name: string) => name.replace(/[\\/:*?"<>|\x00-\x1f]/g, '_').trim() || APP_NAME;
 
 /** Default path of a dialog: the file name in the folder last used for this kind of file. */
 function inLastDir(kind: DialogKind, fileName = ''): string | undefined {
@@ -94,7 +109,7 @@ function rememberDir(kind: DialogKind, filePath: string) {
 async function viewPdf(report: ReportPayload): Promise<string> {
   const dir = join(app.getPath('temp'), APP_NAME);
   mkdirSync(dir, { recursive: true });
-  const file = join(dir, `${report.title.replace(/[\\/:*?"<>|]/g, '_')}.pdf`);
+  const file = join(dir, `${safeFileName(report.title)}.pdf`);
   writeFileSync(file, await renderPdf(report.html));
   const error = await shell.openPath(file);
   if (error) throw new Error(error);
@@ -104,7 +119,7 @@ async function viewPdf(report: ReportPayload): Promise<string> {
 async function exportPdf(report: ReportPayload, mode: ReportMode): Promise<string | null> {
   if (mode === 'view') return viewPdf(report);
   const target = await dialog.showSaveDialog({
-    defaultPath: inLastDir('pdf', `${report.title}.pdf`),
+    defaultPath: inLastDir('pdf', `${safeFileName(report.title)}.pdf`),
     filters: [{ name: 'PDF', extensions: ['pdf'] }],
   });
   if (target.canceled || !target.filePath) return null;
@@ -116,6 +131,9 @@ async function exportPdf(report: ReportPayload, mode: ReportMode): Promise<strin
 function registerIpc() {
   ipcMain.handle('settings:get', () => settings);
   ipcMain.handle('settings:set', (_e, patch: Partial<Settings>) => {
+    // the files to reopen are only those the window may read anyway
+    if (patch.openFiles) patch = { ...patch, openFiles: patch.openFiles.filter((f) => typeof f === 'string' && allowed(f)) };
+    if (patch.activeFile && !allowed(patch.activeFile)) patch = { ...patch, activeFile: '' };
     settings = { ...settings, ...patch };
     if (persist) saveSettings(settings);
     nativeTheme.themeSource = settings.theme;
@@ -151,9 +169,11 @@ function registerIpc() {
     });
     if (r.canceled || !r.filePaths[0]) return null;
     rememberDir('load', r.filePaths[0]);
+    allow(r.filePaths[0]);
     return { path: r.filePaths[0], content: readFileSync(r.filePaths[0], 'utf8') };
   });
   ipcMain.handle('load:read', (_e, path: string) => {
+    if (typeof path !== 'string' || !allowed(path)) return null;
     try {
       return { path, content: readFileSync(path, 'utf8') };
     } catch {
@@ -161,15 +181,18 @@ function registerIpc() {
     }
   });
   ipcMain.handle('load:save', async (_e, path: string | null, content: string, suggestedName: string) => {
-    let target = path;
+    if (typeof content !== 'string') throw new Error('nothing to save');
+    // a path the window did not get from a dialog or the last session is asked for again
+    let target = path && allowed(path) ? path : null;
     if (!target) {
       const r = await dialog.showSaveDialog({
-        defaultPath: inLastDir('load', `${suggestedName}.grtload`),
+        defaultPath: inLastDir('load', `${safeFileName(String(suggestedName ?? ''))}.grtload`),
         filters: [{ name: 'Load', extensions: ['grtload'] }],
       });
       if (r.canceled || !r.filePath) return null;
       rememberDir('load', r.filePath);
       target = r.filePath;
+      allow(target);
     }
     writeFileSync(target, content);
     return target;
@@ -207,7 +230,7 @@ async function screenshotMode(args: string[]) {
     width: 1600,
     height: 1000,
     show: false,
-    webPreferences: { preload, sandbox: false, contextIsolation: true, offscreen: { deviceScaleFactor: Number(arg('--scale') ?? 1) } },
+    webPreferences: { ...webPreferences, offscreen: { deviceScaleFactor: Number(arg('--scale') ?? 1) } },
   });
   await load(win, 'index');
   if (openIdx >= 0) {
@@ -262,8 +285,24 @@ async function screenshotMode(args: string[]) {
   app.exit(0);
 }
 
+/** Pages of the app: the dev server in development, the built renderer files otherwise. */
+function isAppPage(url: string): boolean {
+  const dev = process.env.ELECTRON_RENDERER_URL;
+  if (dev) return url.startsWith(dev);
+  return url.startsWith(pathToFileURL(join(__dirname, '../renderer/')).href);
+}
+
+// no window may navigate away from the app's pages or open another window (links, drag and drop of a URL)
+app.on('web-contents-created', (_e, contents) => {
+  contents.setWindowOpenHandler(() => ({ action: 'deny' }));
+  contents.on('will-navigate', (e, url) => {
+    if (!isAppPage(url)) e.preventDefault();
+  });
+});
+
 void app.whenReady().then(async () => {
   settings = loadSettings();
+  for (const path of settings.openFiles ?? []) allow(path);
   nativeTheme.themeSource = settings.theme;
   openMasterData();
   registerIpc();

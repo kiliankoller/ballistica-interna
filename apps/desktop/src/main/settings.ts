@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { app } from 'electron';
 import type { Settings } from '../shared/api';
@@ -28,6 +28,9 @@ export function loadSettings(): Settings {
   return defaultSettings();
 }
 
+/** Written to a temporary file first: an interrupted write leaves the previous settings intact. */
 export function saveSettings(settings: Settings): void {
-  writeFileSync(file(), JSON.stringify(settings, null, 2));
+  const tmp = `${file()}.tmp`;
+  writeFileSync(tmp, JSON.stringify(settings, null, 2));
+  renameSync(tmp, file());
 }

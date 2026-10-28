@@ -45,6 +45,7 @@ export interface ListItem {
   flags?: string | null;
 }
 
+export const COMPONENT_KINDS: readonly ComponentKind[] = ['caliber', 'projectile', 'propellant'];
 export type ComponentKind = 'caliber' | 'projectile' | 'propellant';
 export type DbRecord = Record<string, string | number | null>;
 export type ComponentSource = 'own' | 'master';
