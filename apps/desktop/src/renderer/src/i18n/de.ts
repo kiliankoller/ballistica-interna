@@ -217,6 +217,9 @@ export default {
   ladder: { charge: 'Ladung', burnt: 'Umgesetzt', fill: 'Füllgrad' },
   compare: { placeholder: 'Vergleichen mit…' },
   library: {
+    deleteTitle: 'Eintrag löschen',
+    deleteConfirm: '„{name}“ aus den eigenen Komponenten löschen? Das lässt sich nicht rückgängig machen.',
+    delete: 'Löschen',
     title: 'Eigene Kaliber, Geschosse und Treibladungen',
     save: 'Speichern',
     cancel: 'Abbrechen',

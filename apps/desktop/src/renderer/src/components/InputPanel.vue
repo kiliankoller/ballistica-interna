@@ -37,6 +37,7 @@ function openEditor(copy: boolean) {
 
 /** Stores the component as it is in this load (e.g. with a measured case capacity) in the library. */
 async function saveOwn() {
+  let name: string;
   try {
     const { value } = await ElMessageBox.prompt(t(`own.${props.kind}.namePrompt`), t(`own.${props.kind}.saveTitle`), {
       inputValue: props.current,
@@ -44,13 +45,18 @@ async function saveOwn() {
       confirmButtonText: t('library.save'),
       cancelButtonText: t('library.cancel'),
     });
-    // an own copy remembers what it was taken from
-    const record = { ...recordFromLoad(props.kind, props.doc.file, value.trim()), origin: props.current };
-    await window.api.librarySave(props.kind, value.trim(), record);
-    loads.dbVersion++;
-    ElMessage.success(t('library.saved', { name: value.trim() }));
+    name = value.trim();
   } catch {
-    // cancelled
+    return; // cancelled
+  }
+  try {
+    // an own copy remembers what it was taken from
+    const record = { ...recordFromLoad(props.kind, props.doc.file, name), origin: props.current };
+    await window.api.librarySave(props.kind, name, record);
+    loads.dbVersion++;
+    ElMessage.success(t('library.saved', { name }));
+  } catch (e) {
+    ElMessage.error(t('errors.failed', { msg: e instanceof Error ? e.message : String(e) }));
   }
 }
 </script>

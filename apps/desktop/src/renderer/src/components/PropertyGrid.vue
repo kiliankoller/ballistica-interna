@@ -3,7 +3,7 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { FieldRow } from '../lib/fields';
-import { fmt, unitOf, unitsOf } from '../lib/units';
+import { fmt, parseInput, unitOf, unitsOf } from '../lib/units';
 import { useLoads, type LoadDoc } from '../stores/loads';
 
 const props = defineProps<{ doc: LoadDoc; rows: FieldRow[] }>();
@@ -38,11 +38,14 @@ function display(row: FieldRow): string {
   return fmt(si === undefined ? undefined : unit(row).fromSI(si), row.decimals);
 }
 
-function commit(row: FieldRow, text: string) {
+function commit(row: FieldRow, input: HTMLInputElement) {
   if (!row.section || !row.name) return;
-  const v = Number(text.replace(',', '.'));
-  if (!Number.isFinite(v)) return;
-  loads.setSI(props.doc, row.section, row.name, unit(row).toSI(v));
+  const v = parseInput(input.value);
+  // a cleared field is empty (the load check asks for a required one), not 0
+  if (v === '') loads.setRaw(props.doc, row.section, row.name, '');
+  else if (v !== null) loads.setSI(props.doc, row.section, row.name, unit(row).toSI(v));
+  // text that is no number is not taken: show the stored value again
+  else input.value = display(row);
 }
 
 function onKey(e: KeyboardEvent, row: FieldRow) {
@@ -76,7 +79,7 @@ function onKey(e: KeyboardEvent, row: FieldRow) {
               v-else
               :value="display(row)"
               spellcheck="false"
-              @change="commit(row, ($event.target as HTMLInputElement).value)"
+              @change="commit(row, $event.target as HTMLInputElement)"
               @keydown="onKey($event, row)"
             />
           </td>

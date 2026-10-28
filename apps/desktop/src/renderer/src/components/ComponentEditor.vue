@@ -5,7 +5,7 @@ import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { ElMessage } from 'element-plus';
 import type { ComponentKind, DbRecord } from '../../../shared/api';
-import { COMPONENT_FIELDS, checkComponent, componentLabel } from '../lib/componentFields';
+import { COMPONENT_FIELDS, checkComponent, componentLabel, recordFromValues } from '../lib/componentFields';
 import { useLoads } from '../stores/loads';
 
 const open = defineModel<boolean>({ required: true });
@@ -26,40 +26,36 @@ const fields = computed(() => COMPONENT_FIELDS[props.kind]);
 const values = ref<Record<string, string>>({});
 const problems = ref<Record<string, string>>({});
 
-watch(open, (isOpen) => {
-  if (!isOpen) return;
-  const r = props.record ?? {};
-  values.value = Object.fromEntries(fields.value.map((f) => [f.key, r[f.key] === null || r[f.key] === undefined ? '' : String(r[f.key])]));
-  problems.value = {};
-});
+// immediate: the settings mount the editor only when it is opened (open is already true then)
+watch(
+  open,
+  (isOpen) => {
+    if (!isOpen) return;
+    const r = props.record ?? {};
+    values.value = Object.fromEntries(fields.value.map((f) => [f.key, r[f.key] === null || r[f.key] === undefined ? '' : String(r[f.key])]));
+    problems.value = {};
+  },
+  { immediate: true },
+);
 
 const title = computed(() =>
   t(`own.${props.kind}.${props.libraryId ? 'titleChange' : props.record ? 'titleCopy' : 'titleNew'}`),
 );
 
-function record(): DbRecord {
-  // all fields of the source record stay (e.g. the C.I.P. outline of a caliber); the edited ones replace them
-  const r: DbRecord = { ...(props.record ?? {}) };
-  for (const f of fields.value) {
-    const v = values.value[f.key]!.trim().replace(',', '.');
-    r[f.key] = f.text ? v : v === '' ? null : Number(v);
-  }
-  if (props.origin && !props.libraryId) r.origin = props.origin;
-  delete r.id;
-  delete r.source_name;
-  return r;
-}
-
 async function save() {
-  const r = record();
+  const r = recordFromValues(props.kind, props.record, values.value, props.libraryId ? undefined : props.origin);
   problems.value = Object.fromEntries(checkComponent(props.kind, r).map(([key, msg, params]) => [key, t(msg, params)]));
   if (Object.keys(problems.value).length) return;
   const label = componentLabel(props.kind, r);
-  const id = props.libraryId ? (await window.api.libraryUpdate(props.libraryId, label, r), props.libraryId) : await window.api.librarySave(props.kind, label, r);
-  loads.dbVersion++;
-  ElMessage.success(t('library.saved', { name: label }));
-  emit('saved', id);
-  open.value = false;
+  try {
+    const id = props.libraryId ? (await window.api.libraryUpdate(props.libraryId, label, r), props.libraryId) : await window.api.librarySave(props.kind, label, r);
+    loads.dbVersion++;
+    ElMessage.success(t('library.saved', { name: label }));
+    emit('saved', id);
+    open.value = false;
+  } catch (e) {
+    ElMessage.error(t('errors.failed', { msg: e instanceof Error ? e.message : String(e) }));
+  }
 }
 </script>
 

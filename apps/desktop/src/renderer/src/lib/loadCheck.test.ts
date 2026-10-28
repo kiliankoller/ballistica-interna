@@ -49,3 +49,16 @@ describe('bullet fit', () => {
     expect(checkLoad(f).find((i) => i.name === 'Dbul')?.problem).toBe('check.bulletNotFitting');
   });
 });
+
+describe('checkLoad: load ladder', () => {
+  it('reports a ladder count or step that is no number', () => {
+    const f = newGrtLoad();
+    f.propellant.laddercnt!.value = 'drei';
+    f.propellant.laddermc!.value = 'x';
+    const problems = checkLoad(f).filter((i) => i.name.startsWith('ladder')).map((i) => [i.label, i.problem]);
+    expect(problems).toEqual([
+      ['ladderSteps', 'check.notNumber'],
+      ['ladderStep', 'check.notNumber'],
+    ]);
+  });
+});

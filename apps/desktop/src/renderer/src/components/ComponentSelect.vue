@@ -3,6 +3,7 @@
 // master data BallisticaInterna ships. Projectiles are offered only once a caliber is chosen, and only those that fit it.
 import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { ElMessage } from 'element-plus';
 import type { ComponentKind, LibraryEntry, ListItem } from '../../../shared/api';
 import { caliberBulletDiameter, fitsCaliber, recordNotes } from '../lib/components';
 import { useLoads, type LoadDoc } from '../stores/loads';
@@ -49,11 +50,15 @@ async function refresh() {
 
 async function choose(value: string) {
   const [source, id] = value.split(':') as ['own' | 'master', string];
-  const record = source === 'own' ? await window.api.libraryRecord(Number(id)) : await window.api.masterRecord(props.kind, Number(id));
-  if (record) {
-    const name = source === 'master' ? String(record.source_name ?? '') : String(record.origin ?? '');
-    const notes = source === 'master' ? recordNotes(record) : [];
-    loads.applyComponent(props.doc, props.kind, record, { from: source, name: name || undefined, notes: notes.length ? notes : undefined });
+  try {
+    const record = source === 'own' ? await window.api.libraryRecord(Number(id)) : await window.api.masterRecord(props.kind, Number(id));
+    if (record) {
+      const name = source === 'master' ? String(record.source_name ?? '') : String(record.origin ?? '');
+      const notes = source === 'master' ? recordNotes(record) : [];
+      loads.applyComponent(props.doc, props.kind, record, { from: source, name: name || undefined, notes: notes.length ? notes : undefined });
+    }
+  } catch (e) {
+    ElMessage.error(t('errors.failed', { msg: e instanceof Error ? e.message : String(e) }));
   }
   selected.value = null;
 }

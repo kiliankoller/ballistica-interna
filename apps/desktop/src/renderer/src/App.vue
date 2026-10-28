@@ -41,8 +41,18 @@ function newLoad() {
   loads.newLoad(t('untitled'));
 }
 
+/** Saves a load; false when cancelled or failed (the error is reported). */
+async function saveDoc(doc: NonNullable<typeof loads.active>, saveAs = false): Promise<boolean> {
+  try {
+    return await loads.save(doc, saveAs);
+  } catch (e) {
+    ElMessage.error(t('errors.failed', { msg: message(e) }));
+    return false;
+  }
+}
+
 async function save(saveAs = false) {
-  if (loads.active) await loads.save(loads.active, saveAs);
+  if (loads.active) await saveDoc(loads.active, saveAs);
 }
 
 async function report(mode: ReportMode) {
@@ -76,7 +86,7 @@ async function closeTab(id: number) {
         distinguishCancelAndClose: true,
         type: 'warning',
       });
-      if (!(await loads.save(doc))) return; // save dialog cancelled
+      if (!(await saveDoc(doc))) return; // save dialog cancelled or saving failed
     } catch (action) {
       if (action !== 'cancel') return; // closed the question: keep the tab
     }

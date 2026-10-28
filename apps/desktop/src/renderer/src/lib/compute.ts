@@ -71,7 +71,8 @@ export function compute(file: GrtLoadFile): Computation {
   } catch (e) {
     return { load: null, steps: [], issues, error: e instanceof Error ? e.message : String(e) };
   }
-  const count = Math.min(Math.max(Math.round(Number(file.propellant.laddercnt?.value ?? 1)), 1), 10);
+  // 1 … 10 steps; an empty or unusable count is one step (the load's charge)
+  const count = Math.min(Math.max(Math.round(Number(file.propellant.laddercnt?.value)) || 1, 1), 10);
   const stepField = file.propellant.laddermc;
   const stepMass = stepField ? toSI(Number(stepField.value), stepField.unit) : 0;
   const steps: Step[] = [];

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { ElMessage } from 'element-plus';
+import { ElMessage, ElMessageBox } from 'element-plus';
 import { Delete, EditPen } from '@element-plus/icons-vue';
 import type { DbRecord, LibraryEntry, Settings } from '../../../shared/api';
 import ComponentEditor from './ComponentEditor.vue';
@@ -35,21 +35,44 @@ const editing = ref<LibraryEntry | null>(null);
 const editingRecord = ref<DbRecord | null>(null);
 const editorOpen = ref(false);
 
+const failed = (e: unknown) => ElMessage.error(t('errors.failed', { msg: e instanceof Error ? e.message : String(e) }));
+
 async function change(entry: LibraryEntry) {
-  editingRecord.value = await window.api.libraryRecord(entry.id);
-  editing.value = entry;
-  editorOpen.value = true;
+  try {
+    editingRecord.value = await window.api.libraryRecord(entry.id);
+    editing.value = entry;
+    editorOpen.value = true;
+  } catch (e) {
+    failed(e);
+  }
 }
 
 async function remove(entry: LibraryEntry) {
-  await window.api.libraryDelete(entry.id);
-  await refreshLibrary();
-  loads.dbVersion++;
+  try {
+    await ElMessageBox.confirm(t('library.deleteConfirm', { name: entry.label }), t('library.deleteTitle'), {
+      confirmButtonText: t('library.delete'),
+      cancelButtonText: t('library.cancel'),
+      type: 'warning',
+    });
+  } catch {
+    return; // cancelled
+  }
+  try {
+    await window.api.libraryDelete(entry.id);
+    await refreshLibrary();
+    loads.dbVersion++;
+  } catch (e) {
+    failed(e);
+  }
 }
 
 async function exportLibrary() {
-  const path = await window.api.libraryExport();
-  if (path) ElMessage.success(t('library.exported', { path }));
+  try {
+    const path = await window.api.libraryExport();
+    if (path) ElMessage.success(t('library.exported', { path }));
+  } catch (e) {
+    failed(e);
+  }
 }
 
 async function importLibrary() {
@@ -60,7 +83,7 @@ async function importLibrary() {
     await refreshLibrary();
     loads.dbVersion++;
   } catch (e) {
-    ElMessage.error(String(e));
+    failed(e);
   }
 }
 

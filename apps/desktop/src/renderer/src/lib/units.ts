@@ -51,6 +51,14 @@ export function unitOf(q: Quantity, id?: string): Unit {
   return list.find((u) => u.id === id) ?? list[0]!;
 }
 
+/** A typed value: '' when the field was cleared, null when the text is no number; a decimal comma is accepted. */
+export function parseInput(text: string): number | '' | null {
+  const t = text.trim();
+  if (t === '') return '';
+  const v = Number(t.replace(',', '.'));
+  return Number.isFinite(v) ? v : null;
+}
+
 /** Formats a number for display with a fixed number of decimals. */
 export function fmt(v: number | undefined, decimals: number): string {
   return v === undefined || !Number.isFinite(v) ? '—' : v.toFixed(decimals);

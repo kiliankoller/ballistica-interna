@@ -219,6 +219,9 @@ const en: typeof de = {
     lengthBelowDiameter: 'Length below diameter',
   },
   library: {
+    deleteTitle: 'Delete entry',
+    deleteConfirm: 'Delete “{name}” from your own components? This cannot be undone.',
+    delete: 'Delete',
     title: 'Own cartridges, projectiles and propellants',
     save: 'Save',
     cancel: 'Cancel',

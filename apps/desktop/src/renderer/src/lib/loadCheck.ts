@@ -51,6 +51,9 @@ const RULES: Rule[] = [
   ['propellant', 'tcc', 'number', false],
   ['propellant', 'tch', 'number', false],
   ['propellant', 'mc', 'positive', true],
+  // load ladder (compute.ts): steps and charge step
+  ['propellant', 'laddercnt', 'number', false],
+  ['propellant', 'laddermc', 'number', false],
 ];
 
 const ROWS = [...CALIBER_ROWS, ...PROJECTILE_ROWS, ...PROPELLANT_ROWS];

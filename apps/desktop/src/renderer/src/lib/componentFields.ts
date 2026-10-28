@@ -92,3 +92,19 @@ export function checkComponent(kind: ComponentKind, r: DbRecord): [string, strin
   }
   return out;
 }
+
+/**
+ * The record the editor saves: every field of the source record stays (e.g. the C.I.P. outline of a caliber), the
+ * edited ones replace it. Number fields take a decimal comma; text fields are kept as typed.
+ */
+export function recordFromValues(kind: ComponentKind, source: DbRecord | null, values: Record<string, string>, origin?: string): DbRecord {
+  const r: DbRecord = { ...(source ?? {}) };
+  for (const f of COMPONENT_FIELDS[kind]) {
+    const v = (values[f.key] ?? '').trim();
+    r[f.key] = f.text ? v : v === '' ? null : Number(v.replace(',', '.'));
+  }
+  if (origin) r.origin = origin;
+  delete r.id;
+  delete r.source_name;
+  return r;
+}
