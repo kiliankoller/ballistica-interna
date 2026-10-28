@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { powderLabel } from '../lib/components';
 import { CALIBER_ROWS, PROJECTILE_ROWS, PROPELLANT_ROWS } from '../lib/fields';
 import { selectedStep, useLoads, type LoadDoc } from '../stores/loads';
 import CartridgePanel from './CartridgePanel.vue';
@@ -40,10 +41,7 @@ const marks = computed<ChartMarks>(() => {
     : {};
 });
 const maxAllowed = computed(() => props.doc.result.load?.cartridge.maxPressure ?? 0);
-const powderName = computed(() => {
-  const w = props.doc.file.propellant;
-  return [w.mname?.value, w.pname?.value].filter(Boolean).join(' ') + (w.lotid?.value ? ` (${w.lotid.value})` : '');
-});
+const powderName = computed(() => powderLabel(props.doc.file));
 </script>
 
 <template>
@@ -124,11 +122,6 @@ const powderName = computed(() => {
 }
 .grow {
   flex: 1;
-}
-.panel {
-  border: 1px solid var(--el-border-color);
-  background: var(--el-bg-color);
-  border-radius: 3px;
 }
 .chart {
   padding: 6px;

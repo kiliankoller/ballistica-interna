@@ -1,4 +1,5 @@
 // Display units: conversion between SI and what the user sees, per quantity.
+import { ref } from 'vue';
 import { GRAIN, WATER_DENSITY } from '@ballistica-interna/solver';
 
 export interface Unit {
@@ -59,7 +60,16 @@ export function parseInput(text: string): number | '' | null {
   return Number.isFinite(v) ? v : null;
 }
 
-/** Formats a number for display with a fixed number of decimals. */
+/** Shown numbers use a decimal comma (German) instead of the point; reactive, so the views follow a change. */
+const decimalComma = ref(false);
+
+export function setDecimalComma(on: boolean): void {
+  decimalComma.value = on;
+}
+
+/** Formats a number for display with a fixed number of decimals (never for values written to a file). */
 export function fmt(v: number | undefined, decimals: number): string {
-  return v === undefined || !Number.isFinite(v) ? '—' : v.toFixed(decimals);
+  if (v === undefined || !Number.isFinite(v)) return '—';
+  const s = v.toFixed(decimals);
+  return decimalComma.value ? s.replace('.', ',') : s;
 }

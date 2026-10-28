@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watchEffect } from 'vue';
+import { computed, onMounted, ref, watch, watchEffect } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { useI18n } from 'vue-i18n';
 import { Document, DocumentAdd, FolderOpened, Printer, Setting } from '@element-plus/icons-vue';
@@ -12,11 +12,14 @@ import DisclaimerDialog from './components/DisclaimerDialog.vue';
 import { DISCLAIMER_VERSION } from '../../shared/api';
 import { reportHtml } from './lib/report';
 import { useLoads } from './stores/loads';
+import { setDecimalComma } from './lib/units';
 
 const { t, locale } = useI18n();
 const loads = useLoads();
 const settingsOpen = ref(false);
 const elLocale = computed(() => (locale.value === 'de' ? de : en));
+// German shows numbers with a decimal comma
+watch(locale, (l) => setDecimalComma(l === 'de'), { immediate: true });
 
 const fileName = (path: string) => path.replace(/^.*[\\/]/, '');
 const message = (e: unknown) => (e instanceof Error ? e.message : String(e));

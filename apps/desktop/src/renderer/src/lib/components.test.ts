@@ -42,3 +42,23 @@ describe('own components', () => {
     expect(target.caliberfile.L1?.value).toBe('39.62');
   });
 });
+
+describe('own components in a file with other units', () => {
+  it('stores the values in the units of the file and keeps OAL and seating depth consistent', () => {
+    const target = sampleLoad();
+    target.caliber.caselen!.unit = 'in';
+    target.caliber.oal!.unit = 'in';
+    target.projectile.glen!.unit = 'in';
+    target.projectile.gdepth!.unit = 'in';
+    target.projectile.mp!.unit = 'gr';
+    applyCaliber(target, recordFromLoad('caliber', sampleLoad(), 'My .308'));
+    applyProjectile(target, recordFromLoad('projectile', sampleLoad(), 'My bullet'));
+    const a = toLoadInput(sampleLoad());
+    const b = toLoadInput(target);
+    expect(Number(target.caliber.caselen!.value)).toBeCloseTo(51 / 25.4, 9);
+    expect(b.cartridge.caseLength).toBeCloseTo(a.cartridge.caseLength, 12);
+    expect(b.projectile.mass).toBeCloseTo(a.projectile.mass, 12);
+    // seating depth = case length + bullet length − OAL, all in inches here
+    expect(b.projectile.seatingDepth).toBeCloseTo(0.051 + 0.03465 - 0.07112, 9);
+  });
+});

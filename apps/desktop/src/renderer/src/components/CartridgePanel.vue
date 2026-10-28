@@ -3,6 +3,7 @@ import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { cartridgeSvg, chamberSvg, chamberTable, cipTable } from '../lib/drawing';
 import type { LoadDoc } from '../stores/loads';
+import { fmt } from '../lib/units';
 
 const props = defineProps<{ doc: LoadDoc }>();
 const { t } = useI18n();
@@ -15,7 +16,7 @@ const cartridge = computed(() => {
 const chamber = computed(() => chamberSvg(props.doc.file.caliberfile));
 const cip = computed(() => {
   const v = Number(props.doc.file.caliberfile.V?.value);
-  return cipTable(props.doc.file.caliberfile, v ? v.toFixed(2) : '');
+  return cipTable(props.doc.file.caliberfile, v ? fmt(v, 2) : '');
 });
 const chamberRows = computed(() => chamberTable(props.doc.file.caliberfile));
 const title = computed(() => {
@@ -54,9 +55,6 @@ const rows = computed(() => (tab.value === 'cartridge' ? cip.value : chamberRows
 
 <style scoped>
 .panel {
-  border: 1px solid var(--el-border-color);
-  background: var(--el-bg-color);
-  border-radius: 3px;
   overflow: hidden;
   min-height: 0;
   display: flex;

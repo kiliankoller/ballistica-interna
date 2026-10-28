@@ -9,6 +9,12 @@ body {
 * {
   box-sizing: border-box;
 }
+/* the framed boxes of the load view (inputs, drawing, results, chart) */
+.panel {
+  border: 1px solid var(--el-border-color);
+  background: var(--el-bg-color);
+  border-radius: 3px;
+}
 /* a denser look than the defaults: this is a tool with many values on screen */
 :root {
   --el-font-size-base: 12px;

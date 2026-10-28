@@ -1,5 +1,5 @@
 // Takes a component record (master data or own library) over into a load file.
-import { toSI, type GrtLoadFile, type GrtSection } from '@ballistica-interna/grtload';
+import { fromSI, toSI, type GrtLoadFile, type GrtSection } from '@ballistica-interna/grtload';
 import { GRAIN, WATER_DENSITY } from '@ballistica-interna/solver';
 import type { ComponentKind, DbRecord } from '../../../shared/api';
 import { capacitySource } from './capacity';
@@ -13,6 +13,23 @@ const text = (v: number) => String(Number(v.toPrecision(12)));
 function set(section: GrtSection, name: string, value: string) {
   const f = section[name];
   if (f) f.value = value;
+}
+
+/**
+ * Stores a number given in `unit` (the unit of the component records: mm, g, bar, …) in the unit the load file uses
+ * for that field, so that a file written with other units gets the same quantity.
+ */
+function setNum(section: GrtSection, name: string, value: number, unit: string) {
+  const f = section[name];
+  if (f) f.value = text(fromSI(toSI(value, unit), f.unit));
+}
+
+/** SI value of a stored field, NaN when empty or not a number. */
+function si(section: GrtSection, name: string): number {
+  const f = section[name];
+  if (!f || f.value.trim() === '') return NaN;
+  const v = Number(f.value);
+  return Number.isFinite(v) ? toSI(v, f.unit) : NaN;
 }
 
 /**
@@ -70,16 +87,16 @@ export function applyCaliber(file: GrtLoadFile, r: DbRecord): void {
   }
   const c = file.caliber;
   set(c, 'CaliberName', caliberLabel(r));
-  set(c, 'caselen', text(num(r.L3)));
-  set(c, 'oal', text(num(r.L6)));
+  setNum(c, 'caselen', num(r.L3), 'mm');
+  setNum(c, 'oal', num(r.L6), 'mm');
   // capacity V is given in grains of water
-  set(c, 'casevol', text((num(r.V) * GRAIN * 1e6) / WATER_DENSITY));
-  set(c, 'Dz', text(num(r.c_Z) || num(r.G1)));
-  set(c, 'Aeff', text(num(r.c_Q)));
-  set(c, 'pMaxZul', text(num(r.Pmax)));
-  if (num(r.sebert) > 0) set(c, 'sebert', text(num(r.sebert)));
+  setNum(c, 'casevol', (num(r.V) * GRAIN) / WATER_DENSITY, 'm3');
+  setNum(c, 'Dz', num(r.c_Z) || num(r.G1), 'mm');
+  setNum(c, 'Aeff', num(r.c_Q), 'mm2');
+  setNum(c, 'pMaxZul', num(r.Pmax), 'bar');
+  if (num(r.sebert) > 0) setNum(c, 'sebert', num(r.sebert), '');
   // start pressure by gun (rifle, auto pistol, revolver), see lib/startPressure.ts
-  set(file.projectile, 'gpressure', text(defaultStartPressure(file)));
+  setNum(file.projectile, 'gpressure', defaultStartPressure(file), 'bar');
   syncSeatingDepth(file, 'oal');
   file.title = loadTitle(file);
 }
@@ -90,19 +107,21 @@ export function applyProjectile(file: GrtLoadFile, r: DbRecord): void {
   set(p, 'mname', str(r.mname));
   set(p, 'pname', str(r.pname));
   set(p, 'lotid', str(r.lotid));
-  set(p, 'Dbul', text(num(r.gdia)));
-  set(p, 'mp', text(num(r.gmass) * GRAIN * 1e3));
+  setNum(p, 'Dbul', num(r.gdia), 'mm');
+  setNum(p, 'mp', num(r.gmass), 'gr');
   // a bullet without a published length keeps the field empty (the load check asks for it), not 0
-  set(p, 'glen', num(r.glen) > 0 ? text(num(r.glen)) : '');
-  set(p, 'gtip', num(r.gtip) > 0 ? text(num(r.gtip)) : '');
-  set(p, 'gpressure', text(num(r.gpressure) > 0 ? num(r.gpressure) : defaultStartPressure(file)));
-  set(p, 'gfriction', text(num(r.gfriction)));
+  if (num(r.glen) > 0) setNum(p, 'glen', num(r.glen), 'mm');
+  else set(p, 'glen', '');
+  if (num(r.gtip) > 0) setNum(p, 'gtip', num(r.gtip), 'mm');
+  else set(p, 'gtip', '');
+  setNum(p, 'gpressure', num(r.gpressure) > 0 ? num(r.gpressure) : defaultStartPressure(file), 'bar');
+  setNum(p, 'gfriction', num(r.gfriction), 'bar');
   // a record with a boat tail length but no base type (Berger) is a boat tail
   const tailType = r.gtailtype === null || r.gtailtype === undefined || r.gtailtype === '' ? (num(r.gtailh) > 0 ? 2 : 0) : num(r.gtailtype);
   set(p, 'gTailType', text(tailType));
-  set(p, 'gtailh', text(num(r.gtailh)));
-  set(p, 'gTailDiaA', text(num(r.gtaildiaA)));
-  set(p, 'gTailDiaB', text(num(r.gtaildiaB)));
+  setNum(p, 'gtailh', num(r.gtailh), 'mm');
+  setNum(p, 'gTailDiaA', num(r.gtaildiaA), 'mm');
+  setNum(p, 'gTailDiaB', num(r.gtaildiaB), 'mm');
   set(p, 'g1bc', text(num(r.g1bc)));
   set(p, 'g7bc', text(num(r.g7bc)));
   set(p, 'gUBCS', str(r.gUBCS));
@@ -113,21 +132,23 @@ export function applyProjectile(file: GrtLoadFile, r: DbRecord): void {
 export function applyPropellant(file: GrtLoadFile, r: DbRecord): void {
   const w = file.propellant;
   for (const name of ['mname', 'pname', 'lotid', 'imageUuid', 'imageDetailUuid']) set(w, name, str(r[name]));
-  for (const name of ['Ba', 'Qex', 'k', 'a0', 'a1', 'z1', 'z2', 'eta', 'pc', 'pcd', 'pt', 'tcc', 'tch']) set(w, name, text(num(r[name])));
+  // units of the component records
+  const units: Record<string, string> = { Qex: 'kJ/kg', eta: 'cm3/g', pc: 'kg/m3', pcd: 'kg/m3', pt: 'Cel' };
+  for (const name of ['Ba', 'Qex', 'k', 'a0', 'a1', 'z1', 'z2', 'eta', 'pc', 'pcd', 'pt', 'tcc', 'tch']) setNum(w, name, num(r[name]), units[name] ?? '');
   file.title = loadTitle(file);
 }
 
 /** Keeps OAL = case length + bullet length − seating depth after one of them changed. */
 export function syncSeatingDepth(file: GrtLoadFile, changed: 'oal' | 'gdepth'): void {
-  const caselen = Number(file.caliber.caselen?.value);
-  const glen = Number(file.projectile.glen?.value);
+  const caselen = si(file.caliber, 'caselen');
+  const glen = si(file.projectile, 'glen');
   if (!(caselen > 0 && glen > 0)) return;
   if (changed === 'oal') {
-    const oal = Number(file.caliber.oal?.value);
-    if (oal > 0) set(file.projectile, 'gdepth', text(Math.max(caselen + glen - oal, 0)));
+    const oal = si(file.caliber, 'oal');
+    if (oal > 0) setNum(file.projectile, 'gdepth', Math.max(caselen + glen - oal, 0), 'm');
   } else {
-    const depth = Number(file.projectile.gdepth?.value);
-    set(file.caliber, 'oal', text(caselen + glen - depth));
+    const depth = si(file.projectile, 'gdepth');
+    if (Number.isFinite(depth)) setNum(file.caliber, 'oal', caselen + glen - depth, 'm');
   }
 }
 
@@ -206,6 +227,12 @@ export function recordFromLoad(kind: ComponentKind, file: GrtLoadFile, label: st
     imageUuid: w.imageUuid?.value ?? '',
     imageDetailUuid: w.imageDetailUuid?.value ?? '',
   };
+}
+
+/** The load's powder as shown: maker, name and, if given, the lot in parentheses. */
+export function powderLabel(file: GrtLoadFile): string {
+  const w = file.propellant;
+  return [w.mname?.value, w.pname?.value].filter(Boolean).join(' ') + (w.lotid?.value ? ` (${w.lotid.value})` : '');
 }
 
 export function loadTitle(file: GrtLoadFile): string {

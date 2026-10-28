@@ -13,11 +13,9 @@ const loads = useLoads();
 const main = computed(() => props.rows.filter((r) => !r.optional));
 const optional = computed(() => props.rows.filter((r) => r.optional));
 
-/** The problem of a row's field, if the load check found one (see lib/loadCheck.ts). */
-function issueOf(row: FieldRow): string {
-  const i = props.doc.result.issues.find((x) => x.section === row.section && x.name === row.name);
-  return i ? t(i.problem) : '';
-}
+/** The problem of each field the load check found (see lib/loadCheck.ts), by `section.name`. */
+const issues = computed(() => new Map(props.doc.result.issues.map((i) => [`${i.section}.${i.name}`, t(i.problem)])));
+const issueOf = (row: FieldRow): string => issues.value.get(`${row.section}.${row.name}`) ?? '';
 
 const unitKey = (row: FieldRow) => (row.section ? `${row.section}.${row.name}` : row.key);
 const unit = (row: FieldRow) => unitOf(row.quantity, loads.units[unitKey(row)]);

@@ -1,5 +1,6 @@
 // Cartridge and chamber drawings from the C.I.P. dimensions of the caliber record, as SVG strings
 // (shared by the window and the report). Upright like a technical drawing: case head at the bottom.
+import { fmt } from './units';
 import type { GrtSection } from '@ballistica-interna/grtload';
 
 const n = (s: GrtSection, k: string) => Number(s[k]?.value ?? 0) || 0;
@@ -15,13 +16,13 @@ export function cipTable(cf: GrtSection, capacityGrains: string): CipRow[] {
   const rows: CipRow[] = [];
   const add = (key: string, unit: string, decimals = 2, label = key) => {
     const v = n(cf, key);
-    if (v) rows.push({ key: label, value: v.toFixed(decimals), unit });
+    if (v) rows.push({ key: label, value: fmt(v, decimals), unit });
   };
   add('Pmax', 'bar', 0);
   add('PK', 'bar', 0);
   add('PE', 'bar', 0);
   add('EE', 'J', 0);
-  if (n(cf, 'c_Q')) rows.push({ key: 'Q', value: n(cf, 'c_Q').toFixed(3), unit: 'mm²' });
+  if (n(cf, 'c_Q')) rows.push({ key: 'Q', value: fmt(n(cf, 'c_Q'), 3), unit: 'mm²' });
   if (capacityGrains) rows.push({ key: 'V', value: capacityGrains, unit: 'gr H2O' });
   for (const k of ['E', 'E1', 'Emin', 'f', 'G1', 'H1', 'H2', 'L1', 'L2', 'L3', 'L6', 'M', 'P1', 'P2', 'R', 'R1', 'r1min', 'r2', 'S']) add(k, 'mm');
   add('alpha', '°', 1);
@@ -33,7 +34,7 @@ export function chamberTable(cf: GrtSection): CipRow[] {
   const rows: CipRow[] = [];
   const add = (key: string, unit: string, decimals = 2) => {
     const v = n(cf, `c_${key}`);
-    if (v) rows.push({ key: key.replace(/_$/, ''), value: v.toFixed(decimals), unit });
+    if (v) rows.push({ key: key.replace(/_$/, ''), value: fmt(v, decimals), unit });
   };
   for (const k of ['L1', 'L2', 'L3', 'P1', 'P2', 'H1', 'H2', 'R1', 'E', 'G1', 'G', 'i_', 'F', 'Z', 'N', 'u_', 'S']) add(k, k === 'N' ? '' : 'mm', k === 'N' ? 0 : 2);
   add('alpha', '°', 1);
@@ -172,17 +173,17 @@ export function cartridgeSvg(cf: GrtSection, bulletLength: number, seatingDepth:
     tip,
     Math.max(R1, P1),
     [
-      { label: `L1 ${shoulder.toFixed(2)}`, x: shoulder },
-      { label: `L2 ${neck.toFixed(2)}`, x: neck },
-      { label: `L3 ${L3.toFixed(2)}`, x: L3 },
-      { label: `L6 ${tip.toFixed(2)}`, x: tip },
+      { label: `L1 ${fmt(shoulder, 2)}`, x: shoulder },
+      { label: `L2 ${fmt(neck, 2)}`, x: neck },
+      { label: `L3 ${fmt(L3, 2)}`, x: L3 },
+      { label: `L6 ${fmt(tip, 2)}`, x: tip },
     ],
     [
-      { label: `ØR1 ${R1.toFixed(2)}`, x: rim / 2, d: R1 },
-      { label: `ØP1 ${P1.toFixed(2)}`, x: E + 1, d: P1 },
-      { label: `ØP2 ${P2.toFixed(2)}`, x: shoulder, d: P2 },
-      { label: `ØH ${H1.toFixed(2)}`, x: (neck + L3) / 2, d: H1 },
-      { label: `ØG1 ${G1.toFixed(2)}`, x: L3 + 2, d: G1 },
+      { label: `ØR1 ${fmt(R1, 2)}`, x: rim / 2, d: R1 },
+      { label: `ØP1 ${fmt(P1, 2)}`, x: E + 1, d: P1 },
+      { label: `ØP2 ${fmt(P2, 2)}`, x: shoulder, d: P2 },
+      { label: `ØH ${fmt(H1, 2)}`, x: (neck + L3) / 2, d: H1 },
+      { label: `ØG1 ${fmt(G1, 2)}`, x: L3 + 2, d: G1 },
     ],
   );
 }
@@ -222,16 +223,16 @@ export function chamberSvg(cf: GrtSection): string | null {
     end,
     R1 + 4,
     [
-      { label: `L1 ${(L1 || 0).toFixed(2)}`, x: L1 || L3 * 0.75 },
-      { label: `L2 ${(L2 || 0).toFixed(2)}`, x: L2 || L3 * 0.85 },
-      { label: `L3 ${L3.toFixed(2)}`, x: L3 },
+      { label: `L1 ${fmt(L1 || 0, 2)}`, x: L1 || L3 * 0.75 },
+      { label: `L2 ${fmt(L2 || 0, 2)}`, x: L2 || L3 * 0.85 },
+      { label: `L3 ${fmt(L3, 2)}`, x: L3 },
     ],
     [
-      { label: `ØP1 ${P1.toFixed(2)}`, x: 6, d: P1 },
-      { label: `ØP2 ${P2.toFixed(2)}`, x: L1 || L3 * 0.75, d: P2 },
-      { label: `ØH ${H1.toFixed(2)}`, x: ((L2 || L3 * 0.85) + L3) / 2, d: H1 },
-      { label: `ØG ${G1.toFixed(2)}`, x: L3 + freebore / 2, d: G1 },
-      { label: `ØF/Z ${F.toFixed(2)}/${Z.toFixed(2)}`, x: end - 3, d: F },
+      { label: `ØP1 ${fmt(P1, 2)}`, x: 6, d: P1 },
+      { label: `ØP2 ${fmt(P2, 2)}`, x: L1 || L3 * 0.75, d: P2 },
+      { label: `ØH ${fmt(H1, 2)}`, x: ((L2 || L3 * 0.85) + L3) / 2, d: H1 },
+      { label: `ØG ${fmt(G1, 2)}`, x: L3 + freebore / 2, d: G1 },
+      { label: `ØF/Z ${fmt(F, 2)}/${fmt(Z, 2)}`, x: end - 3, d: F },
     ],
   );
 }

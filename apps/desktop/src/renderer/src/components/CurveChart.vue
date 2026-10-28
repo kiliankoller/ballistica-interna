@@ -6,6 +6,7 @@ import { useI18n } from 'vue-i18n';
 import uPlot from 'uplot';
 import 'uplot/dist/uPlot.min.css';
 import type { SimResult } from '@ballistica-interna/solver';
+import { fmt } from '../lib/units';
 
 export interface ChartCurve {
   result: SimResult;
@@ -37,14 +38,14 @@ function data(curves: SimResult[], energyOf: SimResult | undefined, mass: number
   const tMax = Math.max(...curves.map((c) => c.barrelTime));
   const n = 400;
   const xs = Array.from({ length: n + 1 }, (_, i) => (i / n) * tMax);
-  const at = (c: SimResult, key: 'p' | 'v', t: number) => {
+  const at = (c: SimResult, key: 'p' | 'v', time: number) => {
     const pts = c.curve;
-    if (t > c.barrelTime) return null;
+    if (time > c.barrelTime) return null;
     let j = 1;
-    while (j < pts.length - 1 && pts[j]!.t < t) j++;
+    while (j < pts.length - 1 && pts[j]!.t < time) j++;
     const a = pts[j - 1]!;
     const b = pts[j]!;
-    const w = b.t > a.t ? (t - a.t) / (b.t - a.t) : 0;
+    const w = b.t > a.t ? (time - a.t) / (b.t - a.t) : 0;
     const v = a[key] + w * (b[key] - a[key]);
     return key === 'p' ? v / 1e5 : v;
   };
@@ -83,9 +84,9 @@ function marksPlugin(focus: SimResult | undefined): uPlot.Plugin {
         ctx.save();
         ctx.font = `${10 * dpr}px system-ui`;
         ctx.textAlign = 'center';
-        for (const [t, label, color, row] of list) {
-          if (t === undefined || !(t > 0) || t > focus.barrelTime) continue;
-          const x = u.valToPos(t * 1e3, 'x', true);
+        for (const [time, label, color, row] of list) {
+          if (time === undefined || !(time > 0) || time > focus.barrelTime) continue;
+          const x = u.valToPos(time * 1e3, 'x', true);
           ctx.strokeStyle = color;
           ctx.setLineDash([5 * dpr, 4 * dpr]);
           ctx.lineWidth = dpr;
@@ -157,6 +158,8 @@ function build() {
       dash: [2, 4],
       value: (_u, x) => (x == null ? '—' : `${x.toFixed(0)} J`),
     });
+  // whole numbers without the thousands separator of the system locale (uPlot's default)
+  const whole = (_u: uPlot, splits: number[]) => splits.map((v) => fmt(v, 0));
   const pTop = Math.max(props.maxAllowed / 1e5, ...curves.map((c) => c.maxPressure / 1e5)) * 1.1;
   plot = new uPlot(
     {
@@ -173,10 +176,10 @@ function build() {
       },
       padding: [26, 0, 0, 0],
       axes: [
-        { stroke: axisColor, grid: { stroke: gridColor }, label: 'ms', size: 40 },
-        { scale: 'p', stroke: 'rgb(220,80,80)', grid: { stroke: gridColor }, label: 'bar', size: 56 },
-        { scale: 'v', side: 1, stroke: 'rgb(80,120,230)', grid: { show: false }, label: 'm/s', size: 56 },
-        ...(energyOf ? [{ scale: 'e', side: 1, stroke: 'rgb(19,138,138)', grid: { show: false }, label: 'J', size: 56 }] : []),
+        { stroke: axisColor, grid: { stroke: gridColor }, label: 'ms', size: 40, values: (_u, splits) => splits.map((v) => fmt(v, 2)) },
+        { scale: 'p', stroke: 'rgb(220,80,80)', grid: { stroke: gridColor }, label: 'bar', size: 56, values: whole },
+        { scale: 'v', side: 1, stroke: 'rgb(80,120,230)', grid: { show: false }, label: 'm/s', size: 56, values: whole },
+        ...(energyOf ? [{ scale: 'e', side: 1, stroke: 'rgb(19,138,138)', grid: { show: false }, label: 'J', size: 56, values: whole }] : []),
       ],
       plugins: [bandsPlugin(), marksPlugin(focus)],
     },
@@ -185,14 +188,20 @@ function build() {
   );
 }
 
+// the axis and grid colours come from the theme: rebuild after main.ts has switched it
+const scheme = window.matchMedia('(prefers-color-scheme: dark)');
+const rebuildForTheme = () => requestAnimationFrame(build);
+
 onMounted(() => {
   build();
   observer = new ResizeObserver(() => {
     if (plot && host.value) plot.setSize({ width: host.value.clientWidth, height: host.value.clientHeight });
   });
   if (host.value) observer.observe(host.value);
+  scheme.addEventListener('change', rebuildForTheme);
 });
 onBeforeUnmount(() => {
+  scheme.removeEventListener('change', rebuildForTheme);
   observer?.disconnect();
   plot?.destroy();
 });

@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { computed, ref, shallowRef } from 'vue';
 import { completeFields, fromSI, newGrtLoad, parseGrtLoad, serializeGrtLoad, toSI, type GrtLoadFile } from '@ballistica-interna/grtload';
-import type { ComponentKind, DbRecord, OpenedFile } from '../../../shared/api';
+import type { ComponentKind, DbRecord, LibraryEntry, ListItem, OpenedFile } from '../../../shared/api';
 import { applyCaliber, applyProjectile, applyPropellant, minTwistOf, recordNotes, syncSeatingDepth } from '../lib/components';
 import { compute, type Computation, type Step } from '../lib/compute';
 import type { Section } from '../lib/fields';
@@ -52,6 +52,23 @@ export const useLoads = defineStore('loads', () => {
   const dbVersion = shallowRef(0);
   /** Display unit chosen per field, kept in the settings for every load. */
   const units = ref<Record<string, string>>({});
+
+  /**
+   * Own and master components of a kind for the choice lists, loaded once per change of the library (dbVersion):
+   * every tab switch mounts the panels again.
+   */
+  const lists = new Map<string, Promise<[LibraryEntry[], ListItem[]]>>();
+  function componentLists(kind: ComponentKind): Promise<[LibraryEntry[], ListItem[]]> {
+    const key = `${dbVersion.value}:${kind}`;
+    let entry = lists.get(key);
+    if (!entry) {
+      for (const k of lists.keys()) if (!k.startsWith(`${dbVersion.value}:`)) lists.delete(k);
+      entry = Promise.all([window.api.libraryList(kind), window.api.masterList(kind)]);
+      entry.catch(() => lists.delete(key));
+      lists.set(key, entry);
+    }
+    return entry;
+  }
 
   function setUnit(key: string, unit: string) {
     units.value = { ...units.value, [key]: unit };
@@ -167,5 +184,5 @@ export const useLoads = defineStore('loads', () => {
     return true;
   }
 
-  return { docs, activeId, active, dbVersion, units, setUnit, openFile, newLoad, close, raw, valueSI, setRaw, setSI, applyComponent, save };
+  return { docs, activeId, active, dbVersion, units, componentLists, setUnit, openFile, newLoad, close, raw, valueSI, setRaw, setSI, applyComponent, save };
 });

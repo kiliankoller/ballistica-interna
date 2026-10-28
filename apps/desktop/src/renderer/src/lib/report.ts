@@ -1,4 +1,5 @@
 // The printable report of a load (A4 portrait), as a self-contained HTML string.
+import { toSI } from '@ballistica-interna/grtload';
 import { GRAIN, caseCapacityGrainsH2O } from '@ballistica-interna/solver';
 import { APP_NAME } from '../../../shared/api';
 import logo from '../assets/logo.svg?raw';
@@ -6,11 +7,13 @@ import { selectedStep, type LoadDoc } from '../stores/loads';
 import { cartridgeSvg, cipTable } from './drawing';
 import { chartSvg, type ChartLabels } from './svgChart';
 import { fmt } from './units';
+import { powderLabel } from './components';
 import { capacitySource } from './capacity';
 import { noticeGroups, noticesOf } from './notices';
 
 type T = (key: string, args?: Record<string, unknown>) => string;
 
+/** HTML text content (element bodies only; attribute values are not built from user text here). */
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 export function reportHtml(doc: LoadDoc, t: T, locale: string): string {
@@ -24,18 +27,17 @@ export function reportHtml(doc: LoadDoc, t: T, locale: string): string {
   const notices = noticeGroups(noticesOf(doc).map((n) => (n.key === 'result.uncalibrated' ? { ...n, key: 'report.warning' } : n)));
   const date = new Date().toLocaleDateString(locale, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
   const charge = step ? step.charge / GRAIN : NaN;
-  const powder = [file.propellant.mname?.value, file.propellant.pname?.value].filter(Boolean).join(' ');
-  const lot = file.propellant.lotid?.value ? ` (${file.propellant.lotid.value})` : '';
   const capacity = load ? caseCapacityGrainsH2O(load.cartridge.caseVolume) : NaN;
   const mm = (v: number | undefined) => `${fmt(v === undefined ? undefined : v * 1e3, 2)} mm`;
   const ladderSteps = Number(file.propellant.laddercnt?.value) || 1;
-  const ladderStep = ladderSteps > 1 ? (Number(file.propellant.laddermc?.value) || 0) * 1e-3 / GRAIN : 0;
+  const stepField = file.propellant.laddermc;
+  const ladderStep = ladderSteps > 1 && stepField ? (toSI(Number(stepField.value) || 0, stepField.unit) / GRAIN) : 0;
   const fileName = doc.path ? doc.path.split(/[\\/]/).pop()! : doc.name;
 
   const loadRows: [string, string][] = [
     [t('report.caliber'), file.caliber.CaliberName?.value ?? ''],
     [t('report.projectile'), file.projectile.ProjectileName?.value ?? ''],
-    [t('report.charge'), `${fmt(charge, 2)} grain, ${powder}${lot}`],
+    [t('report.charge'), `${fmt(charge, 2)} grain, ${powderLabel(file)}`],
     [t('report.ladderStep'), ladderSteps > 1 ? `${fmt(ladderStep, 2)} grain × ${ladderSteps}` : fmt(0, 2)],
     [t('report.seatingDepth'), mm(load?.projectile.seatingDepth)],
     [t('report.bulletLength'), mm(load?.projectile.length)],
@@ -70,7 +72,7 @@ export function reportHtml(doc: LoadDoc, t: T, locale: string): string {
   const drawing = cartridgeSvg(file.caliberfile, load?.projectile.length ? load.projectile.length * 1e3 : 0, load ? load.projectile.seatingDepth * 1e3 : 0, load ? load.cartridge.caseLength * 1e3 : 0) ?? '';
   const cf = file.caliberfile;
   const title = [cf.cipname?.value, cf.altname?.value ? `(${cf.altname.value})` : '', cf.standard?.value ? `– ${cf.standard.value}` : ''].filter(Boolean).join(' ');
-  const cip = cipTable(file.caliberfile, Number(file.caliberfile.V?.value) ? Number(file.caliberfile.V!.value).toFixed(2) : '');
+  const cip = cipTable(file.caliberfile, Number(file.caliberfile.V?.value) ? fmt(Number(file.caliberfile.V!.value), 2) : '');
   const chartLabels: ChartLabels = {
     pressure: t('chart.pressure'),
     velocity: t('chart.velocity'),

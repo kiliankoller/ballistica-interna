@@ -10,6 +10,7 @@ import { useLoads, type LoadDoc } from '../stores/loads';
 import ComponentEditor from './ComponentEditor.vue';
 import ComponentSelect from './ComponentSelect.vue';
 import PropertyGrid from './PropertyGrid.vue';
+import { fmt } from '../lib/units';
 
 const props = defineProps<{ doc: LoadDoc; kind: ComponentKind; title: string; current: string; rows: FieldRow[] }>();
 const emit = defineEmits<{ settings: [] }>();
@@ -81,7 +82,7 @@ async function saveOwn() {
       <ComponentSelect :doc="doc" :kind="kind" :current="current" @settings="emit('settings')" />
       <div class="source">{{ sourceText }}</div>
       <div v-for="note in doc.sources[kind]?.notes ?? doc.notes[kind] ?? []" :key="note" class="warn">{{ t(note) }}</div>
-      <div v-if="kind === 'projectile' && doc.minTwist" class="source">{{ t('source.minTwist', { twist: (doc.minTwist / 25.4).toFixed(1).replace(/\.0$/, '') }) }}</div>
+      <div v-if="kind === 'projectile' && doc.minTwist" class="source">{{ t('source.minTwist', { twist: fmt(doc.minTwist / 25.4, 1).replace(/[.,]0$/, '') }) }}</div>
     </div>
     <PropertyGrid :doc="doc" :rows="rows" />
     <ComponentEditor v-model="editorOpen" :kind="kind" :record="editorRecord" :origin="editorOrigin" />
@@ -90,9 +91,6 @@ async function saveOwn() {
 
 <style scoped>
 .panel {
-  border: 1px solid var(--el-border-color);
-  background: var(--el-bg-color);
-  border-radius: 3px;
   overflow: hidden;
 }
 header {

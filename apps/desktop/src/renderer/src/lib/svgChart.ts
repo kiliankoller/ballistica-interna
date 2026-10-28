@@ -1,5 +1,6 @@
 // Pressure, velocity and bullet energy over time as an SVG string (for the report: sharp in PDF).
 import type { SimResult } from '@ballistica-interna/solver';
+import { fmt } from './units';
 
 export interface ChartLabels {
   pressure: string;
@@ -78,7 +79,7 @@ export function chartSvg(curves: SimResult[], maxAllowed: number, labels: ChartL
   }
   for (let t = 0; t <= tMax + 1e-9; t += tStep) {
     parts.push(`<line y1="${m.t}" y2="${m.t + h}" x1="${X(t)}" x2="${X(t)}" class="grid"/>`);
-    parts.push(`<text x="${X(t)}" y="${m.t + h + 18}" text-anchor="middle" class="tick">${t.toFixed(2)}</text>`);
+    parts.push(`<text x="${X(t)}" y="${m.t + h + 18}" text-anchor="middle" class="tick">${fmt(t, 2)}</text>`);
   }
   ok.forEach((c, i) => {
     const pts = (f: (q: SimResult['curve'][number]) => number) =>

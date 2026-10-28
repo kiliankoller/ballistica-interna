@@ -42,10 +42,7 @@ const placeholder = computed(() => {
 });
 
 async function refresh() {
-  [own.value, master.value] = await Promise.all([
-    window.api.libraryList(props.kind),
-    window.api.masterList(props.kind),
-  ]);
+  [own.value, master.value] = await loads.componentLists(props.kind);
 }
 
 async function choose(value: string) {

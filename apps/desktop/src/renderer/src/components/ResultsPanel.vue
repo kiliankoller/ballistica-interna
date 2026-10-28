@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { GRAIN, caseCapacityGrainsH2O, obtNodeLabel } from '@ballistica-interna/solver';
 import { fmt } from '../lib/units';
+import { powderLabel } from '../lib/components';
 import { SHORT_JUMP_START_PRESSURE } from '../lib/jump';
 import { noticeGroups, noticesOf } from '../lib/notices';
 import { selectedStep, useLoads, type LoadDoc } from '../stores/loads';
@@ -20,8 +21,7 @@ const f = computed(() => props.doc.file);
 const summary = computed(() => {
   const l = load.value;
   if (!l) return '';
-  const w = f.value.propellant;
-  const powder = [w.mname?.value, w.pname?.value].filter(Boolean).join(' ') + (w.lotid?.value ? ` (${w.lotid.value})` : '');
+  const powder = powderLabel(f.value);
   return [
     `${t('result.projectile')}: ${f.value.projectile.ProjectileName?.value ?? ''}`,
     `${t('result.charge')}: ${powder}, ${fmt((step.value?.charge ?? l.propellant.charge) / GRAIN, 2)} grain`,
