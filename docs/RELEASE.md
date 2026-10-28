@@ -140,7 +140,7 @@ GPL-3.0-or-later, data (`data/*.csv`) ODbL 1.0 with attribution (NOTICE). Not af
 sponsored by any maker, the C.I.P. or GRT. No outside contributions, no donations (see CONTRIBUTING.md). Security
 reports: GitHub private vulnerability reporting (SECURITY.md).
 
-## Text of the release v0.4.0
+## Text of the release v0.4.0 (published 2026-10-28)
 
 **BallisticaInterna 0.4.0: interior ballistics for rifle handloads**
 
