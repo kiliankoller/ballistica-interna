@@ -3,7 +3,7 @@
 Checklist for the maintainer, and the texts of the releases. Nothing here is done automatically: the tag and the
 release text are the maintainer's decision.
 
-Published: the repository is public; v0.2.0 (2026-10-23) was the first release, v0.3.0 (2026-10-26) the current one. Their texts are at the end of this file.
+Published: the repository is public; v0.2.0 (2026-10-23) was the first release, then v0.3.0 (2026-10-26), v0.4.0 and v0.4.1 (2026-10-28). Their texts are at the end of this file.
 
 ## Before every tag
 
@@ -79,7 +79,68 @@ five of the review are in `local/legal-review-2026-10-21.md`. Among them:
 
 Reply template if a maker complains: [CEASE-AND-DESIST-RESPONSE.md](CEASE-AND-DESIST-RESPONSE.md).
 
-## Text of the release v0.4.0 (draft)
+## Text of the release v0.4.1
+
+**BallisticaInterna 0.4.1: interior ballistics for rifle handloads**
+
+A maintenance release after a code review: fixes, a safer app process and a decimal comma in the German interface.
+The calculation and the master data are unchanged: every result is the same as in 0.4.0.
+
+**Warning: this is a simulation, not load data.** The calculated pressure can be too low at any fill ratio, most
+at low fill. The real pressure can be higher than shown. Never load on the basis of this app alone; use only the
+makers' published load data, start with the starting load and never exceed the maximum load. Reloading is
+dangerous and can cause serious injury or death.
+
+Fixed since 0.4.0
+- Windows: the master data showed letters outside ASCII garbled ("500 SchÃ¼ler" instead of "500 Schüler", also
+  "Ø", "×", "³" in names and notes); the Windows build read the data files in the wrong encoding. All releases up to
+  0.4.0 on Windows are affected; macOS and Linux are not.
+- One unreadable load file of the last session kept every other file closed and switched off the keyboard
+  shortcuts at every start; it is now reported and dropped from the list. A "%" in a value (e.g. the title) no
+  longer makes a file unreadable, and a title such as "007" keeps its leading zeros.
+- The component editor turned the first comma of a name into a point ("6,5 x 57" became "6.5 x 57").
+- Editing an own component from the settings showed an empty form the first time.
+- A cleared input field was stored as 0; it is now empty and reported as missing. Text that is no number is no
+  longer shown as if it had been taken.
+- A ladder count that is no number left the load without a result and without a reason; it is now reported.
+- Deleting an own component asks first; failed actions (saving, library, report) show their error.
+- Taking a component over into a load file written with other units (inch, grain) stores the values in those units.
+- A chamber whose free volume the gas of the burning charge fills up is reported instead of showing a pressure of 0
+  (no published load reaches it).
+
+Also new
+- German interface: numbers with a decimal comma (input with comma or point); load files keep the point. The chart
+  axes no longer use the system's thousands separator.
+- The app windows run sandboxed; the window can read and overwrite only files chosen in a dialog or open in the last
+  session, and cannot navigate to other pages.
+- The chart follows a change between light and dark.
+
+How accurate it is (unchanged since 0.4.0)
+- Velocity: about 3.4 % rms against the makers' measured loads. Pressure: about 13 % rms, 12.8 % on loads held out
+  of the fit. By powder maker the typical range is ±2 to ±5 % in velocity and ±8 to ±15 % in pressure. It is no
+  safety margin.
+
+Known limitations
+- [#12](https://github.com/kiliankoller/ballistica-interna/issues/12) The installers are not signed. macOS: open the
+  app once via System Settings → Privacy & Security → Open Anyway. Windows: SmartScreen: More info → Run anyway.
+- [#13](https://github.com/kiliankoller/ballistica-interna/issues/13) Pressure deviates about 13 % rms from
+  measured loads and can be too low at any fill ratio, most below 90 %. It is no safety margin.
+- [#5](https://github.com/kiliankoller/ballistica-interna/issues/5) Handguns are not supported.
+- The derived case capacities are not yet compared with measured water capacities
+  ([docs/MODEL.md](https://github.com/kiliankoller/ballistica-interna/blob/main/docs/MODEL.md#case-capacity)).
+- No powders of Hodgdon, Ramshot, IMR, Winchester and Alliant (their terms forbid using the load data).
+
+Compare the SHA-256 checksum (`SHA256SUMS-*.txt`, attached to this release) with your download before you start
+an installer: `shasum -a 256 <file>` on macOS, `sha256sum <file>` on Linux, `certutil -hashfile <file> SHA256`
+on Windows.
+
+Provided free of charge and without warranty; liability is excluded to the extent permitted by law
+([DISCLAIMER.md](https://github.com/kiliankoller/ballistica-interna/blob/main/DISCLAIMER.md)). Licences: code
+GPL-3.0-or-later, data (`data/*.csv`) ODbL 1.0 with attribution (NOTICE). Not affiliated with, endorsed by or
+sponsored by any maker, the C.I.P. or GRT. No outside contributions, no donations (see CONTRIBUTING.md). Security
+reports: GitHub private vulnerability reporting (SECURITY.md).
+
+## Text of the release v0.4.0
 
 **BallisticaInterna 0.4.0: interior ballistics for rifle handloads**
 
