@@ -10,9 +10,11 @@ const BAR = 1e5;
  * Lumped-parameter interior ballistics:
  *   burn law        dz/dt = Ba(T)·φ(z)·p[bar]
  *   energy (Résal)  p·Vfree = f·mc·z − (κ−1)·(½·m·v² + W)      f = (κ−1)·Qex·(1 − heatLoss)
- *                   W = (pr·A + Ff)·x,  Ff = bulletFriction·length·diameter (work against friction)
+ *                   W = (pr·A + (1 − h)·Ff)·x + We,  Ff = bulletFriction·length·diameter (work against friction,
+ *                   the share h of its heat returned to the gas, default 0), We = A·∫pe·(1 − x/le)dx over the first
+ *                   le of travel (engraving, default off)
  *   free volume     Vfree = V0 + A·x − mc·(1−z)/ρc − b·mc·z     (Noble–Abel covolume b)
- *   momentum        m·dv/dt = A·(p − pr),  m = mp + sebert·mc
+ *   momentum        m·dv/dt = A·(p − pr − pe·(1 − x/le)) − k·Ff,  m = mp + sebert·mc  (k = frictionInMomentum, default 1)
  * Time zero is shot start: the gas has reached the start pressure ps and the bullet begins to move.
  */
 export function simulate(load: LoadInput, params: ModelParams = defaultParams): SimResult {
@@ -54,6 +56,13 @@ export function simulate(load: LoadInput, params: ModelParams = defaultParams): 
   const m = mp + ca.sebert * mc;
   const pr0 = params.boreResistance;
   const friction = params.bulletFriction * pr.length * pr.diameter;
+  const frictionLoss = friction * (1 - params.frictionHeatReturn);
+  const frictionForce = params.frictionInMomentum * friction;
+  const pe = params.engravingResistance;
+  const le = params.engravingLength;
+  // engraving: resistance pe·(1 − x/le) over the first le of travel, and its work
+  const engraving = (x: number) => (pe > 0 && x < le ? pe * (1 - x / le) : 0);
+  const engravingWork = (x: number) => (pe > 0 ? A * pe * (x < le ? x - (x * x) / (2 * le) : le / 2) : 0);
   const Ba = vivacityAt(pw) * Math.pow(pw.Ba / params.vivacityReference, params.vivacityExponent);
   const ps = pr.startPressure;
   // burn rate pressure term [bar]: p itself for n = 1, else 1000 bar · (p / 1000 bar)ⁿ
@@ -63,7 +72,7 @@ export function simulate(load: LoadInput, params: ModelParams = defaultParams): 
   const freeVolume = (x: number, z: number) => V0 + A * x - (mc * (1 - z)) / rhoC - b * mc * z;
   const meanPressure = (y: State) => {
     const [x, v, z] = y as [number, number, number];
-    const energy = f * mc * z - theta * (0.5 * m * v * v + (pr0 * A + friction) * x);
+    const energy = f * mc * z - theta * (0.5 * m * v * v + (pr0 * A + frictionLoss) * x + engravingWork(x));
     const vol = freeVolume(x, z);
     return vol > 0 ? Math.max(energy, 0) / vol : 0;
   };
@@ -72,9 +81,9 @@ export function simulate(load: LoadInput, params: ModelParams = defaultParams): 
   const reported = (p: number) => (params.reportedPressure === 'breech' ? p * breechFactor : p);
 
   const derivative = (y: State): State => {
-    const [, v, z] = y as [number, number, number];
+    const [x, v, z] = y as [number, number, number];
     const p = meanPressure(y);
-    let a = (A * (p - pr0)) / m;
+    let a = (A * (p - pr0 - engraving(x)) - frictionForce) / m;
     if (v <= 0 && a < 0) a = 0;
     const dz = z >= 1 ? 0 : Ba * formFunction(z, pw, params) * burnPressure(p);
     return [v, a, dz];

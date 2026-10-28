@@ -15,6 +15,12 @@ export const defaultParams: ModelParams = {
   // bullet friction against the bore, as an energy loss of the gas (see ModelParams.bulletFriction)
   bulletFriction: 2.848e6,
   boreResistance: 0,
+  // friction acting on the bullet (1) or only as an energy loss of the gas (0); heat share returned to the gas
+  frictionInMomentum: 1,
+  frictionHeatReturn: 0,
+  // engraving resistance at shot start, falling to 0 over engravingLength of travel; 0 = off
+  engravingResistance: 0,
+  engravingLength: 0.005,
   reportedPressure: 'mean',
   tolerance: 1e-8,
   maxStep: 2e-6,

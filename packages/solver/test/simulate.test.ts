@@ -26,3 +26,22 @@ describe('pressure exponent of the burn rate', () => {
     expect(rise(0.85)).toBeLessThan(rise(1));
   });
 });
+
+describe('consistent friction and engraving', () => {
+  it('lets the friction act on the bullet by default, without heat return or engraving', () => {
+    const a = simulate(load(44), withParams({ frictionInMomentum: 1, frictionHeatReturn: 0, engravingResistance: 0 }));
+    const b = simulate(load(44), defaultParams);
+    expect(a.maxPressure).toBe(b.maxPressure);
+    expect(a.muzzleVelocity).toBe(b.muzzleVelocity);
+  });
+
+  it('raises the pressure with an engraving resistance, a low charge relatively more', () => {
+    const gain = (grains: number) => simulate(load(grains), withParams({ engravingResistance: 300e5, engravingLength: 0.006 })).maxPressure / simulate(load(grains), defaultParams).maxPressure;
+    expect(gain(36)).toBeGreaterThan(1);
+    expect(gain(36)).toBeGreaterThan(gain(46));
+  });
+
+  it('slows the bullet when the friction acts in its momentum', () => {
+    expect(simulate(load(44), withParams({ frictionInMomentum: 1 })).muzzleVelocity).toBeLessThan(simulate(load(44), withParams({ frictionInMomentum: 0 })).muzzleVelocity);
+  });
+});

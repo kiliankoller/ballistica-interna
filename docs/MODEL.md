@@ -14,7 +14,7 @@ State: bullet travel *x*, velocity *v*, burnt fraction of the charge *z*.
 | energy (Résal) | p · V_free = f · m_c · z − (κ − 1) · (½ · m · v² + F_f · x) |
 | force of the powder | f = (κ − 1) · Q_ex |
 | free volume (Noble–Abel) | V_free = V₀ + A · x − m_c · (1 − z) / ρ_c − b · m_c · z |
-| momentum | m · dv/dt = A · p,  m = m_p + s · m_c |
+| momentum | m · dv/dt = A · p − F_f,  m = m_p + s · m_c |
 
 *V₀* is the space behind the bullet (case capacity minus the part of the bullet inside the case), *A* the
 effective bore area (C.I.P. Q), *m_c* the charge, *m_p* the bullet mass, *s* the Sebert factor (the share of
@@ -28,9 +28,16 @@ rifles 250 bar, auto pistol cartridges 290 bar, revolver cartridges 150 bar (the
 jump), unless the bullet record gives its own value. With a jump below about 1.5 mm the app advises about
 800 bar (see *Start pressure and jump*).
 
-**Bullet friction.** A force *F_f* = 2.85 MPa · bullet length · bullet diameter does work along the travel and
-takes energy from the gas; it does not act in the bullet's momentum. The coefficient was set during development
-and is checked against the measured loads below.
+**Bullet friction.** A force *F_f* = 2.85 MPa · bullet length · bullet diameter brakes the bullet
+(m·dv/dt = A·p − F_f) and its work along the travel is taken from the gas. The coefficient was set during
+development and is checked against the measured loads below. Until 2026-10-28 the friction only took energy from
+the gas and did not act in the bullet's momentum; acting on the bullet it lifts the pressure of loosely filled
+loads more than that of full ones and so reduces the low-fill bias (held out below 80 % fill: −14.9 → −5.3 %, all
+loads −2.0 → +0.8 %, loads more than 10 % too low 26 → 18 %). The cost is an overestimate of the fast Vihtavuori
+powders (see *Cross-validation*). `frictionHeatReturn` (share of the friction work returned to the gas) and an
+engraving resistance (`engravingResistance`, `engravingLength`) exist in the solver but are off: the heat share
+made no difference, and the engraving resistance raised the start loads and the spread without helping the low
+fill as much.
 
 ## Form function
 
@@ -71,21 +78,23 @@ capacities) pull the burn law to the edge of its range (a₀ = 5 for N110, the m
 limit). The Sax-based sets (Norma, Rottweil) and Reload Swiss were refitted with all calibers.
 
 Lower exponents help at low fill but make the maximum loads too low, the dangerous side; 0.9 is the compromise.
-The error at low fill is not removed by the exponent.
+The error at low fill is not removed by the exponent. With the friction acting on the bullet (2026-10-28) the
+exponent was checked again (0.9, 0.95, 1, cross-validated): 0.9 stays best in the worst underestimates, below 90 %
+fill and in all loads; higher exponents fit the rise from start to maximum load of Reload Swiss slightly better
+(+47 % instead of +43 %, measured +45 %) but overestimate Vihtavuori more.
 
 **Shipped fits.** `data/fits-shipped.json` holds the burn values that `tools/master-data/build_csv.py` writes to
 `data/powders.csv`, per measured set and powder, with the fit file each one came from (`source`). Fits in
 `fixtures/calibration` are not read by the build, so a test run (e.g. `--powders N110`) cannot change the master
 data. To ship a new fit: run `fit-powders`, copy the fitted values of the approved fit into that file, rebuild.
 
-The shipped fits are those of 2026-10-25 (`local/scripts/refit-all.sh`, same options as before). The measured sets
-had been rebuilt from the master data that day (caliber aliases, unique bullet names, the bullets of Fox and
-Sellier & Bellot, the case capacities of 7 mm-08 Rem., 270 WSM, 300 WSM and 300 PRC), so every powder was refitted:
-a fit must follow from the data it ships with. Against the previous fits on the same loads the pressure rms went
-from 12.6 to 12.3 % and the V0 rms from 3.60 to 3.54 %, but the mean pressure moved from −1.3 to −2.0 %, towards
-the dangerous side, mostly through RS62 (maximum loads +4.0 → −4.2 %) and Vihtavuori N530 (+7.5 → −4.8 %). Both
-were poorly determined before (Ba −9.5 % and −17 % in the refit); their earlier surplus was not a safety margin.
-The warnings below use the figures of these fits.
+The shipped fits are those of 2026-10-28, a refit of all shipped powders with the friction acting on the bullet
+(`local/scripts/refit-variant.sh`, the split and options of the previous fits, the measured sets of 2026-10-25).
+Parameters at the bounds of the fit went from 8 to 1: the Lovex powders leave the lower Q_ex bound, S060, N150 and
+R907 leave theirs; RS80 now ends at a₀ = 5. The fits before were those of 2026-10-25 (`local/scripts/refit-all.sh`),
+made after the measured sets had been rebuilt from the master data (caliber aliases, unique bullet names, the
+bullets of Fox and Sellier & Bellot, the case capacities of 7 mm-08 Rem., 270 WSM, 300 WSM and 300 PRC): a fit must
+follow from the data it ships with. The warnings below use the figures of these fits.
 
 ## Powder models
 
@@ -98,8 +107,8 @@ themselves are not shipped. `fit_status` in the CSV says what each fit rests on.
 
 **Lovex** (Explosia): S060, S062, S065, S070, D073.4, D073.5 and D073.6, fitted to the Lovex reloading guide 2019,
 which gives the pressure of the maximum loads only; the bulk density is from Explosia's catalogue 2023, which gives
-no Q_ex, so Q_ex is fitted. Q_ex ends at the lower bound of the fit (3400 kJ/kg) for D073.5, S062, S065 and S070:
-the fit wants less energy than the range allows. S071 is left out (too few loads for the cross-validation). In
+no Q_ex, so Q_ex is fitted (3544 … 3930 kJ/kg; before the friction acted on the bullet it ended at the lower bound
+of 3400 kJ/kg for four of them). S071 is left out (too few loads for the cross-validation). In
 Explosia's burning-rate chart S062 equals Vihtavuori N530; in the model it is about 13 % slower (between N530 and
 N140), while it meets Lovex's own maximum loads (held out: Pmax mean −1.2 %). The app notes next to a Lovex powder
 that its pressure is checked on maximum loads only.
@@ -176,14 +185,15 @@ The shipped powder models against the makers' measured loads (`pnpm accuracy`, d
 measured, rms in %). Loads used for fitting are included, so the pressure figures of the fitting sets are
 slightly optimistic; the velocity sets of other makers are independent.
 
-Figures of 2026-10-26, with the shipped master data (n = 0.9, the powder fits of 2026-10-25, see *Shipped fits*; the
-Vihtavuori fit with defined case capacities only, see *Pressure exponent*; Lovex included):
+Figures of 2026-10-28, with the shipped master data (n = 0.9, friction acting on the bullet, the powder fits of
+2026-10-28, see *Shipped fits*; the Vihtavuori fit with defined case capacities only, see *Pressure exponent*; Lovex
+included):
 
 | class | loads | V0 mean | V0 rms | loads with pressure | Pmax mean | Pmax rms |
 |---|---|---|---|---|---|---|
-| standard rifle | 7467 | +0.3 % | 3.6 % | 1308 | −2.0 % | 12.3 % |
-| magnum rifle (case > 5 cm³) | 2123 | −0.7 % | 3.3 % | 347 | −1.0 % | 11.5 % |
-| handgun (barrel < 300 mm) | 38 | +3.0 % | 8.6 % | — | — | — |
+| standard rifle | 7467 | −0.6 % | 3.4 % | 1308 | +1.6 % | 12.9 % |
+| magnum rifle (case > 5 cm³) | 2123 | −1.3 % | 3.3 % | 347 | +2.7 % | 12.8 % |
+| handgun (barrel < 300 mm) | 38 | +2.4 % | 8.0 % | — | — | — |
 
 The measured sets (rs, rsk, sax, v-vihtavuori, v-barnes, v-sierra, lovex) were rebuilt on 2026-10-25 from the
 current master data, so the jobs carry the case capacities of `data/calibers.csv`; with the caliber aliases and
@@ -192,9 +202,11 @@ pressure, Lovex included). The handgun row is unchanged.
 
 **Handguns are not supported.** The app says so for every load with a barrel below 300 mm. The handgun row is
 the model with rifle powders in handgun cartridges, which is what the app would calculate if asked. Its V0 is
-too high on average (+3 %). This comes from the Vihtavuori fit: its maximum loads anchor the pressure through the
-C.I.P. limit, and the case capacities of most handgun calibers are estimated (see *Pressure exponent*). The rifle
-rows improved in every column against the previous fit. The 38 loads are the handgun loads of the sets with a
+too high on average (+2.4 %). This comes from the Vihtavuori fit: its maximum loads anchor the pressure through the
+C.I.P. limit, and the case capacities of most handgun calibers are estimated (see *Pressure exponent*). Against the
+fits of 2026-10-25 (friction on the gas only) the rifle V0 rms fell (standard 3.6 → 3.4 %) and the Pmax rms rose
+(standard 12.3 → 12.9 %, magnum 11.5 → 12.8 %, mostly the Vihtavuori powders, see *Cross-validation*); in exchange
+the low-fill bias, the dangerous direction, shrank (see *Bullet friction* and below). The 38 loads are the handgun loads of the sets with a
 shipped powder (54) less those whose bullet matched by weight only (16), which `pnpm accuracy` leaves out; the
 fill-ratio check of the set builder plays no part, since the handgun sources state no fill ratio. The earlier
 handgun figures (59 loads, −2.9 % / 9.4 %) came from an older run and are not reproduced.
@@ -203,7 +215,7 @@ Since 2026-10-24 the handgun row is for information only: a change of the model 
 rifle rows, and "no class gets worse" applies to them only. Handgun support would be a project of its own, with
 handgun powders, measured case capacities and its own acceptance figures.
 
-The analyses below are those of the shipped fits: the cross-validations ran together with the refit of 2026-10-25,
+The analyses below are those of the shipped fits: the cross-validations ran together with the refit of 2026-10-28,
 on the same measured sets.
 
 **Cross-validation.** `pnpm fit-powders --cv` fits every powder three times, each time without a third of the
@@ -213,39 +225,75 @@ the shipped fits, see *Pressure exponent*):
 
 | powders (sets) | held-out loads | V0 rms held out (fit) | Pmax rms held out (fit) |
 |---|---|---|---|
-| Reload Swiss (rs) | 872 | 4.5 % (4.0 %) | 15.2 % (13.2 %) |
-| Norma (sax) | 144 | 1.9 % (1.7 %) | 8.9 % (8.1 %) |
-| Rottweil (sax) | 110 | 2.0 % (1.8 %) | 8.5 % (7.7 %) |
-| Lovex (lovex, maximum loads) | 257 | 3.3 % (2.9 %) | 12.0 % (10.8 %) |
-| Vihtavuori (v-vihtavuori, pressure from sax), defined capacities | 1132 | 4.0 % (3.5 %) | 8.3 % (7.4 %) |
-| Vihtavuori 24N41 (all calibers, velocity only) | 38 | 4.0 % (3.9 %) | — |
+| Reload Swiss (rs) | 872 | 4.2 % (3.9 %) | 14.3 % (12.9 %) |
+| Norma (sax) | 144 | 1.7 % (1.5 %) | 7.8 % (7.1 %) |
+| Rottweil (sax) | 110 | 1.9 % (1.7 %) | 8.5 % (7.7 %) |
+| Lovex (lovex, maximum loads) | 257 | 3.2 % (2.9 %) | 11.3 % (10.3 %) |
+| Vihtavuori (v-vihtavuori, pressure from sax), defined capacities | 1132 | 3.9 % (3.4 %) | 11.7 % (9.9 %) |
+| Vihtavuori 24N41 (all calibers, velocity only) | 38 | 3.6 % (3.6 %) | — |
+
+The Vihtavuori powders are calculated too high held out (Pmax mean +7.5 %, before +0.5 %; mostly the fast N120,
+N130 and N133): their fit rests on Vihtavuori's velocities, and a bullet braked by the friction needs more energy
+for the same velocity. That is the safe direction.
 
 **Systematic deviation (rifles, `pnpm accuracy --by`).** The error depends on the fill ratio (calculated with the
-bullet seated): at 70 … 80 % the model is 1.5 % low in V0 and 13.2 % low in Pmax (85 loads with pressure), at
-80 … 90 % 0.5 % and 4.5 %, at 90 … 100 % it is nearly unbiased (V0 +0.1 %, Pmax −1.2 %, rms 3.0 % and 10.3 %), at
-100 % and more (compressed charges) it is 1.8 % high in V0 and 4.0 % high in Pmax. Below 70 % there is a single
-load with pressure.
+bullet seated): at 70 … 80 % the model is 2.2 % low in V0 and 5.5 % low in Pmax (85 loads with pressure), at
+80 … 90 % 1.3 % low in V0 and nearly unbiased in Pmax (+0.5 %), at 90 … 100 % 0.7 % low in V0 and 2.2 % high in
+Pmax (rms 3.0 % and 12.1 %), at 100 % and more (compressed charges) 0.7 % high in V0 and 5.0 % high in Pmax. Below
+70 % there is a single load with pressure.
 
-**Direction of the error.** The dangerous direction is the low one: at fill ratios below about 90 % the
-calculated pressure is on average too low (70 … 80 %: 13 %, held out below 80 %: 15 %), so the real pressure can
-be higher than shown. Bullets of 300 gr and more are 3.7 % high in V0. Other weight classes show no trend in V0
-(−0.3 … +1.0 %).
+**Direction of the error.** The dangerous direction is the low one: below 80 % fill the calculated pressure is on
+average too low (70 … 80 %: 5.5 %, held out below 80 %: 5.3 %), so the real pressure can be higher than shown;
+from 80 % on the mean is unbiased or high, but the spread stays (see the laboratory figures under *Warnings of the
+app*). Bullets of 300 gr and more are 1.9 % high in V0. Other weight classes show no trend in V0 (−1.1 … −0.2 %).
 
 **Warnings of the app** (`lib/warnings.ts`). Their figures come from the held-out loads of the cross-validations of
-the shipped fits (2026-10-25, pressure exponent 0.9, 1488 rifle loads of Reload Swiss, Sax and Lovex with measured
-pressure; fill ratios as published by Reload Swiss, Sax and Lovex publish none).
+the shipped fits (2026-10-28, friction acting on the bullet, pressure exponent 0.9, 1483 rifle loads of Reload Swiss, Sax and Lovex with measured
+pressure; the fill ratio calculated as in the app, also for Sax and Lovex, which publish none). The comparison is
+called "the makers' laboratory measurements" in the app: the loads were measured by Reload Swiss, Lovex and Sax, not
+by this project.
 
-- Fill ratio below 90 %: the calculated pressure was on average 4 % too low at 80 … 90 % and 15 % below 80 %,
-  single loads up to 40 %. Below 85 % the warning is shown as a danger.
+Next to the result and in the report the notices stand in three levels (`resultNotices` in `lib/warnings.ts`, the
+same for both):
+
+- **Danger** (red): the calculated peak pressure above the C.I.P. maximum pressure; fill ratio below 85 %; a slow
+  powder below 85 % fill; a jump below 1.5 mm with the start pressure not raised; a handgun.
+- **Caution** (yellow): fill ratio 85 … 90 %; the calculated pressure below the C.I.P. maximum, but above it with
+  the 95 % laboratory deviation (this applies to 54 % of the 870 published maximum loads of the tests, held out,
+  and another 18 % are a danger already; of the 23 that were measured above the C.I.P. maximum, 12 get this caution
+  and 11 the danger, none neither; since it fires on most maximum loads, it is a caution, not a danger); a powder that is not the
+  shipped model; an estimated case capacity; a twist slower than the bullet maker's minimum.
+- **Note** (grey, always shown): simulation, not load data, never above the makers' data; the laboratory figures at
+  the fill ratio of the result from 90 % on (below, they stand in the fill ratio warning, so one figure says how far
+  the real pressure was above the calculation); case, lot and seating about ±8 %; the source of the case capacity
+  (unless it is estimated, which is a caution).
+
+The whole ladder is checked, not only the step shown: the C.I.P. maximum at the step with the highest pressure, the
+fill ratio at the most loosely filled step; the notice names the step's charge when another step is shown.
+
+The laboratory figures are given only where they apply: for a powder whose burn values are those of a shipped fit
+(master record with `fit_status` "fitted…", values unchanged), and for rifles. For an own powder, one taken from a
+file with other values, or a changed one, the app says that the deviation is not known; for handguns the handgun
+danger says that the pressure is not backed. They also refer to the default start pressure of the fits (rifle
+250 bar): with a raised start pressure (800 bar for a short jump) the model's pressure is higher and the figures
+are a rough guide only.
+
+- Fill ratio: below 80 % the measured pressure was up to 34 % above the calculation in 19 of 20 loads (single loads
+  up to 56 %), at 80 … 90 % up to 27 % (50 %), at 90 … 100 % up to 21 % (34 %), at 100 % and more up to 15 % (22 %).
+  The quantiles hardly depend on single loads (±1 point without the most doubtful one), the maxima do. In the
+  other direction: below 80 % the calculated pressure was on average 5 % too low, at 80 … 100 % it was unbiased
+  (+0.6 %, 0.0 %), at 100 % and more 4.5 % too high.
 - Slow powder below 85 % fill: risk of the secondary explosion effect, which no model calculates. A powder counts
   as slow by its peak pressure in a fixed reference load (`referencePressure` in `packages/solver`: the .308 Win.
-  example with 43.06 grains), at or below 3250 bar: Vihtavuori N550, Reload Swiss RS60, Norma URP, Rottweil R904,
+  example with 43.06 grains), at or below 3470 bar: Vihtavuori N550, Reload Swiss RS60, Norma URP, Rottweil R904,
   Lovex S070 and slower. Until 0.3.0 the rule was Ba ≤ 0.55; Ba is comparable only at the same Q_ex and form
   function, so Lovex S070 (low Q_ex, high Ba, in Explosia's chart next to URP and R904) was missed and Norma 203B
-  (in Vihtavuori's chart next to N140) was counted as slow. The bound lies in the gap between N550 (3188 bar) and
-  Rottweil R903 (3325 bar); a test checks it against the shipped powders. It applies to own powders as well.
-- Worst case next to every result: the measured pressure exceeded the calculated one by up to 67 % below 90 %
-  fill, 40 % at 90 … 100 % and 30 % above (without fill ratio: Sax up to 24 %, Lovex up to 46 %).
+  (in Vihtavuori's chart next to N140) was counted as slow. The bound lies in the gap between N550 (3439 bar) and
+  Rottweil R907 (3497 bar); a test checks it against the shipped powders. Rottweil R903 (3366 bar) falls below it,
+  although Explosia's chart puts it next to IMR4064, far faster than N550: the model ranks it too slow, which costs
+  one warning too many, never one too few. It applies to own powders as well.
+- Case capacity (±2 %), powder lot (Ba ±4 %, which matches Reload Swiss's lot tolerance of ±250 bar) and seating
+  depth (±0.5 mm) change the peak pressure by about ±8 % (90 % of the combinations).
 - Estimated case capacity (see *Case capacity*).
 
 The Vihtavuori powders are fitted to Vihtavuori's velocities together with Sax's measured pressures (`fit_status`),
@@ -254,19 +302,19 @@ so the app no longer marks their pressure as not backed.
 **Independent check.** The customer loads of the Reload Swiss load data guide 2025 (rifles) were not used for
 fitting. Reload Swiss checks them for plausibility only, and their seating depth and pressure are not reliable, so
 only the velocity V5 (at 5 m) is compared, with the bullet seated to the C.I.P. maximum cartridge length and the
-shipped master data (bullets matched by type or maker, 689 loads; 2026-10-26, `pnpm accuracy` and
+shipped master data (bullets matched by type or maker, 689 loads; 2026-10-28, `pnpm accuracy` and
 `local/scripts/accuracy-dist.ts`, sets rsk and rs):
 
 | class | loads | V0 mean | V0 rms | within ±5 % |
 |---|---|---|---|---|
-| standard rifle, customer loads | 583 | −1.1 % | 4.3 % | 80 % |
-| magnum rifle, customer loads | 106 | −1.3 % | 3.1 % | 85 % |
-| same powders, laboratory loads (standard / magnum) | 684 / 188 | +0.7 / −0.5 % | 4.3 / 3.9 % | 82 / 84 % |
+| standard rifle, customer loads | 583 | −2.6 % | 4.7 % | 73 % |
+| magnum rifle, customer loads | 106 | −2.3 % | 3.5 % | 83 % |
+| same powders, laboratory loads (standard / magnum) | 684 / 188 | −0.7 / −1.7 % | 3.9 / 4.1 % | 81 / 80 % |
 
-The velocity holds up on loads from real rifles with unknown seating: the rms is the same as on the laboratory
-loads for standard rifles and lower for magnums. The model is about 1.2 % low on average against the customers
-(median −1.6 % standard, −1.0 % magnum); V5 is a few tenths of a percent below V0, so the true bias is a little
-larger.
+The velocity holds up on loads from real rifles with unknown seating: the rms is somewhat higher than on the
+laboratory loads for standard rifles and lower for magnums. The model is about 2.5 % low on average against the
+customers (median −2.9 % standard, −2.3 % magnum), about 1.3 points more than with the fits of 2026-10-25; V5 is a
+few tenths of a percent below V0, so the true bias is a little larger.
 
 Handgun powders are not shipped yet: on handgun loads the model's pressure scatters much more (rms about 26 %),
 mostly per cartridge. The case capacity, the bullet dimensions and the powder lot change the pressure far more

@@ -108,6 +108,16 @@ export interface ModelParams {
   bulletFriction: number;
   /** Bore resistance acting against the bullet once it moves [Pa]. */
   boreResistance: number;
+  /** 1: the friction force also brakes the bullet (m·dv/dt = A·p − Ff; default); 0: energy loss of the gas only. */
+  frictionInMomentum: number;
+  /** Share of the friction work that returns to the gas as heat (0 = all lost, default). */
+  frictionHeatReturn: number;
+  /**
+   * Engraving resistance [Pa over the bore area] at shot start, falling linearly to zero over
+   * `engravingLength` [m] of travel; acts in the bullet's momentum and takes its work from the gas. 0 = off.
+   */
+  engravingResistance: number;
+  engravingLength: number;
   /** Which pressure the results report. */
   reportedPressure: 'mean' | 'breech';
   /** Relative tolerance of the adaptive integration. */
