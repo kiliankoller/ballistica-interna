@@ -45,3 +45,17 @@ describe('consistent friction and engraving', () => {
     expect(simulate(load(44), withParams({ frictionInMomentum: 1 })).muzzleVelocity).toBeLessThan(simulate(load(44), withParams({ frictionInMomentum: 0 })).muzzleVelocity);
   });
 });
+
+describe('chamber too small for the charge', () => {
+  it('reports a chamber whose free volume the covolume of the burning charge fills up', () => {
+    // 72 gr: solid 2.9 cm³ in a chamber of about 3.24 cm³, covolume 1.2 / 1600 · 4.67 g = 3.5 cm³; a bullet of 5 kg
+    // hardly moves, so the free volume reaches zero (before, the pressure silently dropped to 0 there)
+    const heavy = load(72);
+    heavy.projectile.mass = 5;
+    expect(simulate(heavy, defaultParams).status).toBe('charge-too-high');
+  });
+
+  it('calculates the same charge with a normal bullet, which moves before the free volume is used up', () => {
+    expect(simulate(load(72), defaultParams).status).toBe('ok');
+  });
+});

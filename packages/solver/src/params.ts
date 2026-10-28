@@ -12,7 +12,7 @@ export const defaultParams: ModelParams = {
   heatLoss: 0,
   // covolume b = covolumeFactor / pc (0.75 cm³/g at pc 1600 kg/m³), a typical value for nitrocellulose powders
   covolumeFactor: 1.2,
-  // bullet friction against the bore, as an energy loss of the gas (see ModelParams.bulletFriction)
+  // bullet friction against the bore: brakes the bullet, its work is lost by the gas (see ModelParams.bulletFriction)
   bulletFriction: 2.848e6,
   boreResistance: 0,
   // friction acting on the bullet (1) or only as an energy loss of the gas (0); heat share returned to the gas

@@ -70,6 +70,9 @@ export function simulate(load: LoadInput, params: ModelParams = defaultParams): 
   const burnPressure = (p: number) => (n === 1 ? p / BAR : 1000 * Math.pow(p / (1000 * BAR), n));
 
   const freeVolume = (x: number, z: number) => V0 + A * x - (mc * (1 - z)) / rhoC - b * mc * z;
+  // a covolume above the solid volume makes the free volume shrink as the powder burns; if the bullet has not
+  // moved far enough when it reaches zero, the pressure equation has no solution (reported, not shown as p = 0)
+  let noVolume = false;
   const meanPressure = (y: State) => {
     const [x, v, z] = y as [number, number, number];
     const energy = f * mc * z - theta * (0.5 * m * v * v + (pr0 * A + frictionLoss) * x + engravingWork(x));
@@ -95,8 +98,10 @@ export function simulate(load: LoadInput, params: ModelParams = defaultParams): 
 
   const atol = [1e-9, 1e-6, 1e-10];
   const curve: CurvePoint[] = [];
-  const record = (t: number, y: State) =>
+  const record = (t: number, y: State) => {
+    if (freeVolume(y[0]!, Math.min(y[2]!, 1)) <= 0) noVolume = true;
     curve.push({ t, x: y[0]!, v: y[1]!, z: Math.min(y[2]!, 1), p: reported(meanPressure(y)) });
+  };
 
   let y: State = [0, 0, z0];
   let t = 0;
@@ -132,6 +137,7 @@ export function simulate(load: LoadInput, params: ModelParams = defaultParams): 
     t += h;
     y = step.y;
     record(t, y);
+    if (noVolume) return { ...empty, status: 'charge-too-high', curve, message: 'the powder gas does not fit into the chamber (covolume)' };
     if (y[1]! <= 0 && y[2]! >= 1 && derivative(y)[1]! <= 0) {
       return { ...empty, status: 'bullet-stuck', curve, message: 'bullet stops in the barrel' };
     }

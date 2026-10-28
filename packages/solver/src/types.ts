@@ -102,8 +102,8 @@ export interface ModelParams {
   /** Covolume of the powder gas = covolumeFactor / material density pc (1.2: 0.75 cm³/g at pc 1600 kg/m³). */
   covolumeFactor: number;
   /**
-   * Bullet friction: a force `bulletFriction · bullet length · bullet diameter` [Pa] that
-   * the gas loses as work along the travel; it does not act in the bullet's momentum.
+   * Bullet friction: a force `bulletFriction · bullet length · bullet diameter` [N] that brakes the bullet
+   * (frictionInMomentum = 1, default) and whose work along the travel the gas loses.
    */
   bulletFriction: number;
   /** Bore resistance acting against the bullet once it moves [Pa]. */
