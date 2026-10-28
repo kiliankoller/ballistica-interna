@@ -3,9 +3,8 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { GRAIN, caseCapacityGrainsH2O, obtNodeLabel } from '@ballistica-interna/solver';
 import { fmt } from '../lib/units';
-import { SHORT_JUMP, SHORT_JUMP_START_PRESSURE } from '../lib/jump';
-import { capacitySource } from '../lib/capacity';
-import { loadWarnings, pressureMargin } from '../lib/warnings';
+import { SHORT_JUMP_START_PRESSURE } from '../lib/jump';
+import { noticeGroups, noticesOf } from '../lib/notices';
 import { selectedStep, useLoads, type LoadDoc } from '../stores/loads';
 
 const props = defineProps<{ doc: LoadDoc }>();
@@ -37,30 +36,8 @@ const geometry = computed(() => {
   )} mm, ${t('field.bulletLength')}: ${fmt(l.projectile.length * 1e3, 2)} mm, ${t('field.caseCapacity')}: ${fmt(caseCapacityGrainsH2O(l.cartridge.caseVolume), 2)} grain H2O`;
 });
 
-/** Jump below 1.5 mm with a start pressure below 800 bar: the real pressure can be far higher (lib/jump.ts). */
-const shortJump = computed(() => {
-  const jump = d.value?.jump ?? NaN;
-  const start = load.value?.projectile.startPressure ?? NaN;
-  return Number.isFinite(jump) && jump < SHORT_JUMP && start < SHORT_JUMP_START_PRESSURE - 1e5 ? jump : null;
-});
-/** Handgun (barrel below 300 mm, as in the accuracy script): the pressure of the model is too low (docs/MODEL.md). */
-const handgun = computed(() => (load.value?.gun.barrelLength ?? 1) < 0.3);
-/** The gun's twist is longer than the bullet maker's minimum: the bullet may not be stabilised. */
-const slowTwist = computed(() => {
-  const twist = load.value?.gun.twistLength ?? 0;
-  const min = props.doc.minTwist;
-  return min && twist > 0 && twist * 1e3 > min + 0.5 ? { twist: twist / 0.0254, min: min / 25.4 } : null;
-});
-/** Source of the case capacity (estimated, from load data, own), see lib/capacity.ts. */
-const capacity = computed(() => capacitySource(f.value));
-/** Low fill ratio, a slow powder loosely filled and an estimated case capacity, see lib/warnings.ts. */
-const warnings = computed(() => loadWarnings(d.value?.fill, load.value?.propellant, capacity.value));
-/** How far the measured pressure exceeded the calculation in the tests at this fill ratio. */
-const margin = computed(() => {
-  const m = pressureMargin(d.value?.fill);
-  const p = r.value?.status === 'ok' ? r.value.maxPressure : NaN;
-  return m !== undefined && Number.isFinite(p) ? { pct: fmt(m * 100, 0), bar: fmt((p * (1 + m)) / 1e5, 0) } : null;
-});
+/** Danger, caution and the note next to the result, see lib/warnings.ts (resultNotices). */
+const notices = computed(() => noticeGroups(noticesOf(props.doc)));
 const setStartPressure = () => loads.setSI(props.doc, 'projectile', 'gpressure', SHORT_JUMP_START_PRESSURE);
 
 const left = computed<[string, string, string?][]>(() => {
@@ -121,17 +98,15 @@ const right = computed<[string, string][]>(() => {
         </tr>
       </table>
     </div>
-    <p v-if="margin" class="sub">{{ t('result.pressureMargin', margin) }} {{ t(`result.capacitySource.${capacity}`) }}</p>
-    <div v-if="warnings.estimatedCapacity" class="jump">{{ t('result.capacityEstimated') }}</div>
-    <div v-if="shortJump !== null" class="jump">
-      {{ t('result.shortJump', { jump: fmt(shortJump * 1e3, 1) }) }}
-      <el-button size="small" type="warning" plain @click="setStartPressure">{{ t('result.setStartPressure') }}</el-button>
+    <div v-for="g in notices" :key="g.level" class="notice" :class="g.level">
+      <div class="level">{{ t(`result.level.${g.level}`) }}</div>
+      <ul>
+        <li v-for="n in g.items" :key="n.key">
+          <template v-if="n.charge">{{ t('result.atCharge', { charge: n.charge }) }} </template>{{ t(n.key, n.args ?? {}) }}
+          <el-button v-if="n.action === 'startPressure'" size="small" type="danger" plain @click="setStartPressure">{{ t('result.setStartPressure') }}</el-button>
+        </li>
+      </ul>
     </div>
-    <div v-if="warnings.lowFill" class="jump" :class="{ danger: warnings.veryLowFill }">{{ t('result.lowFill', { fill: fmt((d?.fill ?? 0) * 100, 0) }) }}</div>
-    <div v-if="warnings.slowPowderLowFill" class="jump danger">{{ t('result.slowPowderLowFill') }}</div>
-    <div v-if="handgun" class="jump">{{ t('result.handgun') }}</div>
-    <div v-if="slowTwist" class="jump">{{ t('result.slowTwist', { twist: fmt(slowTwist.twist, 1), min: fmt(slowTwist.min, 1) }) }}</div>
-    <p class="note">{{ t('result.uncalibrated') }}</p>
   </div>
 </template>
 
@@ -179,28 +154,43 @@ tr.velocity th {
   padding-left: 18px;
   font-size: 12.5px;
 }
-/* red: the pressure may be far higher than calculated */
-.jump.danger {
+/* three levels: danger (red), caution (yellow), note (grey, always shown) */
+.notice {
+  margin: 10px 0 0;
+  padding: 6px 8px;
+  border: 1px solid;
+  border-radius: 3px;
+  font-size: 12px;
+}
+.notice .level {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+.notice ul {
+  margin: 2px 0 0;
+  padding-left: 16px;
+}
+.notice li + li {
+  margin-top: 3px;
+}
+.notice .el-button {
+  margin-left: 8px;
+}
+.notice.danger {
   border-color: var(--el-color-danger);
   color: var(--el-color-danger-dark-2);
   background: var(--el-color-danger-light-9);
 }
-.jump {
-  margin: 10px 0 0;
-  padding: 6px 8px;
-  border: 1px solid var(--el-color-warning);
-  border-radius: 3px;
+.notice.caution {
+  border-color: var(--el-color-warning);
   color: var(--el-color-warning-dark-2);
   background: var(--el-color-warning-light-9);
-  font-size: 12px;
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  justify-content: space-between;
 }
-.note {
-  margin: 8px 0 0;
-  font-size: 11px;
-  color: var(--el-color-warning);
+.notice.note {
+  border-color: var(--el-border-color);
+  color: var(--el-text-color-regular);
+  background: var(--el-fill-color-light);
 }
 </style>

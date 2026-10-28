@@ -7,7 +7,7 @@ import { cartridgeSvg, cipTable } from './drawing';
 import { chartSvg, type ChartLabels } from './svgChart';
 import { fmt } from './units';
 import { capacitySource } from './capacity';
-import { loadWarnings, pressureMargin } from './warnings';
+import { noticeGroups, noticesOf } from './notices';
 
 type T = (key: string, args?: Record<string, unknown>) => string;
 
@@ -20,8 +20,8 @@ export function reportHtml(doc: LoadDoc, t: T, locale: string): string {
   const r = step?.result;
   const d = step?.derived;
   const capacitySrc = capacitySource(file);
-  const warn = loadWarnings(d?.fill, load?.propellant, capacitySrc);
-  const margin = pressureMargin(d?.fill);
+  // the same notices as next to the result; the report's note carries the full legal text
+  const notices = noticeGroups(noticesOf(doc).map((n) => (n.key === 'result.uncalibrated' ? { ...n, key: 'report.warning' } : n)));
   const date = new Date().toLocaleDateString(locale, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
   const charge = step ? step.charge / GRAIN : NaN;
   const powder = [file.propellant.mname?.value, file.propellant.pname?.value].filter(Boolean).join(' ');
@@ -133,7 +133,7 @@ table{border-collapse:collapse;width:100%}
 .cip td{padding:.1mm 1.2mm;border-bottom:1px dotted #ccc;font-size:7.5px;white-space:nowrap}
 .cip td:first-child{color:#b03030}
 .chart{width:100%;height:auto;flex:1;min-height:0}
-.warn{margin-top:3mm;border:1px solid #c0392b;color:#7b241c;background:#fdf2f0;padding:2mm 3mm;font-size:9px}
+.notice{margin-top:2mm;border:1px solid;padding:1.5mm 3mm;font-size:9px}.notice b{text-transform:uppercase;font-size:8px;letter-spacing:.04em}.notice ul{margin:.5mm 0 0;padding-left:4mm}.notice.danger{border-color:#c0392b;color:#7b241c;background:#fdf2f0}.notice.caution{border-color:#d68910;color:#7e5109;background:#fef5e7}.notice.note{border-color:#bbb;color:#333;background:#f6f6f6}
 footer{margin-top:auto;display:flex;justify-content:space-between;gap:6mm;color:#555;font-size:8.5px}
 footer .note{font-style:italic}
 </style>
@@ -153,11 +153,7 @@ footer .note{font-style:italic}
   </div>
 </div>
 ${chart}
-<div class="warn">${esc(t('report.warning'))}${
-  warn.lowFill ? ` ${esc(t('result.lowFill', { fill: fmt((d?.fill ?? 0) * 100, 0) }))}` : ''
-}${warn.slowPowderLowFill ? ` ${esc(t('result.slowPowderLowFill'))}` : ''}${
-  warn.estimatedCapacity ? ` ${esc(t('result.capacityEstimated'))}` : ''
-}${margin !== undefined && r?.status === 'ok' ? ` ${esc(t('result.pressureMargin', { pct: fmt(margin * 100, 0), bar: fmt((r.maxPressure * (1 + margin)) / 1e5, 0) }))}` : ''}</div>
+${notices.map((g) => `<div class="notice ${g.level}"><b>${esc(t(`result.level.${g.level}`))}</b><ul>${g.items.map((n) => `<li>${n.charge ? `${esc(t('result.atCharge', { charge: n.charge }))} ` : ''}${esc(t(n.key, n.args))}</li>`).join('')}</ul></div>`).join('\n')}
 <footer><span class="note">${esc(t('report.disclaimer'))}</span><span>${esc(t('report.page'))} 1</span></footer>
 </div>`;
 }

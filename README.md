@@ -10,10 +10,10 @@ Compatible with the .grtload file format of Gordon's Reloading Tool (not affilia
 Example report (PDF) of the same load, .308 Win. with a 165 grain bullet: [R8_AERO_V2_OR-report.pdf](docs/examples/R8_AERO_V2_OR-report.pdf)
 (the load file: [R8_AERO_V2_OR.grtload](docs/examples/R8_AERO_V2_OR.grtload); `pnpm docs:media` makes screenshot and report from it)
 
-> **Warning: simulation, not load data.** The calculated pressure can be too **low**: at low fill ratios (below
-> about 90 %) the model calculates the gas pressure on average clearly too low (fill ratio below 80 %: Pmax about
-> 15 % too low, single loads up to 40 %, [docs/MODEL.md](docs/MODEL.md#accuracy)), so the real pressure can be
-> higher than shown. A calculation is never evidence that a load is safe: **never load on the basis of this app alone.** Use only the load data
+> **Warning: simulation, not load data.** The calculated pressure can be too **low**, especially at low
+> fill ratios (below 80 % fill the measured pressure of the makers' laboratory loads was up to 34 % above the
+> calculation in 19 of 20 loads, up to 56 % in single loads, at 90 to 100 % still up to 21 %,
+> [docs/MODEL.md](docs/MODEL.md#accuracy)), so the real pressure can be clearly higher than shown. A calculation is never evidence that a load is safe: **never load on the basis of this app alone.** Use only the load data
 > published by the powder and bullet makers, start with their starting load and never exceed their maximum load.
 > Reloading is dangerous and can cause serious injury or death. The software is provided free of charge and
 > without warranty; liability is excluded to the extent permitted by law (liability for intent, injury to life,
@@ -23,11 +23,12 @@ Example report (PDF) of the same load, .308 Win. with a 165 grain bullet: [R8_AE
 
 - **Rifles only.** Handgun cartridges are in the caliber list, but there are no handgun powders and the model
   is not backed for them (velocity about ±10 %, pressure not measured). The app says so.
-- **Low fill ratio:** below about 90 % the calculated pressure is too low (below 80 %: about 15 % on average,
-  single loads up to 40 %). The app warns from a fill ratio below 90 %, below 85 % as a danger, and for slow
-  powders below 85 % of the secondary explosion effect.
-- **Velocity** deviates about 4 % (rms) from the makers' measured loads, **pressure** about 12 % rms, about 13 %
-  on loads held out of the fit ([docs/MODEL.md](docs/MODEL.md#accuracy)). The pressure
+- **Low fill ratio:** the lower the fill ratio, the further the calculated pressure can be too low (below 80 %: the
+  measured pressure up to 34 % above the calculation in 19 of 20 loads, up to 56 % in single loads; at 90 … 100 %
+  still up to 21 %). The app warns from a fill ratio below
+  90 %, below 85 % as a danger, and for slow powders below 85 % of the secondary explosion effect.
+- **Velocity** deviates about 2 … 5 % (rms, by powder maker) from the makers' measured loads, **pressure** about
+  8 … 15 %, on loads held out of the fit ([docs/MODEL.md](docs/MODEL.md#accuracy)). The pressure
   is not a safety margin.
 - **Powders:** 46 models of Reload Swiss (9), Vihtavuori (19), Lovex (7), Norma (6) and Rottweil (5), fitted to
   makers' published laboratory loads (Vihtavuori: its velocities with Sax's measured pressures; Lovex: pressure of
@@ -46,7 +47,7 @@ Example report (PDF) of the same load, .308 Win. with a 165 grain bullet: [R8_AE
 - Missing or wrong inputs are listed with the name of their field and marked in the input panels
 - The jump of the bullet to the lands (C.I.P. freebore, cartridge length, tip length): below 1.5 mm the results
   warn to raise the start pressure to about 800 bar
-- Warnings next to the result: fill ratio below 90 % (pressure too low), slow powder loosely filled (secondary
+- Warnings next to the result: fill ratio below 90 % (pressure possibly too low), slow powder loosely filled (secondary
   explosion effect), estimated case capacity, and how far the measured pressure exceeded the calculation in the
   tests at this fill ratio
 - Notes on taken data: bullet length missing or taken from JBM's list, estimated bulk density of a powder

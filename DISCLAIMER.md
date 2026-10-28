@@ -1,19 +1,20 @@
 # Disclaimer / Haftungshinweis
 
 This text is the same as the notice that BallisticaInterna shows on the first start (and again whenever it changes).
-Version 2026-10-24.
+Version 2026-10-28.
 
 ## English
 
-**BallisticaInterna is a simulation and does NOT provide load data.** The calculated pressure can be too **low**: at
-low fill ratios (below about 90 %) the model calculates the gas pressure on average clearly too low (below 80 %
-by about 15 %, single loads by up to 40 %), so the real pressure can be higher than shown.
+**BallisticaInterna is a simulation and does NOT provide load data.** The calculated pressure can be too **low**,
+especially at low fill ratios: compared with the makers' laboratory measurements, below 80 % fill the measured
+pressure was up to 34 % above the calculation in 19 of 20 loads (up to 56 % in single loads), at 90 to 100 % fill
+still up to 21 %, so the real pressure can be clearly higher than shown.
 
 - A calculation is never evidence that a load is safe. **Never load on the basis of this app alone.** Use only
   the published load data of the powder and bullet makers, start with their starting load, work up carefully
   watching for pressure signs and never exceed the maximum load.
 - Calculated values differ from reality, in single cases considerably. Against the makers' laboratory
-  measurements typically: rifle ±4 % in velocity, ±12 to ±15 % in pressure; handgun ±10 % in velocity, pressure
+  measurements typically: rifle ±2 to ±5 % in velocity, ±8 to ±15 % in pressure; handgun ±10 % in velocity, pressure
   not backed by measurements. Do not rely on pressure figures.
 - Case capacity, bullet dimensions and powder lot change the pressure a lot. Measure case capacity and bullets
   and enter them as own cartridge or own projectile. Check every load against the makers' data.
@@ -28,15 +29,16 @@ or Gordon's Reloading Tool. All names are trademarks of their owners and are use
 
 ## Deutsch
 
-**BallisticaInterna ist eine Simulation und liefert KEINE Ladedaten.** Der berechnete Druck kann zu **niedrig** sein:
-Bei niedrigem Füllgrad (unter etwa 90 %) berechnet das Modell den Gasdruck im Mittel deutlich zu niedrig (unter
-80 % etwa 15 %, einzelne Ladungen bis 40 %); der tatsächliche Druck kann höher sein als angezeigt.
+**BallisticaInterna ist eine Simulation und liefert KEINE Ladedaten.** Der berechnete Druck kann zu **niedrig** sein,
+besonders bei niedrigem Füllgrad: Verglichen mit Labormessungen der Hersteller lag der gemessene Druck unter 80 %
+Füllgrad in 19 von 20 Ladungen bis zu 34 % (in einzelnen Ladungen bis zu 56 %), bei 90 bis 100 % Füllgrad noch bis
+zu 21 % über der Rechnung; der tatsächliche Druck kann also deutlich höher sein als angezeigt.
 
 - Eine Rechnung ist nie ein Beleg dafür, dass eine Ladung sicher ist. **Lade nie allein aufgrund dieser App.**
   Verwende ausschließlich die veröffentlichten Ladedaten der Pulver- und Geschosshersteller, beginne mit deren
   Startladung, steigere vorsichtig unter Beachtung von Drucksymptomen und überschreite niemals die Höchstladung.
 - Berechnete Werte weichen von der Realität ab, im Einzelfall deutlich. Gegenüber Labormessungen der Hersteller
-  typisch: Büchse ±4 % Geschwindigkeit, ±12 bis ±15 % Gasdruck; Kurzwaffe ±10 % Geschwindigkeit, Gasdruck nicht
+  typisch: Büchse ±2 bis ±5 % Geschwindigkeit, ±8 bis ±15 % Gasdruck; Kurzwaffe ±10 % Geschwindigkeit, Gasdruck nicht
   durch Messungen belegt. Verlass dich nicht auf Druckwerte.
 - Hülsenvolumen, Geschossmaße und Pulverlos beeinflussen den Druck stark. Miss Hülsenvolumen und Geschosse und
   lege sie als eigenes Kaliber bzw. eigenes Geschoss an. Prüfe jede Ladung anhand der Herstellerdaten.

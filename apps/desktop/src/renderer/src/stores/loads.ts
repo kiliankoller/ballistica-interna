@@ -32,6 +32,8 @@ export interface LoadDoc {
   notes: Partial<Record<ComponentKind, string[]>>;
   /** Minimum twist the bullet's maker states [mm per turn] (from the master data; not stored in the file). */
   minTwist: number | null;
+  /** Master record of the load's powder (by maker and name), to tell whether its burn values are the shipped fit. */
+  powderRecord: DbRecord | null;
 }
 
 /** The ladder step whose results are shown. */
@@ -57,7 +59,7 @@ export const useLoads = defineStore('loads', () => {
   }
 
   function add(file: GrtLoadFile, path: string | null, name: string) {
-    const doc: LoadDoc = { id: nextId++, path, name, file, dirty: false, result: compute(file), focus: 0, compare: [], sources: {}, notes: {}, minTwist: null };
+    const doc: LoadDoc = { id: nextId++, path, name, file, dirty: false, result: compute(file), focus: 0, compare: [], sources: {}, notes: {}, minTwist: null, powderRecord: null };
     docs.value.push(doc);
     activeId.value = doc.id;
     return doc;
@@ -85,6 +87,7 @@ export const useLoads = defineStore('loads', () => {
       const notes = record ? recordNotes(record) : [];
       if (notes.length) doc.notes[kind] = notes;
       if (kind === 'projectile' && record) doc.minTwist = minTwistOf(record);
+      if (kind === 'propellant') doc.powderRecord = record ?? null;
     }
   }
 
@@ -139,7 +142,11 @@ export const useLoads = defineStore('loads', () => {
       applyProjectile(doc.file, record);
       doc.minTwist = minTwistOf(record);
     }
-    if (kind === 'propellant') applyPropellant(doc.file, record);
+    if (kind === 'propellant') {
+      applyPropellant(doc.file, record);
+      // an own powder counts as not checked, even when copied from the master data
+      doc.powderRecord = origin?.from === 'master' ? record : null;
+    }
     delete doc.notes[kind];
     if (origin) doc.sources[kind] = origin;
     else delete doc.sources[kind];

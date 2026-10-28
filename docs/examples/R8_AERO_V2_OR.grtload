@@ -96,13 +96,13 @@
       <input name="mname" value="Reload%20Swiss" unit="" type="string" descr="propellant manufacturer" />
       <input name="pname" value="RS52" unit="" type="string" descr="propellant product name" />
       <input name="lotid" value="" unit="" type="string" descr="propellant lot-id" />
-      <input name="Ba" value="0.563446" unit="" type="decimal" descr="vivacity coefficient" />
+      <input name="Ba" value="0.485843" unit="" type="decimal" descr="vivacity coefficient" />
       <input name="Qex" value="3900" unit="kJ/kg" type="decimal" descr="specific explosive heat" />
       <input name="k" value="1.23" unit="" type="decimal" descr="ratio of the specific heat of the powder gases" />
-      <input name="a0" value="0.943173" unit="" type="decimal" descr="prog/deg coefficient" />
+      <input name="a0" value="2.79337" unit="" type="decimal" descr="prog/deg coefficient" />
       <input name="a1" value="0" unit="" type="decimal" descr="prog/deg coefficient" />
-      <input name="z1" value="0.44605" unit="" type="decimal" descr="burn-up limit z1" />
-      <input name="z2" value="0.768032" unit="" type="decimal" descr="burn-up limit z2" />
+      <input name="z1" value="0.565944" unit="" type="decimal" descr="burn-up limit z1" />
+      <input name="z2" value="0.833452" unit="" type="decimal" descr="burn-up limit z2" />
       <input name="eta" value="0" unit="cm3/kg" type="decimal" descr="covolume of the powder gases" />
       <input name="pc" value="1600" unit="kg/m3" type="decimal" descr="material density" />
       <input name="pcd" value="950" unit="kg/m3" type="decimal" descr="bulk density" />
