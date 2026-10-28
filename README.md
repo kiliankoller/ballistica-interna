@@ -19,7 +19,7 @@ Example report (PDF) of the same load, .308 Win. with a 165 grain bullet: [R8_AE
 > without warranty; liability is excluded to the extent permitted by law (liability for intent, injury to life,
 > body or health and in other mandatory cases remains unaffected). Full text: [DISCLAIMER.md](DISCLAIMER.md).
 
-## Scope and limits (version 0.3)
+## Scope and limits (version 0.4)
 
 - **Rifles only.** Handgun cartridges are in the caliber list, but there are no handgun powders and the model
   is not backed for them (velocity about ±10 %, pressure not measured). The app says so.

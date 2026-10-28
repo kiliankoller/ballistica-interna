@@ -79,6 +79,63 @@ five of the review are in `local/legal-review-2026-10-21.md`. Among them:
 
 Reply template if a maker complains: [CEASE-AND-DESIST-RESPONSE.md](CEASE-AND-DESIST-RESPONSE.md).
 
+## Text of the release v0.4.0 (draft)
+
+**BallisticaInterna 0.4.0: interior ballistics for rifle handloads**
+
+It calculates pressure, velocity and energy of a rifle load over the bullet's travel and opens and saves
+`.grtload` files. Compatible with the .grtload file format of Gordon's Reloading Tool (not affiliated with, not
+checked by GRT).
+
+**Warning: this is a simulation, not load data.** The calculated pressure can be too low at any fill ratio, most
+at low fill: on loads held out of the fit the measured pressure was up to 34 % above the calculation in 19 of 20
+loads below 80 % fill (single loads up to 56 %), and still up to 21 % at 90 … 100 %. The real pressure can be
+higher than shown. Never load on the basis of this app alone; use only the makers' published load data, start
+with the starting load and never exceed the maximum load. Reloading is dangerous and can cause serious injury or
+death.
+
+What is new since 0.3.0
+- Bullet friction: the friction against the bore now brakes the bullet instead of only taking energy from the gas.
+  All 46 shipped powders are refitted. At low fill ratios the pressure is calculated less too low (held out below
+  80 % fill: on average 5 % too low, was 15 %); in exchange the pressure scatters slightly more and the fast
+  Vihtavuori powders are calculated too high.
+- Warnings in three levels (danger, caution, note) next to the result and in the report. Each result shows how far
+  the measured pressure exceeded the calculation in the tests at its fill ratio (95 % of the loads and the worst
+  case). A caution appears when the C.I.P. maximum pressure lies within that deviation.
+- The optimal barrel time (OBT) is marked as an empirical rule (barrel vibration), not a result of the interior
+  ballistics.
+- The first-start notice states the figures of this version (it is shown again once).
+- Accuracy checked again
+  ([docs/MODEL.md](https://github.com/kiliankoller/ballistica-interna/blob/main/docs/MODEL.md#accuracy)).
+- Master data unchanged: 486 calibers, about 1750 bullets, 46 powder models (Reload Swiss 9, Vihtavuori 19,
+  Lovex 7, Norma 6, Rottweil 5).
+
+How accurate it is
+- Velocity: about 3.4 % rms against the makers' measured loads. Checked on customer loads of Reload Swiss that
+  were not used for fitting: 4.7 % (standard rifles), 3.5 % (magnum); the model is about 2.5 % slow on them.
+- Pressure: about 13 % rms, 12.8 % on loads held out of the fit, on average 0.8 % too high. By powder maker the
+  typical range is ±2 to ±5 % in velocity and ±8 to ±15 % in pressure. It is no safety margin.
+
+Known limitations
+- [#12](https://github.com/kiliankoller/ballistica-interna/issues/12) The installers are not signed. macOS: open the
+  app once via System Settings → Privacy & Security → Open Anyway. Windows: SmartScreen: More info → Run anyway.
+- [#13](https://github.com/kiliankoller/ballistica-interna/issues/13) Pressure deviates about 13 % rms from
+  measured loads and can be too low at any fill ratio, most below 90 %. It is no safety margin.
+- [#5](https://github.com/kiliankoller/ballistica-interna/issues/5) Handguns are not supported.
+- The derived case capacities are not yet compared with measured water capacities
+  ([docs/MODEL.md](https://github.com/kiliankoller/ballistica-interna/blob/main/docs/MODEL.md#case-capacity)).
+- No powders of Hodgdon, Ramshot, IMR, Winchester and Alliant (their terms forbid using the load data).
+
+Compare the SHA-256 checksum (`SHA256SUMS-*.txt`, attached to this release) with your download before you start
+an installer: `shasum -a 256 <file>` on macOS, `sha256sum <file>` on Linux, `certutil -hashfile <file> SHA256`
+on Windows.
+
+Provided free of charge and without warranty; liability is excluded to the extent permitted by law
+([DISCLAIMER.md](https://github.com/kiliankoller/ballistica-interna/blob/main/DISCLAIMER.md)). Licences: code
+GPL-3.0-or-later, data (`data/*.csv`) ODbL 1.0 with attribution (NOTICE). Not affiliated with, endorsed by or
+sponsored by any maker, the C.I.P. or GRT. No outside contributions, no donations (see CONTRIBUTING.md). Security
+reports: GitHub private vulnerability reporting (SECURITY.md).
+
 ## Text of the release v0.3.0 (published 2026-10-26)
 
 **BallisticaInterna 0.3.0: interior ballistics for rifle handloads**
