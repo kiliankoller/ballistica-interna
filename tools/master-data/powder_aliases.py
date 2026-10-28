@@ -84,7 +84,7 @@ def main():
         full = os.path.join(ROOT, path)
         if not os.path.exists(full):
             continue
-        names = [l['powder'] for l in json.load(open(full))] if sql is None else [p for (p,) in sqlite3.connect(full).execute(sql)]
+        names = [l['powder'] for l in json.load(open(full, encoding='utf-8'))] if sql is None else [p for (p,) in sqlite3.connect(full).execute(sql)]
         for p in names:
             counts[p] += 1
             seen_in[p].add(src)
@@ -118,7 +118,7 @@ def main():
         else:
             missing[alias] = n
     rows.sort(key=lambda r: (r['mname'], r['pname'], r['alias']))
-    with open(a.out, 'w', newline='') as f:
+    with open(a.out, 'w', newline='', encoding='utf-8') as f:
         w = csv.DictWriter(f, ['alias', 'mname', 'pname', 'rule', 'uses', 'sources'], lineterminator='\n')
         w.writeheader()
         w.writerows(rows)

@@ -49,12 +49,16 @@ def check(table, r):
         need(depth is None or (l and depth < l), f'max. seating depth {depth} vs length {l}')
         need(bc is None or 0 < bc < 1.3, f'BC {bc}')
     elif table == 'propellant':
-        ba, q, k, z1, z2, pcd = (num(r, x) for x in ('Ba', 'Qex', 'k', 'z1', 'z2', 'pcd'))
+        ba, q, k, z1, z2, pc, pcd = (num(r, x) for x in ('Ba', 'Qex', 'k', 'z1', 'z2', 'pc', 'pcd'))
         need(ba and 0.05 < ba < 10, f'Ba {ba}')
         need(q and 2500 < q < 6000, f'Qex {q} kJ/kg')
         need(k and 1.1 < k < 1.4, f'k {k}')
         need(z1 is not None and z2 is not None and 0 < z1 <= z2 < 1, f'z1 {z1} / z2 {z2}')
+        need(pc and 1000 < pc < 2000, f'material density {pc}')
         need(pcd and 250 < pcd < 1150, f'bulk density {pcd}')
+    for k, v in r.items():
+        if k not in TEXT and v not in (None, '') and num(r, k) is None:
+            bad.append(f'{k} "{v}" is not a number')
     return bad
 
 
@@ -63,31 +67,42 @@ def main():
     ap.add_argument('--out', default=os.path.join(DATA, 'build', 'ballisticainterna.db'))
     a = ap.parse_args()
     os.makedirs(os.path.dirname(a.out), exist_ok=True)
-    if os.path.exists(a.out):
-        os.remove(a.out)
-    db = sqlite3.connect(a.out)
+    # built next to the target and moved there only when every row passed: a failed build leaves no database the
+    # app could pick up
+    tmp = a.out + '.tmp'
+    if os.path.exists(tmp):
+        os.remove(tmp)
+    db = sqlite3.connect(tmp)
     errors = 0
     for file, table in TABLES.items():
-        with open(os.path.join(DATA, file), newline='') as f:
+        with open(os.path.join(DATA, file), newline='', encoding='utf-8') as f:
+            header = next(csv.reader(f))
+            f.seek(0)
             rows = list(csv.DictReader(f))
-            columns = list(rows[0].keys()) if rows else next(csv.reader(open(os.path.join(DATA, file))))
+            columns = header
         cols = ', '.join(f'"{c}" {"text" if c in TEXT else "real"}' for c in columns)
         # id, geloescht and status as in the tables the app knows
         db.execute(f'create table {table} (id integer primary key, {cols}, geloescht integer default 0, status text default \'\')')
         for i, r in enumerate(rows, start=2):
-            for why in check(table, r):
+            problems = check(table, r)
+            for why in problems:
                 print(f'{file}:{i} {r.get("cipname") or r.get("pname")}: {why}', file=sys.stderr)
                 errors += 1
+            if problems:
+                continue
             db.execute(f'insert into {table} ({", ".join(f"{chr(34)}{c}{chr(34)}" for c in columns)}) values ({", ".join("?" * len(columns))})',
                        [None if v == '' else (v if c in TEXT else float(v)) for c, v in r.items()])
         print(f'{table}: {len(rows)} rows', file=sys.stderr)
-    with open(os.path.join(DATA, 'sources.csv'), newline='') as f:
+    with open(os.path.join(DATA, 'sources.csv'), newline='', encoding='utf-8') as f:
         src = list(csv.DictReader(f))
     db.execute('create table source (id text primary key, name text, url text, licence_note text, retrieved text, ship text)')
     db.executemany('insert into source values (:id, :name, :url, :licence_note, :retrieved, :ship)', src)
     db.commit()
+    db.close()
     if errors:
-        sys.exit(f'{errors} implausible values: {a.out} is not usable')
+        os.remove(tmp)
+        sys.exit(f'{errors} implausible values: {a.out} not written')
+    os.replace(tmp, a.out)
     print(f'→ {a.out}', file=sys.stderr)
 
 

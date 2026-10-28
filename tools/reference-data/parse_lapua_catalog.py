@@ -35,10 +35,10 @@ def num(s):
 
 def page_of_components(pdf):
     """Pages whose text names the rifle components table."""
-    out = subprocess.run(['pdfinfo', pdf], capture_output=True, text=True).stdout
+    out = subprocess.run(['pdfinfo', pdf], capture_output=True, text=True, encoding='utf-8', check=True).stdout
     pages = int(re.search(r'Pages:\s+(\d+)', out)[1])
     for p in range(1, pages + 1):
-        t = subprocess.run(['pdftotext', '-raw', '-f', str(p), '-l', str(p), pdf, '-'], capture_output=True, text=True).stdout
+        t = subprocess.run(['pdftotext', '-raw', '-f', str(p), '-l', str(p), pdf, '-'], capture_output=True, text=True, encoding='utf-8', check=True).stdout
         if 'COMPONENTS - CENTERFIRE RIFLE' in t:
             yield p, t
 

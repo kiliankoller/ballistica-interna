@@ -2,7 +2,7 @@
 in fixtures/ (see fixtures/README.md). Only sources marked ship=yes in data/sources.csv are used. Column names
 follow the C.I.P. designations (and so the field names the app already reads); every row names its source.
 
-  python3 tools/master-data/build_csv.py [--powder-fit fixtures/calibration/powders-<time>.json]
+  python3 tools/master-data/build_csv.py
 
 Calibers: C.I.P. Tab I–IV (centre-fire rifle and handgun), cartridge maximum dimensions as L1 … H2, G1, chamber
 minimum dimensions and barrel as c_*. The case capacity V (grains of water) is not part of the C.I.P. tables: derived
@@ -10,7 +10,7 @@ from the fill ratios of the Reload Swiss load data guide where it has enough loa
 Bullets: maker data (Styria Arms AERO price list; Berger, Nosler, Hornady, Sierra, Barnes, Speer), lengths from
 the maker or else from the JBM length list, checked and flagged by merge_bullets.py; the report goes to
 logs/bullet-report.md.
-Powders: datasheet values (Qex, bulk density) and own fitted burn values (newest fit per measured set: Reload
+Powders: datasheet values (Qex, bulk density) and own fitted burn values (the shipped fits of data/fits-shipped.json: Reload
 Swiss, Lovex, Norma and Rottweil (Sax's loads), Hodgdon, IMR, Winchester and Ramshot with measured pressure,
 Vihtavuori with its own velocities together with Sax's measured pressures). The measured sets are built from the
 master data's components (local/scripts/make-set.ts), so the fit uses the case capacities the app uses. Makers without a datasheet: the
@@ -47,7 +47,7 @@ POWDER_COLUMNS = ['mname', 'pname', 'Ba', 'Qex', 'k', 'a0', 'a1', 'z1', 'z2', 'p
 
 
 def shipping():
-    with open(os.path.join(DATA, 'sources.csv'), newline='') as f:
+    with open(os.path.join(DATA, 'sources.csv'), newline='', encoding='utf-8') as f:
         return {r['id'] for r in csv.DictReader(f) if r['ship'].strip().lower() == 'yes'}
 
 
@@ -61,7 +61,7 @@ def fmt(v):
 
 def write(name, columns, rows):
     rows.sort(key=lambda r: [str(r.get(c, '')) for c in columns[:3]])
-    with open(os.path.join(DATA, name), 'w', newline='') as f:
+    with open(os.path.join(DATA, name), 'w', newline='', encoding='utf-8') as f:
         w = csv.DictWriter(f, columns, extrasaction='ignore', lineterminator='\n')
         w.writeheader()
         for r in rows:
@@ -84,7 +84,9 @@ def reload_swiss_capacities():
     path = os.path.join(FIX, 'calibration', 'capacity-rs.json')
     if not os.path.exists(path):
         sys.exit(f'{path} missing: run local/scripts/derive-capacity.ts first (docs/MODEL.md#case-capacity)')
-    return {k.split(' (')[0]: v['capacity_gr'] for k, v in json.load(open(path)).items()
+    with open(path, encoding='utf-8') as f:
+        derived = json.load(f)
+    return {k.split(' (')[0]: v['capacity_gr'] for k, v in derived.items()
             if v['charges'] >= 4 and k.split(' (')[0] not in REJECTED_DERIVED}
 
 
@@ -218,7 +220,7 @@ def tell_apart(rows):
 def correct_bullets(rows):
     """Applies data/bullet_corrections.csv: errors of a maker's page, checked against other sources (each line names
     its evidence). A corrected row gets the flag `corrected`; its implausible_* flags are checked again."""
-    with open(os.path.join(DATA, 'bullet_corrections.csv'), newline='') as f:
+    with open(os.path.join(DATA, 'bullet_corrections.csv'), newline='', encoding='utf-8') as f:
         fixes = list(csv.DictReader(f))
     for r in rows:
         mine = [x for x in fixes if x['maker'] == r['mname'] and x['part_number'] == str(r.get('part_number') or '')]
@@ -232,8 +234,7 @@ def correct_bullets(rows):
         r['flags'] = ' '.join(flags + merge_bullets.plausibility(check) + ['corrected'])
 
 
-# measured set of a powder fit → maker as in the datasheets, what the fit rests on, data source of the fit
-# measured set → maker → (what the fit rests on, datasheet source, load data source); the newest fit per set counts
+# measured set → maker → (what the fit rests on, datasheet source, load data source)
 FIT_SETS = {
     'rs': {'ReloadSwiss': ('pressure and velocity measured', 'reload-swiss-products', None),
            'Reload Swiss': ('pressure and velocity measured', 'reload-swiss-products', None)},
@@ -275,10 +276,12 @@ def estimated_bulk():
     path = os.path.join(FIX, 'calibration', 'bulk-density.json')
     if not os.path.exists(path):
         return {}
-    return {(v['maker'], v['name'].replace(' ', '')): v['bulkDensity'] for v in json.load(open(path)).values() if v.get('reliable')}
+    with open(path, encoding='utf-8') as f:
+        estimates = json.load(f)
+    return {(v['maker'], v['name'].replace(' ', '')): v['bulkDensity'] for v in estimates.values() if v.get('reliable')}
 
 
-def powders(_fit_file=None):
+def powders():
     db = sqlite3.connect(os.path.join(FIX, 'open-db', 'components.db'))
     sheet = {(m.replace(' ', ''), n): (q, b, kind) for m, n, q, b, kind in db.execute('select maker, name, qex_j_g, bulk_density_g_l, kind from powder_datasheet')}
     sheet_doc = {(m.replace(' ', ''), n): src for m, n, src in db.execute('select maker, name, source from powder_datasheet')}
@@ -315,14 +318,11 @@ def powders(_fit_file=None):
 
 
 def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument('--powder-fit', help='JSON of pnpm fit-powders (default: the newest with Qex from datasheets)')
-    a = ap.parse_args()
+    argparse.ArgumentParser(description=__doc__.split('\n')[0]).parse_args()
     ship = shipping()
-    fit = a.powder_fit
     for name, columns, rows in (('calibers.csv', CALIBER_COLUMNS, calibers()),
                                 ('bullets.csv', BULLET_COLUMNS, bullets()),
-                                ('powders.csv', POWDER_COLUMNS, powders(fit))):
+                                ('powders.csv', POWDER_COLUMNS, powders())):
         rows = [r for r in rows if all(s.strip() in ship for s in r['source'].split(';'))]
         write(name, columns, rows)
 

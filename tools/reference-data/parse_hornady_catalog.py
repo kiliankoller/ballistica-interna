@@ -164,7 +164,7 @@ def main():
     ap.add_argument('--db', default=COMPONENTS_DB)
     a = ap.parse_args()
     pdf = a.pdf or max(glob.glob(os.path.join(SOURCES, '*Catalog*.pdf')), key=os.path.getmtime)
-    bbox = subprocess.run(['pdftotext', '-bbox', pdf, '-'], capture_output=True, text=True, check=True).stdout
+    bbox = subprocess.run(['pdftotext', '-bbox', pdf, '-'], capture_output=True, text=True, encoding='utf-8', check=True).stdout
     rows = parse(bbox)
     retrieved = datetime.date.fromtimestamp(os.path.getmtime(pdf)).isoformat()
     for r in rows:

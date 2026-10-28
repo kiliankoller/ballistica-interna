@@ -35,7 +35,7 @@ def num(s):
 
 def page_sizes(pdf):
     """{page: (width, height)}; single and double pages are mixed."""
-    info = subprocess.run(['pdfinfo', '-f', '1', '-l', '9999', pdf], capture_output=True, text=True).stdout
+    info = subprocess.run(['pdfinfo', '-f', '1', '-l', '9999', pdf], capture_output=True, text=True, encoding='utf-8', check=True).stdout
     return {int(p): (float(w), float(h)) for p, w, h in re.findall(r'Page\s+(\d+) size:\s*([\d.]+) x ([\d.]+)', info)}
 
 
@@ -48,7 +48,11 @@ def main():
     sizes = page_sizes(a.pdf)
     first, last = (int(x) for x in a.pages.split('-')) if a.pages else (1, max(sizes))
     os.makedirs(os.path.dirname(a.db), exist_ok=True)
-    db = sqlite3.connect(a.db)
+    # built in a temporary file: a failing run (pdftotext missing, an error) leaves the previous database as it was
+    tmp = a.db + '.tmp'
+    if os.path.exists(tmp):
+        os.remove(tmp)
+    db = sqlite3.connect(tmp)
     db.executescript('''
       drop table if exists cartridge; drop table if exists charge;
       create table cartridge(id integer primary key, name text, barrel_mm real, twist text, primer text, cases text);
@@ -63,7 +67,7 @@ def main():
         for x in ((0, half) if w > h else (0,)):
             text = subprocess.run(['pdftotext', '-layout', '-f', str(p), '-l', str(p), '-x', str(int(x)), '-y', '0',
                                    '-W', str(int(half)), '-H', str(int(h)), a.pdf, '-'],
-                                  capture_output=True, text=True).stdout
+                                  capture_output=True, text=True, encoding='utf-8', check=True).stdout
             name, bullet = None, None
             barrel = twist = primer = cases = None
             for line in text.split('\n'):
@@ -98,6 +102,8 @@ def main():
                             1 if m['c'] else 0, p))
                 n += 1
     db.commit()
+    db.close()
+    os.replace(tmp, a.db)
     print(f'{len(ids)} cartridges, {n} charges → {a.db}', file=sys.stderr)
 
 

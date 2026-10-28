@@ -24,6 +24,10 @@ GR_PER_G = 15.4324
 FPS_PER_MS = 3.28084
 PSI_PER_BAR = 14.5038
 TOKEN = re.compile(r'\d+(?:[.,]\d+)?')
+# first character of a powder name as OCR reads it → S or D
+LEADING = {'$': 'S', '5': 'S', 'S': 'S', 'D': 'D', '0': 'D', 'O': 'D'}
+# a table row starts with the (OCR'd) powder name
+POWDER_AT_START = re.compile(r"^\W*([$5SsDdO0][^\s|]{2,6})\s")
 
 
 def candidates(tok):
@@ -67,13 +71,15 @@ def powder_name(raw, known):
     s = raw.strip(" '‘’\"|([{.,;:_-~").upper()
     if not s:
         return None
-    first = {'$': 'S', '5': 'S', 'S': 'S', 'D': 'D', '0': 'D', 'O': 'D'}.get(s[0])
-    rest = s[1:] if first and s[0] in '$5SDO' or (first == 'D' and s[0] == '0' and len(s) > 4) else s
-    if first == 'D' and s[0] == '0' and len(s) <= 4:  # "073" may be "D073" without the D
-        rest = s
+    first = LEADING.get(s[0])
+    if not first:
+        return None
+    # a leading "0" is a misread "D" before a full name ("0073.5"), but the first digit of a short name that lost its
+    # "D" ("073")
+    rest = s if s[0] == '0' and len(s) <= 4 else s[1:]
     body = rest.replace('O', '0').replace('I', '1').replace('L', '1')
     m = re.match(r'(\d{3})(?:[.,](\d))?', body)
-    if not first or not m:
+    if not m:
         return None
     name = f'{first}{m[1]}' + (f'.{m[2]}' if m[2] else '')
     if name in known:
@@ -92,7 +98,11 @@ def main():
              'D013', 'D032', 'D036', 'D037.1', 'D037.2', 'D037', 'D060', 'D063', 'D073.1', 'D073.2', 'D073.3',
              'D073.4', 'D073.5', 'D073.6', 'D073', 'D100'}
     os.makedirs(os.path.dirname(a.db), exist_ok=True)
-    db = sqlite3.connect(a.db)
+    # built in a temporary file: a failing run (pdftotext missing, an error) leaves the previous database as it was
+    tmp = a.db + '.tmp'
+    if os.path.exists(tmp):
+        os.remove(tmp)
+    db = sqlite3.connect(tmp)
     db.executescript('''
       drop table if exists block; drop table if exists charge;
       create table block(id integer primary key, page integer, caliber text, barrel_mm real, twist_in real,
@@ -103,7 +113,7 @@ def main():
     ''')
     if a.ocr_dir.lower().endswith('.pdf'):
         import subprocess
-        text = subprocess.run(['pdftotext', '-layout', a.ocr_dir, '-'], capture_output=True, text=True).stdout
+        text = subprocess.run(['pdftotext', '-layout', a.ocr_dir, '-'], capture_output=True, text=True, encoding='utf-8', check=True).stdout
         pages = [(i + 1, t) for i, t in enumerate(text.split('\f'))]
     else:
         pages = [(int(re.search(r'(\d+)', f)[1]), open(os.path.join(a.ocr_dir, f), encoding='utf-8').read())
@@ -144,7 +154,8 @@ def main():
                 bno = m[1]
             if (m := re.search(r'^\W*([A-Z][A-Z\-/]{1,10})\s*\|?\s*Powder', line)):
                 btype = m[1]
-            is_row = re.match(r"^\W*([$5SsDdO0][^\s|]{2,6})\s", line) and powder_name(re.match(r"^\W*([$5SsDdO0][^\s|]{2,6})\s", line)[1], known)
+            start = POWDER_AT_START.match(line)
+            is_row = start and powder_name(start[1], known)
             if block is None and not is_row and 'Grams' not in line and 'Length' not in line:
                 # the bullet mass in g ("12.70", "3.24 q") stands between the table header and the first row
                 for t in re.findall(r'(?<![\d.])(\d{1,2}[.,]\d{1,3})(?=\s*g\b|\s*$)', line):
@@ -152,7 +163,7 @@ def main():
                         bgram = float(t.replace(',', '.'))
             if (m := re.search(r'(\d{2,3}(?:[.,]\d)?)\s*grs?\b', line)):
                 bgr = float(m[1].replace(',', '.'))
-            m = re.match(r"^\W*([$5SsDdO0][^\s|]{2,6})\s", line)
+            m = start
             if not m:
                 continue
             name = powder_name(m[1], known)
@@ -178,6 +189,8 @@ def main():
             db.execute('insert into charge values (?,?,?,?,?,?,?,?,?,?)', (block, name, g1, v1, g2, v2, bar, col, page, k + 1))
             rows += 1
     db.commit()
+    db.close()
+    os.replace(tmp, a.db)
     print(f'{rows} rows read, {rejected} rows rejected (values disagree) → {a.db}', file=sys.stderr)
 
 

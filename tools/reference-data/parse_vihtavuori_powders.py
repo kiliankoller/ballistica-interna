@@ -21,7 +21,7 @@ def main():
     ap.add_argument('--brochure', help="Vihtavuori's industrial powders brochure (PDF)")
     ap.add_argument('--db', default='fixtures/open-db/components.db')
     a = ap.parse_args()
-    text = subprocess.run(['pdftotext', '-layout', a.pdf, '-'], capture_output=True, text=True).stdout
+    text = subprocess.run(['pdftotext', '-layout', a.pdf, '-'], capture_output=True, text=True, encoding='utf-8', check=True).stdout
     lines = text.split('\n')
     rows = []
     for k, line in enumerate(lines):
@@ -42,7 +42,7 @@ def main():
                              grain_2_mm=None, grain_text='', powder_type='', tolerance='', url='',
                              source='Vihtavuori reloading guide 2026'))
     if a.brochure:
-        raw = subprocess.run(['pdftotext', '-raw', a.brochure, '-'], capture_output=True, text=True).stdout
+        raw = subprocess.run(['pdftotext', '-raw', a.brochure, '-'], capture_output=True, text=True, encoding='utf-8', check=True).stdout
         known = {r['name'] for r in rows}
         num = r'(\d+,\d+|\d+)'
         for m in re.finditer(rf'^(N\d{{3}}|\d{{1,2}}N\d{{2}}) \d+ {num} {num} (\d{{3}}) {num} (\d{{4}}) \d+ kg', raw, re.M):

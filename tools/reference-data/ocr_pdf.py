@@ -20,7 +20,7 @@ def main():
     ap.add_argument('--dpi', type=int, default=450)
     a = ap.parse_args()
     os.makedirs(a.out, exist_ok=True)
-    info = subprocess.run(['pdfinfo', a.pdf], capture_output=True, text=True).stdout
+    info = subprocess.run(['pdfinfo', a.pdf], capture_output=True, text=True, encoding='utf-8', check=True).stdout
     pages = int(re.search(r'Pages:\s*(\d+)', info)[1])
     with tempfile.TemporaryDirectory() as tmp:
         for p in range(1, pages + 1):
@@ -31,9 +31,9 @@ def main():
                             os.path.join(tmp, 'p')], check=True)
             image = next(os.path.join(tmp, f) for f in os.listdir(tmp) if f.endswith('.png'))
             text = subprocess.run(['tesseract', image, '-', '--psm', '6', '-c', 'preserve_interword_spaces=1'],
-                                  capture_output=True, text=True).stdout
+                                  capture_output=True, text=True, encoding='utf-8', check=True).stdout
             os.remove(image)
-            with open(target, 'w') as f:
+            with open(target, 'w', encoding='utf-8') as f:
                 f.write(text)
             print(f'page {p}/{pages}', file=sys.stderr)
 

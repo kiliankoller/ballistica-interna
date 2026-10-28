@@ -5,6 +5,7 @@ what it is in its User-Agent.
 """
 import sys
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
 import urllib.robotparser
@@ -17,14 +18,23 @@ _last = {}
 
 
 def _rules(host):
+    """robots.txt of host, read as urllib.robotparser does: 401/403 forbid everything, another 4xx (no robots.txt)
+    allows everything; a host that cannot be reached stops the script (its rules are unknown)."""
     if host not in _robots:
         rp = urllib.robotparser.RobotFileParser()
         try:
             req = urllib.request.Request(f'https://{host}/robots.txt', headers=HEADERS)
             with urllib.request.urlopen(req, timeout=30) as r:
                 rp.parse(r.read().decode('utf-8', 'replace').splitlines())
-        except Exception:  # noqa: BLE001 - no robots.txt: everything allowed
-            rp.parse([])
+        except urllib.error.HTTPError as e:
+            if e.code in (401, 403):
+                rp.disallow_all = True
+            elif 400 <= e.code < 500:
+                rp.allow_all = True
+            else:
+                sys.exit(f'robots.txt of {host}: HTTP {e.code}, rules unknown: stopped')
+        except (urllib.error.URLError, TimeoutError, OSError) as e:
+            sys.exit(f'robots.txt of {host} not readable ({e}): stopped')
         _robots[host] = rp
     return _robots[host]
 

@@ -43,7 +43,9 @@ def test_barrels():
         path = os.path.join(REF, name)
         if not os.path.exists(path):
             continue
-        for load in json.load(open(path)):
+        with open(path, encoding='utf-8') as f:
+            loads = json.load(f)
+        for load in loads:
             if load.get('barrel') and load['barrel'] >= 300:
                 seen.setdefault(key(load['caliber']), []).append(load['barrel'])
     return {k: max(set(v), key=v.count) for k, v in seen.items()}
@@ -58,7 +60,7 @@ def powder_name(raw):
 
 def main():
     pdf = sys.argv[1] if len(sys.argv) > 1 else 'fixtures/sources/sax/sax_munition_ladedaten_2014.pdf'
-    text = subprocess.run(['pdftotext', '-layout', pdf, '-'], capture_output=True, text=True).stdout
+    text = subprocess.run(['pdftotext', '-layout', pdf, '-'], capture_output=True, text=True, encoding='utf-8', check=True).stdout
     barrels = test_barrels()
     loads, skipped = [], 0
     for i, line in enumerate(text.splitlines()):

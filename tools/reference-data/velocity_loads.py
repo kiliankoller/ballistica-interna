@@ -63,12 +63,19 @@ def hornady():
     db = sqlite3.connect(os.path.join(REF, 'hornady', 'hornady.db'))
     for i, (cal, barrel, bw, bname, coal, powder, sg, sv, mg, mv) in enumerate(db.execute(
             'select cartridge, barrel_in, bullet_gr, bullet, coal_in, powder, start_gr, start_fps, max_gr, max_fps from basic_load')):
+        if not (barrel and coal and mg and mv and sg and sv):
+            continue
         yield load(cal, bw, 'Hornady', bname, powder, charge(sg * G_PER_GR, sv * MS_PER_FPS),
                    charge(mg * G_PER_GR, mv * MS_PER_FPS), barrel * 25.4, coal * 25.4, i)
 
 
-for name, gen in (('vihtavuori', vihtavuori), ('barnes', barnes), ('sierra', sierra), ('hornady', hornady)):
-    loads = list(gen())
-    with open(os.path.join(REF, f'{name}.json'), 'w') as f:
-        json.dump(loads, f)
-    print(f'{name}: {len(loads)} loads', file=sys.stderr)
+def main():
+    for name, gen in (('vihtavuori', vihtavuori), ('barnes', barnes), ('sierra', sierra), ('hornady', hornady)):
+        loads = list(gen())
+        with open(os.path.join(REF, f'{name}.json'), 'w', encoding='utf-8') as f:
+            json.dump(loads, f)
+        print(f'{name}: {len(loads)} loads', file=sys.stderr)
+
+
+if __name__ == '__main__':
+    main()

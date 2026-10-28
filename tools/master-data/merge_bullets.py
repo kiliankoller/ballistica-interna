@@ -191,6 +191,6 @@ def report(rows, conflicts, path):
         lines += [f'| {r["mname"]} | {r["part_number"]} | {r["pname"]} | {r["flags"]} |' for r in rows
                   if any(x.startswith(flag) for x in r['flags'].split())]
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, 'w') as f:
+    with open(path, 'w', encoding='utf-8') as f:
         f.write('\n'.join(lines) + '\n')
     return summary

@@ -32,7 +32,8 @@ def parse(lines):
         v = [number(x) for x in g[4:15]]
         mid = re.split(r'\s{2,}', m['mid'].strip())
         # mid: [type ...] bullet maker, case maker, primer; the type may also stand on the lines around
-        around = ' '.join(s.strip() for s in (lines[k - 1], lines[k + 1]) if s.strip() and not ROW.match(s))
+        neighbours = lines[max(k - 1, 0):k] + lines[k + 1:k + 2]
+        around = ' '.join(s.strip() for s in neighbours if s.strip() and not ROW.match(s))
         loads.append(dict(
             caliber=m['cal'].strip(), grains=number(m['gr']),
             bulletMaker=mid[-3] if len(mid) >= 3 else '', bulletType=' '.join(mid[:-3] + [around]).strip(),

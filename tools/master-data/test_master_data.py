@@ -37,7 +37,7 @@ class CapacityEstimate(unittest.TestCase):
     def test_factor_for_rifle_calibers_only(self):
         self.assertEqual(build_csv.capacity_factor(dict(tab='1')), build_csv.CAPACITY_FACTOR)
         self.assertEqual(build_csv.capacity_factor(dict(tab=4)), 1)
-        with open(os.path.join(DATA, 'calibers.csv'), newline='') as f:
+        with open(os.path.join(DATA, 'calibers.csv'), newline='', encoding='utf-8') as f:
             for r in csv.DictReader(f):
                 if r['V_source'] == 'estimate':
                     v = build_csv.capacity_estimate(r) * build_csv.capacity_factor(r)
@@ -62,7 +62,7 @@ SUSPECT_DERIVED = set()
 
 class DerivedCapacities(unittest.TestCase):
     def test_derived_capacities_agree_with_the_outline(self):
-        with open(os.path.join(DATA, 'calibers.csv'), newline='') as f:
+        with open(os.path.join(DATA, 'calibers.csv'), newline='', encoding='utf-8') as f:
             rows = [r for r in csv.DictReader(f) if r['V_source'] == 'reload-swiss-fill']
         self.assertTrue(rows)
         off = {r['cipname'] for r in rows
@@ -70,14 +70,14 @@ class DerivedCapacities(unittest.TestCase):
         self.assertEqual(off, SUSPECT_DERIVED, 'fixed or new suspects: update SUSPECT_DERIVED')
 
     def test_bullet_names_are_unique(self):
-        with open(os.path.join(DATA, 'bullets.csv'), newline='') as f:
+        with open(os.path.join(DATA, 'bullets.csv'), newline='', encoding='utf-8') as f:
             names = [(r['mname'], r['pname'], r['gdia']) for r in csv.DictReader(f)]
         self.assertEqual(len(names), len(set(names)))
         self.assertIn(('Styria Arms', 'AERO SB 165 gr HP 1.5', '7.82'), names)
         self.assertIn(('Nosler', '30 Cal 150 gr Spitzer Partition', '7.823'), names)
 
     def test_rejected_derived_capacities_are_estimated(self):
-        with open(os.path.join(DATA, 'calibers.csv'), newline='') as f:
+        with open(os.path.join(DATA, 'calibers.csv'), newline='', encoding='utf-8') as f:
             rows = {r['cipname']: r for r in csv.DictReader(f)}
         for name in build_csv.REJECTED_DERIVED:
             self.assertEqual(rows[name]['V_source'], 'estimate', name)
@@ -95,6 +95,37 @@ class Checks(unittest.TestCase):
     def test_powder_shape(self):
         self.assertTrue(build_db.check('propellant', dict(Ba='0.5', Qex='3900', k='1.23', z1='0.8', z2='0.5', pcd='950')))
 
+    def test_material_density_and_numbers_are_checked(self):
+        powder = dict(Ba='0.5', Qex='3900', k='1.23', z1='0.5', z2='0.8', pc='1600', pcd='950')
+        self.assertEqual(build_db.check('propellant', powder), [])
+        self.assertTrue(any('material density' in b for b in build_db.check('propellant', dict(powder, pc='0'))))
+        self.assertTrue(any('"abc" is not a number' in b for b in build_db.check('propellant', dict(powder, tcc='abc'))))
+
+    def test_failed_build_leaves_no_database(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            data = os.path.join(tmp, 'data')
+            os.makedirs(data)
+            for name in ('calibers.csv', 'bullets.csv', 'powders.csv', 'sources.csv'):
+                with open(os.path.join(DATA, name), encoding='utf-8') as src, open(os.path.join(data, name), 'w', encoding='utf-8') as dst:
+                    dst.write(src.read())
+            with open(os.path.join(data, 'powders.csv'), encoding='utf-8') as f:
+                lines = f.read().split('\n')
+            head = lines[0].split(',')
+            row = lines[1].split(',')
+            row[head.index('Qex')] = '99999'
+            with open(os.path.join(data, 'powders.csv'), 'w', encoding='utf-8') as f:
+                f.write('\n'.join([lines[0], ','.join(row)] + lines[2:]))
+            out = os.path.join(tmp, 'x.db')
+            saved = build_db.DATA
+            try:
+                build_db.DATA = data
+                sys.argv = ['build_db.py', '--out', out]
+                with self.assertRaises(SystemExit):
+                    build_db.main()
+            finally:
+                build_db.DATA = saved
+            self.assertFalse(os.path.exists(out) or os.path.exists(out + '.tmp'))
+
     def test_bullet_seating_depth(self):
         self.assertTrue(build_db.check('projectile', dict(gdia='7.82', gmass='150', glen='30', gdepthmax='31', g1bc='0.4')))
 
@@ -103,14 +134,14 @@ class CommittedData(unittest.TestCase):
     def test_csvs_build_without_errors(self):
         with tempfile.TemporaryDirectory() as tmp:
             r = subprocess.run([sys.executable, os.path.join(os.path.dirname(__file__), 'build_db.py'), '--out',
-                                os.path.join(tmp, 'x.db')], capture_output=True, text=True)
+                                os.path.join(tmp, 'x.db')], capture_output=True, text=True, encoding='utf-8')
             self.assertEqual(r.returncode, 0, r.stderr)
 
     def test_every_row_names_a_shipped_source(self):
-        with open(os.path.join(DATA, 'sources.csv'), newline='') as f:
+        with open(os.path.join(DATA, 'sources.csv'), newline='', encoding='utf-8') as f:
             ship = {r['id'] for r in csv.DictReader(f) if r['ship'] == 'yes'}
         for name in ('calibers.csv', 'bullets.csv', 'powders.csv'):
-            with open(os.path.join(DATA, name), newline='') as f:
+            with open(os.path.join(DATA, name), newline='', encoding='utf-8') as f:
                 for r in csv.DictReader(f):
                     for s in r['source'].split(';'):
                         self.assertIn(s.strip(), ship, f'{name}: {r}')
@@ -207,7 +238,7 @@ class ShippedFitsTest(unittest.TestCase):
             os.makedirs(os.path.join(tmp, 'calibration'))
             # a single-powder test fit, newer than all others, with a deliberately wrong value
             fake = {'set': 'rs', 'class': None, 'params': {}, 'datasheet': True, 'fitted': {'RS50': {'Ba': 99.0}}}
-            with open(os.path.join(tmp, 'calibration', 'powders-2099-01-01T00-00-00-000Z.json'), 'w') as f:
+            with open(os.path.join(tmp, 'calibration', 'powders-2099-01-01T00-00-00-000Z.json'), 'w', encoding='utf-8') as f:
                 json.dump(fake, f)
             saved = build_csv.FIX
             build_csv.FIX = tmp
@@ -222,7 +253,7 @@ class ShippedFitsTest(unittest.TestCase):
         with open(os.path.join(build_csv.ROOT, 'data', 'fits-shipped.json'), encoding='utf-8') as f:
             notes = {n: v['note'] for fitted in json.load(f)['fits'].values() for n, v in fitted.items() if v.get('note')}
         self.assertIn('24N41', notes)
-        with open(os.path.join(DATA, 'powders.csv'), newline='') as f:
+        with open(os.path.join(DATA, 'powders.csv'), newline='', encoding='utf-8') as f:
             status = {r['pname']: r['fit_status'] for r in csv.DictReader(f)}
         for name, note in notes.items():
             self.assertIn(note, status[name])

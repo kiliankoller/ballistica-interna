@@ -121,18 +121,18 @@ def parse(pages, contents):
 def catalogue_pages(pdf):
     """{catalogue page number: `pdftotext -raw` text}: the cover is a single page, every further PDF page a spread
     of two catalogue pages, read as left and right half."""
-    info = subprocess.run(['pdfinfo', pdf], capture_output=True, text=True, check=True).stdout
+    info = subprocess.run(['pdfinfo', pdf], capture_output=True, text=True, encoding='utf-8', check=True).stdout
     count = int(re.search(r'Pages:\s+(\d+)', info)[1])
     out = {}
     for p in range(1, count + 1):
-        size = subprocess.run(['pdfinfo', '-f', str(p), '-l', str(p), pdf], capture_output=True, text=True).stdout
+        size = subprocess.run(['pdfinfo', '-f', str(p), '-l', str(p), pdf], capture_output=True, text=True, encoding='utf-8', check=True).stdout
         w, h = (float(x) for x in re.search(r'Page\s+\d+ size:\s+([\d.]+) x ([\d.]+)', size).groups())
         halves = [(0, w)] if w < h else [(0, w / 2), (w / 2, w / 2)]
         for i, (x, width) in enumerate(halves):
             no = 1 if p == 1 else 2 * p - 3 + i
             out[no] = subprocess.run(['pdftotext', '-raw', '-f', str(p), '-l', str(p), '-x', str(int(x)), '-y', '0',
                                       '-W', str(int(width)), '-H', str(int(h)), pdf, '-'],
-                                     capture_output=True, text=True, check=True).stdout
+                                     capture_output=True, text=True, encoding='utf-8', check=True).stdout
     return out
 
 
@@ -143,7 +143,7 @@ def main():
     a = ap.parse_args()
     pdf = a.pdf or max(glob.glob(os.path.join(SOURCES, '*.pdf')), key=os.path.getmtime)
     pages = catalogue_pages(pdf)
-    contents = subprocess.run(['pdftotext', '-layout', '-f', '2', '-l', '2', pdf, '-'], capture_output=True, text=True,
+    contents = subprocess.run(['pdftotext', '-layout', '-f', '2', '-l', '2', pdf, '-'], capture_output=True, text=True, encoding='utf-8',
                               check=True).stdout
     rows = parse(pages, contents)
     retrieved = datetime.date.fromtimestamp(os.path.getmtime(pdf)).isoformat()
