@@ -36,8 +36,12 @@ function openChecked(f: OpenedFile): boolean {
 }
 
 async function open() {
-  const f = await window.api.openLoad();
-  if (f) openChecked(f);
+  try {
+    const f = await window.api.openLoad();
+    if (f) openChecked(f);
+  } catch (e) {
+    ElMessage.error(t('errors.failed', { msg: message(e) }));
+  }
 }
 
 function newLoad() {

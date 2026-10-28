@@ -98,6 +98,7 @@ def main():
                    ':hollow,:length_mm,:tip_mm,:smax_mm,:bc_g1,:twist_note,:source)',
                    [dict(r, source=source) for r in rows])
     db.commit()
+    db.close()
     print(f'{len(rows)} bullets → {a.db}', file=sys.stderr)
 
 

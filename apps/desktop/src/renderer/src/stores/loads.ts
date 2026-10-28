@@ -102,7 +102,8 @@ export const useLoads = defineStore('loads', () => {
       const names = () => `${doc.file[kind].mname?.value ?? ''}\n${doc.file[kind].pname?.value ?? ''}`;
       const asked = names();
       const [mname, pname] = asked.split('\n') as [string, string];
-      const record = await window.api.masterFind(kind, mname, pname);
+      // only notes: a failed lookup leaves them out
+      const record = await window.api.masterFind(kind, mname, pname).catch(() => null);
       // another component was chosen meanwhile: its own notes are already set
       if (names() !== asked) continue;
       const notes = record ? recordNotes(record) : [];

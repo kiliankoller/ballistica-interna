@@ -6,6 +6,7 @@ import { APP_NAME, DISCLAIMER_VERSION, type DialogKind, type LibraryExport, type
 import { findMaster, listMaster, masterRecord, masterStatus, openMasterData } from './masterdata';
 import { deleteFromLibrary, exportLibrary, importLibrary, libraryRecord, listLibrary, saveToLibrary, updateInLibrary } from './library';
 import { defaultSettings, loadSettings, saveSettings } from './settings';
+import { safeFileName as safeName } from './files';
 
 // one data folder named like the app, in development and in the installed app alike
 app.setName(APP_NAME);
@@ -89,8 +90,7 @@ const allowedPaths = new Set<string>();
 const allow = (path: string) => allowedPaths.add(resolve(path));
 const allowed = (path: string) => allowedPaths.has(resolve(path));
 
-/** A file name without the characters Windows and macOS do not allow. */
-const safeFileName = (name: string) => name.replace(/[\\/:*?"<>|\x00-\x1f]/g, '_').trim() || APP_NAME;
+const safeFileName = (name: string) => safeName(name, APP_NAME);
 
 /** Default path of a dialog: the file name in the folder last used for this kind of file. */
 function inLastDir(kind: DialogKind, fileName = ''): string | undefined {

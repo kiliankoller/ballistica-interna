@@ -42,7 +42,11 @@ const placeholder = computed(() => {
 });
 
 async function refresh() {
-  [own.value, master.value] = await loads.componentLists(props.kind);
+  try {
+    [own.value, master.value] = await loads.componentLists(props.kind);
+  } catch (e) {
+    ElMessage.error(t('errors.failed', { msg: e instanceof Error ? e.message : String(e) }));
+  }
 }
 
 async function choose(value: string) {

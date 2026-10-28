@@ -62,6 +62,7 @@ def main():
     db.executemany('insert into powder_datasheet values (:maker,:name,:kind,:qex_j_g,:bulk_density_g_l,:grain_1_mm,'
                    ':grain_2_mm,:grain_text,:powder_type,:tolerance,:url,:source)', rows)
     db.commit()
+    db.close()
     print(f'{len(rows)} powders → {a.db}', file=sys.stderr)
 
 

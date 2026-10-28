@@ -16,6 +16,7 @@ import json
 import os
 import re
 import sqlite3
+from contextlib import closing
 import sys
 
 ROOT = os.path.join(os.path.dirname(__file__), '..', '..')
@@ -71,6 +72,7 @@ def main():
     a = ap.parse_args()
     db = sqlite3.connect(f'file:{a.names}?mode=ro', uri=True)
     known = sorted({(m, re.sub(r'\s*\(approx\.\)\s*$', '', p)) for m, p in db.execute('select mname, pname from propellant where coalesce(geloescht, 0) = 0')})
+    db.close()
     known_set = set(known)
     by_name = collections.defaultdict(set)
     for m, p in known:
@@ -84,7 +86,12 @@ def main():
         full = os.path.join(ROOT, path)
         if not os.path.exists(full):
             continue
-        names = [l['powder'] for l in json.load(open(full, encoding='utf-8'))] if sql is None else [p for (p,) in sqlite3.connect(full).execute(sql)]
+        if sql is None:
+            with open(full, encoding='utf-8') as f:
+                names = [l['powder'] for l in json.load(f)]
+        else:
+            with closing(sqlite3.connect(full)) as src_db:
+                names = [p for (p,) in src_db.execute(sql)]
         for p in names:
             counts[p] += 1
             seen_in[p].add(src)

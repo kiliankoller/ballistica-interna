@@ -13,29 +13,38 @@ const loads = useLoads();
 const settings = ref<Settings | null>(null);
 const library = ref<LibraryEntry[]>([]);
 
+const failed = (e: unknown) => ElMessage.error(t('errors.failed', { msg: e instanceof Error ? e.message : String(e) }));
+
 async function refreshLibrary() {
   library.value = await window.api.libraryList();
 }
 
 watch(open, async (isOpen) => {
   if (!isOpen) return;
-  settings.value = await window.api.getSettings();
-  await refreshLibrary();
+  try {
+    settings.value = await window.api.getSettings();
+    await refreshLibrary();
+  } catch (e) {
+    failed(e);
+  }
 });
 
 const notices = ref('');
 const noticesOpen = ref(false);
 
 async function showNotices() {
-  notices.value = await window.api.thirdPartyNotices();
-  noticesOpen.value = true;
+  try {
+    notices.value = await window.api.thirdPartyNotices();
+    noticesOpen.value = true;
+  } catch (e) {
+    failed(e);
+  }
 }
 
 const editing = ref<LibraryEntry | null>(null);
 const editingRecord = ref<DbRecord | null>(null);
 const editorOpen = ref(false);
 
-const failed = (e: unknown) => ElMessage.error(t('errors.failed', { msg: e instanceof Error ? e.message : String(e) }));
 
 async function change(entry: LibraryEntry) {
   try {
@@ -88,12 +97,20 @@ async function importLibrary() {
 }
 
 async function setLanguage(language: 'de' | 'en') {
-  settings.value = await window.api.setSettings({ language });
-  locale.value = language;
+  try {
+    settings.value = await window.api.setSettings({ language });
+    locale.value = language;
+  } catch (e) {
+    failed(e);
+  }
 }
 
 async function setTheme(theme: 'system' | 'light' | 'dark') {
-  settings.value = await window.api.setSettings({ theme });
+  try {
+    settings.value = await window.api.setSettings({ theme });
+  } catch (e) {
+    failed(e);
+  }
 }
 </script>
 

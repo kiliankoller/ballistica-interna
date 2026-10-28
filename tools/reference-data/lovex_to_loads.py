@@ -21,6 +21,7 @@ def main():
                           caseMaker='Sellier & Bellot', powder=powder,
                           min=dict(g=rec_g, v=rec_ms, p=None, fill=None), max=dict(g=max_g, v=max_ms, p=bar, fill=None),
                           barrel=barrel, twist=None, col=col or colmax, notes='', line=(page or 0) * 1000 + (line or 0)))
+    db.close()
     json.dump(loads, sys.stdout, indent=1)
     print(f'{len(loads)} loads', file=sys.stderr)
 

@@ -3,6 +3,7 @@
 // load data; the user has to confirm before working with the app.
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { ElMessage } from 'element-plus';
 import { APP_NAME, DISCLAIMER_VERSION } from '../../../shared/api';
 import logo from '../assets/logo.svg?raw';
 
@@ -11,7 +12,12 @@ const { t, tm } = useI18n();
 const understood = ref(false);
 
 async function accept() {
-  await window.api.setSettings({ disclaimerAccepted: DISCLAIMER_VERSION });
+  try {
+    await window.api.setSettings({ disclaimerAccepted: DISCLAIMER_VERSION });
+  } catch (e) {
+    // the confirmation holds for this session; the notice comes again at the next start
+    ElMessage.error(t('errors.failed', { msg: e instanceof Error ? e.message : String(e) }));
+  }
   open.value = false;
 }
 </script>

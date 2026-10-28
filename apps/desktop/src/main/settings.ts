@@ -1,7 +1,8 @@
-import { existsSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { app } from 'electron';
 import type { Settings } from '../shared/api';
+import { writeFileAtomic } from './files';
 
 const file = () => join(app.getPath('userData'), 'settings.json');
 
@@ -28,9 +29,7 @@ export function loadSettings(): Settings {
   return defaultSettings();
 }
 
-/** Written to a temporary file first: an interrupted write leaves the previous settings intact. */
+/** Written via a temporary file: an interrupted write leaves the previous settings intact. */
 export function saveSettings(settings: Settings): void {
-  const tmp = `${file()}.tmp`;
-  writeFileSync(tmp, JSON.stringify(settings, null, 2));
-  renameSync(tmp, file());
+  writeFileAtomic(file(), JSON.stringify(settings, null, 2));
 }

@@ -118,6 +118,7 @@ def calibers():
             rows.append(r)
         else:
             skipped.append(name)
+    db.close()
     print(f'calibers left out (sheet without L3, L6, G1 or Pmax): {len(skipped)}', file=sys.stderr)
     return rows
 
@@ -177,6 +178,7 @@ def bullets():
     styria = list(db.execute(
             'select maker, model, type, diameter_in, diameter_mm, weight_gr, length_mm, tip_mm, smax_mm, bc_g1, twist_note, hollow '
             "from bullet where source = 'Styria Arms AERO price list'"))
+    db.close()
     # the price list has some bullets twice under the same model, type and weight: the SB with a hollow point of
     # 1.5 or 2 mm diameter, the SOLR with a short (magazine) or long tip; the name says which
     same = collections.Counter((r[1], r[2], r[4], r[5]) for r in styria)
@@ -285,6 +287,7 @@ def powders():
     db = sqlite3.connect(os.path.join(FIX, 'open-db', 'components.db'))
     sheet = {(m.replace(' ', ''), n): (q, b, kind) for m, n, q, b, kind in db.execute('select maker, name, qex_j_g, bulk_density_g_l, kind from powder_datasheet')}
     sheet_doc = {(m.replace(' ', ''), n): src for m, n, src in db.execute('select maker, name, source from powder_datasheet')}
+    db.close()
     estimated = estimated_bulk()
     rows = []
     for set_, fitted in newest_fits().items():

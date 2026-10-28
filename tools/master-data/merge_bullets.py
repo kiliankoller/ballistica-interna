@@ -105,6 +105,7 @@ def load(db_path):
         r = dict(r)
         r['diameter_in'] = JBM_DIAMETER.get(r['diameter_in'], r['diameter_in'])
         jbm.setdefault(JBM_MAKER.get(r['maker'], r['maker']), []).append(r)
+    db.close()
     return makers, jbm
 
 
