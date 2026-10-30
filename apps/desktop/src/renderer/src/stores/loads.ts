@@ -71,8 +71,10 @@ export const useLoads = defineStore('loads', () => {
   }
 
   function setUnit(key: string, unit: string) {
-    units.value = { ...units.value, [key]: unit };
-    void window.api.setSettings({ units: units.value });
+    // plain object: the reactive proxy cannot be cloned for IPC
+    const next = { ...units.value, [key]: unit };
+    units.value = next;
+    void window.api.setSettings({ units: next });
   }
 
   function add(file: GrtLoadFile, path: string | null, name: string) {
