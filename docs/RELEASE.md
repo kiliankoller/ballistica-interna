@@ -3,7 +3,7 @@
 Checklist for the maintainer, and the texts of the releases. Nothing here is done automatically: the tag and the
 release text are the maintainer's decision.
 
-Published: the repository is public; v0.2.0 (2026-10-23) was the first release, then v0.3.0 (2026-10-26), v0.4.0 and v0.4.1 (2026-10-28). Their texts are at the end of this file.
+Published: the repository is public; v0.2.0 (2026-10-23) was the first release, then v0.3.0 (2026-10-26), v0.4.0 and v0.4.1 (2026-10-28). Draft for v0.5.0 below. Their texts are at the end of this file.
 
 ## Before every tag
 
@@ -40,14 +40,15 @@ Done:
 
 Open (the maintainer decides how far to go; the points are accepted risks, not forgotten):
 
-- [ ] Name BallisticaInterna: check TMview/DPMA/EUIPO and GitHub.
+- [x] Name BallisticaInterna: accepted without a trademark search (maintainer's decision 2026-11-16).
 - [x] Run each installer once on its platform (v0.3.0: macOS, Windows and Linux checked by the maintainer, 2026-10-26).
-- [ ] Per maker: terms of service and robots.txt read and noted in `data/sources.csv`; still to confirm for Norma and
-      Vihtavuori.
+- [x] Per maker: terms of service and robots.txt read and noted in `data/sources.csv` (Norma and Vihtavuori
+      rechecked 2026-11-16: unchanged since 2026-10-21).
 - [x] Repository settings (checked 2026-10-22): description and topics set, Issues enabled, private vulnerability
       reporting enabled (SECURITY.md points to it). Still to look at: no Sponsors button, no donation links
       (CONTRIBUTING.md).
-- [ ] GitHub account: "Keep my email addresses private" and "Block command line pushes that expose my email" on.
+- [x] GitHub account: "Keep my email addresses private" and "Block command line pushes that expose my email" on
+      (checked 2026-11-16).
 - [ ] Enquiry to the liability insurer: is publishing free open-source software, and damage to third parties from
       wrong calculations, covered (enquiry to be written by the maintainer).
 - [x] Impressum checked by the maintainer (2026-10-22): not needed.
@@ -71,13 +72,66 @@ five of the review are in `local/legal-review-2026-10-21.md`. Among them:
   e-mail address, no income. Whether this is enough is not clarified.
 - Whether the fitting of powder parameters to publicly available laboratory loads and the listing of catalogue
   facts (section 44b UrhG, database rights) is permitted where a maker's terms or robots.txt exclude automated
-  use.
+  use. Rechecked 2026-11-16 for Norma and Vihtavuori: terms unchanged, reservations in plain text only, no
+  machine-readable opt-out; whether a plain-text reservation suffices awaits the Federal Court of Justice (BGH).
+  The decision of 2026-10-21 stands.
 - How far the exclusion of liability carries for free but safety-relevant software, and whether the private
   liability insurance covers it.
 - Whether the new product liability rules or the Cyber Resilience Act apply as long as there is no income.
 - Donations and sponsoring: none; if ever wished, clarify with a lawyer first.
 
 Reply template if a maker complains: [CEASE-AND-DESIST-RESPONSE.md](CEASE-AND-DESIST-RESPONSE.md).
+
+## Text of the release v0.5.0 (draft)
+
+**BallisticaInterna 0.5.0: interior ballistics for rifle handloads**
+
+New: QuickLOAD load files (`.dat`) can be imported. The calculation and the master data are unchanged: every load
+gives the same result as in 0.4.1.
+
+**Warning: this is a simulation, not load data.** The calculated pressure can be too low at any fill ratio, most
+at low fill. The real pressure can be higher than shown. Never load on the basis of this app alone; use only the
+makers' published load data, start with the starting load and never exceed the maximum load. Reloading is
+dangerous and can cause serious injury or death.
+
+New since 0.4.1
+- "Import QuickLOAD…" (toolbar and start page) opens one or more QuickLOAD load files (`.dat`) read only. Each
+  becomes a new load that is not saved yet; "Save" stores it as a `.grtload` file, the QuickLOAD file stays
+  unchanged. A summary lists per file where caliber, bullet and powder came from.
+- Taken from the QuickLOAD file: case capacity, case and cartridge length, bullet diameter, weight, length and BC,
+  groove diameter, bore area, Pmax, barrel length, charge and powder temperature. Calibers and bullets without a
+  master data record are built from these values.
+- Not taken: the burn values of the powder (QuickLOAD uses another form function; the powder keeps
+  BallisticaInterna's fit) and the start pressure (BallisticaInterna's default). A powder that is not in the master
+  data must be chosen by hand. Not affiliated with QuickLOAD.
+
+Fixed since 0.4.1
+- A changed display unit (e.g. grain instead of gram) was not saved and was back to the old one at the next start.
+
+How accurate it is (unchanged since 0.4.0)
+- Velocity: about 3.4 % rms against the makers' measured loads. Pressure: about 13 % rms, 12.8 % on loads held out
+  of the fit. By powder maker the typical range is ±2 to ±5 % in velocity and ±8 to ±15 % in pressure. It is no
+  safety margin.
+
+Known limitations
+- [#12](https://github.com/kiliankoller/ballistica-interna/issues/12) The installers are not signed. macOS: open the
+  app once via System Settings → Privacy & Security → Open Anyway. Windows: SmartScreen: More info → Run anyway.
+- [#13](https://github.com/kiliankoller/ballistica-interna/issues/13) Pressure deviates about 13 % rms from
+  measured loads and can be too low at any fill ratio, most below 90 %. It is no safety margin.
+- [#5](https://github.com/kiliankoller/ballistica-interna/issues/5) Handguns are not supported.
+- The derived case capacities are not yet compared with measured water capacities
+  ([docs/MODEL.md](https://github.com/kiliankoller/ballistica-interna/blob/main/docs/MODEL.md#case-capacity)).
+- No powders of Hodgdon, Ramshot, IMR, Winchester and Alliant (their terms forbid using the load data).
+
+Compare the SHA-256 checksum (`SHA256SUMS-*.txt`, attached to this release) with your download before you start
+an installer: `shasum -a 256 <file>` on macOS, `sha256sum <file>` on Linux, `certutil -hashfile <file> SHA256`
+on Windows.
+
+Provided free of charge and without warranty; liability is excluded to the extent permitted by law
+([DISCLAIMER.md](https://github.com/kiliankoller/ballistica-interna/blob/main/DISCLAIMER.md)). Licences: code
+GPL-3.0-or-later, data (`data/*.csv`) ODbL 1.0 with attribution (NOTICE). Not affiliated with, endorsed by or
+sponsored by any maker, the C.I.P. or GRT. No outside contributions, no donations (see CONTRIBUTING.md). Security
+reports: GitHub private vulnerability reporting (SECURITY.md).
 
 ## Text of the release v0.4.1 (published 2026-10-28)
 
