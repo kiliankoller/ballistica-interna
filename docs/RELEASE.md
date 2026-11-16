@@ -3,7 +3,7 @@
 Checklist for the maintainer, and the texts of the releases. Nothing here is done automatically: the tag and the
 release text are the maintainer's decision.
 
-Published: the repository is public; v0.2.0 (2026-10-23) was the first release, then v0.3.0 (2026-10-26), v0.4.0 and v0.4.1 (2026-10-28). Draft for v0.5.0 below. Their texts are at the end of this file.
+Published: the repository is public; v0.2.0 (2026-10-23) was the first release, then v0.3.0 (2026-10-26), v0.4.0 and v0.4.1 (2026-10-28), v0.5.0 (2026-11-16). Their texts are at the end of this file.
 
 ## Before every tag
 
@@ -82,7 +82,7 @@ five of the review are in `local/legal-review-2026-10-21.md`. Among them:
 
 Reply template if a maker complains: [CEASE-AND-DESIST-RESPONSE.md](CEASE-AND-DESIST-RESPONSE.md).
 
-## Text of the release v0.5.0 (draft)
+## Text of the release v0.5.0 (published 2026-11-16)
 
 **BallisticaInterna 0.5.0: interior ballistics for rifle handloads**
 
