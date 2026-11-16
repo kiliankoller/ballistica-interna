@@ -1,7 +1,7 @@
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
-import { describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 import type { DbRecord } from './api';
 import { bulletName, caliberKey, isQuickLoad, matchCaliber, matchPowder, parseQuickLoad, qlNumber } from './quickload';
 
@@ -29,11 +29,18 @@ describe('caliberKey', () => {
 const dbPath = join(import.meta.dirname, '..', '..', '..', '..', 'data', 'build', 'ballisticainterna.db');
 
 // against the shipped master data (pnpm data); the names are those of real QuickLOAD files
+// The suite body runs even when skipped (test collection), so the database is opened in beforeAll: in CI the checks
+// run before the master data is built.
 describe.skipIf(!existsSync(dbPath))('matching against the master data', () => {
-  const db = new DatabaseSync(dbPath, { readOnly: true } as ConstructorParameters<typeof DatabaseSync>[1]);
-  const all = (t: string) => db.prepare(`select * from ${t} where geloescht = 0`).all() as DbRecord[];
-  const calibers = all('caliber');
-  const powders = all('propellant');
+  let calibers: DbRecord[] = [];
+  let powders: DbRecord[] = [];
+  beforeAll(() => {
+    const db = new DatabaseSync(dbPath, { readOnly: true } as ConstructorParameters<typeof DatabaseSync>[1]);
+    const all = (t: string) => db.prepare(`select * from ${t} where geloescht = 0`).all() as DbRecord[];
+    calibers = all('caliber');
+    powders = all('propellant');
+    db.close();
+  });
 
   it('finds the calibers', () => {
     const expected: Record<string, string | null> = {
