@@ -80,7 +80,7 @@ Installers for macOS, Windows and Linux are attached to each release on GitHub. 
 
 ## Development
 
-Needs Node.js 22, pnpm 8 and Python 3 (master data build).
+Needs Node.js 22, pnpm 10 and Python 3.14 or later (master data build).
 
 ```sh
 ./run.sh         # build the master data and start the app (development mode)

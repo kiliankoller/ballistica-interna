@@ -6,10 +6,10 @@ import { spawnSync } from 'node:child_process';
 const env = { ...process.env, PYTHONUTF8: '1' };
 
 for (const cmd of ['python3', 'python', 'py']) {
-  const probe = spawnSync(cmd, ['-c', 'import sys; sys.exit(0 if sys.version_info >= (3, 9) else 1)'], { stdio: 'ignore', shell: false, env });
+  const probe = spawnSync(cmd, ['-c', 'import sys; sys.exit(0 if sys.version_info >= (3, 14) else 1)'], { stdio: 'ignore', shell: false, env });
   if (probe.status !== 0) continue;
   const run = spawnSync(cmd, process.argv.slice(2), { stdio: 'inherit', env });
   process.exit(run.status ?? 1);
 }
-console.error('Python 3.9 or later not found (python3, python or py)');
+console.error('Python 3.14 or later not found (python3, python or py)');
 process.exit(1);

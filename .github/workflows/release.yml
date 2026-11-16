@@ -15,15 +15,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # windows-2022: node-gyp 9 (inside pnpm 8) finds Visual Studio 2022 but not 2026, which windows-latest has
+        # windows-2022: node-gyp 9 (inside pnpm 8) found Visual Studio 2022 but not 2026, which windows-latest has;
+        # not yet tried with pnpm 10
         os: [macos-latest, windows-2022, ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v6
 
+      # pnpm version from packageManager in package.json
       - uses: pnpm/action-setup@v6
-        with:
-          version: 8.6.11
 
       - uses: actions/setup-node@v6
         with:
@@ -32,8 +32,7 @@ jobs:
 
       - uses: actions/setup-python@v6
         with:
-          # node-gyp 9 (inside pnpm 8) still imports distutils, which Python 3.12 has removed
-          python-version: '3.11'
+          python-version: '3.14'
 
       - name: Dependencies
         run: pnpm install --frozen-lockfile

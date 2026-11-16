@@ -5,7 +5,7 @@ The installer is built on Windows itself (the SQLite module is native).
 ## Prepare (once)
 
 1. Node.js 22 LTS (nodejs.org), then in PowerShell: `corepack enable`
-2. Python 3.9 or later (python.org, "Add python.exe to PATH")
+2. Python 3.14 or later (python.org, "Add python.exe to PATH")
 3. Git (git-scm.com)
 4. `git clone git@github.com:kiliankoller/ballistica-interna.git` (or the share from the Mac)
 
