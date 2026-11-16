@@ -22,6 +22,7 @@ const sourceText = computed(() => {
   // always name a source: values not taken from a list come from the opened file or were typed in
   if (!o) return t(props.doc.path ? 'source.file' : 'source.input');
   if (o.from === 'master') return t('source.master', { name: o.name ?? '' });
+  if (o.from === 'quickload') return t('source.quickload', { name: o.name ?? '' });
   return o.name ? t('source.ownCopy', { name: o.name }) : t(`own.${props.kind}.source`);
 });
 

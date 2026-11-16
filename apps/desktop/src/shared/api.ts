@@ -1,4 +1,5 @@
 // Types shared by the main process, the preload bridge and the renderer.
+import type { QuickLoadImport } from './quickload';
 
 /** Name shown in titles and reports, and the name of the data folder. */
 export const APP_NAME = 'BallisticaInterna';
@@ -22,7 +23,7 @@ export interface Settings {
   activeFile: string;
 }
 
-export type DialogKind = 'load' | 'pdf' | 'library';
+export type DialogKind = 'load' | 'pdf' | 'library' | 'quickload';
 
 export interface OpenedFile {
   path: string;
@@ -92,6 +93,8 @@ export interface Api {
   /** Reads a load by path; null when the file no longer exists or is unreadable. */
   readLoad(path: string): Promise<OpenedFile | null>;
   saveLoad(path: string | null, content: string, suggestedName: string): Promise<string | null>;
+  /** Asks for QuickLOAD files (.dat) and reads them with the master records found for them ([] when cancelled). */
+  importQuickLoad(): Promise<QuickLoadImport[]>;
   exportPdf(report: ReportPayload, mode: ReportMode): Promise<string | null>;
   /** Tells the main process whether a load has unsaved changes (asked before the window closes). */
   setDirty(dirty: boolean): void;

@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import Database from 'better-sqlite3';
 import { app } from 'electron';
 import { COMPONENT_KINDS, type ComponentKind, type DbRecord, type DbStatus, type ListItem } from '../shared/api';
+import { INCH, matchBullet, matchCaliber, matchPowder, qlNumber, type QuickLoadImport, type QuickLoadValues } from '../shared/quickload';
 
 // The master data BallisticaInterna ships (data/build/ballisticainterna.db, built from data/*.csv): read only. Records use the
 // same field names as the components of a load, so they are taken over the same way.
@@ -75,4 +76,22 @@ export function findMaster(kind: ComponentKind, mname: string, pname: string): D
   if (!db || !known(kind) || kind === 'caliber' || !mname || !pname) return null;
   const r = db.prepare(`SELECT id FROM ${kind} WHERE geloescht = 0 AND mname = ? AND pname = ? LIMIT 1`).get(mname, pname) as { id: number } | undefined;
   return r ? masterRecord(kind, r.id) : null;
+}
+
+/** The master caliber, bullet and powder of a QuickLOAD file (each null when not found safely). */
+export function matchQuickLoad(v: QuickLoadValues): Pick<QuickLoadImport, 'caliber' | 'projectile' | 'propellant'> {
+  if (!db) return { caliber: null, projectile: null, propellant: null };
+  const all = (kind: ComponentKind) => db!.prepare(`SELECT * FROM ${kind} WHERE geloescht = 0`).all() as DbRecord[];
+  const full = (kind: ComponentKind, r: DbRecord | null) => (r ? masterRecord(kind, Number(r.id)) : null);
+  const dia = qlNumber(v, 'buldia') * INCH;
+  const mass = qlNumber(v, 'bulgew');
+  const near =
+    dia > 0 && mass > 0
+      ? (db.prepare('SELECT * FROM projectile WHERE geloescht = 0 AND abs(gdia - ?) < 0.03 AND abs(gmass - ?) < 0.6').all(dia, mass) as DbRecord[])
+      : [];
+  return {
+    caliber: full('caliber', matchCaliber(v.pattyp ?? '', all('caliber'))),
+    projectile: full('projectile', matchBullet(v.bultyp ?? '', qlNumber(v, 'bullen') * INCH, near)),
+    propellant: full('propellant', matchPowder(v.pulver ?? '', all('propellant'))),
+  };
 }

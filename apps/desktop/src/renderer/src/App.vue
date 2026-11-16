@@ -2,13 +2,16 @@
 import { computed, onMounted, ref, watch, watchEffect } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { useI18n } from 'vue-i18n';
-import { Document, DocumentAdd, FolderOpened, Printer, Setting } from '@element-plus/icons-vue';
+import { Document, DocumentAdd, FolderOpened, Printer, Setting, Upload } from '@element-plus/icons-vue';
 import de from 'element-plus/es/locale/lang/de';
 import en from 'element-plus/es/locale/lang/en';
 import type { OpenedFile, ReportMode } from '../../shared/api';
 import LoadView from './components/LoadView.vue';
 import SettingsDialog from './components/SettingsDialog.vue';
 import DisclaimerDialog from './components/DisclaimerDialog.vue';
+import QuickLoadDialog from './components/QuickLoadDialog.vue';
+import type { ImportRow } from './lib/quickload';
+import type { QuickLoadImport } from '../../shared/quickload';
 import { DISCLAIMER_VERSION } from '../../shared/api';
 import { reportHtml } from './lib/report';
 import { useLoads } from './stores/loads';
@@ -42,6 +45,24 @@ async function open() {
   } catch (e) {
     ElMessage.error(t('errors.failed', { msg: message(e) }));
   }
+}
+
+const importRows = ref<ImportRow[]>([]);
+const importOpen = ref(false);
+
+/** QuickLOAD files as new unsaved loads, then the summary of what was taken from where. */
+async function importQuickLoad() {
+  try {
+    showImport(await window.api.importQuickLoad());
+  } catch (e) {
+    ElMessage.error(t('errors.failed', { msg: message(e) }));
+  }
+}
+
+function showImport(files: QuickLoadImport[]) {
+  if (!files.length) return;
+  importRows.value = files.map((q) => ({ file: fileName(q.path), components: q.invalid ? null : loads.importQuickLoad(q).components }));
+  importOpen.value = true;
 }
 
 function newLoad() {
@@ -134,10 +155,12 @@ onMounted(async () => {
   // used by the screenshot check of the main process
   const check = window as unknown as {
     __openForCheck: (f: OpenedFile) => void;
+    __importForCheck: (files: QuickLoadImport[]) => void;
     __compareForCheck: () => void;
     __reportForCheck: () => string;
   };
   check.__openForCheck = (f) => loads.openFile(f);
+  check.__importForCheck = showImport;
   check.__compareForCheck = () => {
     const a = loads.active;
     if (a) a.compare = loads.docs.filter((d) => d.id !== a.id).map((d) => d.id);
@@ -154,6 +177,7 @@ const tabLabel = (d: { name: string; dirty: boolean }) => (d.dirty ? `${d.name} 
       <div class="toolbar">
         <el-button :icon="DocumentAdd" text @click="newLoad">{{ t('menu.new') }}</el-button>
         <el-button :icon="FolderOpened" text @click="open">{{ t('menu.open') }}</el-button>
+        <el-button :icon="Upload" text @click="importQuickLoad">{{ t('menu.importQuickLoad') }}</el-button>
         <el-button :icon="Document" text :disabled="!loads.active" @click="save()">{{ t('menu.save') }}</el-button>
         <el-button text :disabled="!loads.active" @click="save(true)">{{ t('menu.saveAs') }}</el-button>
         <el-dropdown :disabled="!loads.active" @command="(mode: ReportMode) => report(mode)">
@@ -185,10 +209,12 @@ const tabLabel = (d: { name: string; dirty: boolean }) => (d.dirty ? `${d.name} 
         <div v-else class="empty">
           <el-button type="primary" :icon="DocumentAdd" @click="newLoad">{{ t('menu.new') }}</el-button>
           <el-button :icon="FolderOpened" @click="open">{{ t('menu.open') }}</el-button>
+          <el-button :icon="Upload" @click="importQuickLoad">{{ t('menu.importQuickLoad') }}</el-button>
         </div>
       </main>
       <SettingsDialog v-model="settingsOpen" />
       <DisclaimerDialog v-model="disclaimerOpen" />
+      <QuickLoadDialog v-model="importOpen" :rows="importRows" />
     </div>
   </el-config-provider>
 </template>

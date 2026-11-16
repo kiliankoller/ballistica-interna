@@ -3,7 +3,8 @@ import { basename, dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { app, BrowserWindow, dialog, ipcMain, nativeTheme, shell } from 'electron';
 import { APP_NAME, DISCLAIMER_VERSION, type DialogKind, type LibraryExport, type ReportMode, type ReportPayload, type Settings } from '../shared/api';
-import { findMaster, listMaster, masterRecord, masterStatus, openMasterData } from './masterdata';
+import { findMaster, listMaster, masterRecord, masterStatus, matchQuickLoad, openMasterData } from './masterdata';
+import { isQuickLoad, parseQuickLoad, type QuickLoadImport } from '../shared/quickload';
 import { deleteFromLibrary, exportLibrary, importLibrary, libraryRecord, listLibrary, saveToLibrary, updateInLibrary } from './library';
 import { defaultSettings, loadSettings, saveSettings } from './settings';
 import { safeFileName as safeName } from './files';
@@ -128,6 +129,13 @@ async function exportPdf(report: ReportPayload, mode: ReportMode): Promise<strin
   return target.filePath;
 }
 
+/** A QuickLOAD file with the master records found for it (read only: it is saved as a new .grtload). */
+function readQuickLoad(path: string): QuickLoadImport {
+  const values = parseQuickLoad(readFileSync(path, 'latin1'));
+  if (!isQuickLoad(values)) return { path, values, caliber: null, projectile: null, propellant: null, invalid: true };
+  return { path, values, ...matchQuickLoad(values) };
+}
+
 function registerIpc() {
   ipcMain.handle('settings:get', () => settings);
   ipcMain.handle('settings:set', (_e, patch: Partial<Settings>) => {
@@ -197,6 +205,17 @@ function registerIpc() {
     writeFileSync(target, content);
     return target;
   });
+  ipcMain.handle('quickload:import', async () => {
+    const r = await dialog.showOpenDialog({
+      defaultPath: inLastDir('quickload'),
+      properties: ['openFile', 'multiSelections'],
+      filters: [{ name: 'QuickLOAD', extensions: ['dat'] }],
+    });
+    if (r.canceled || !r.filePaths.length) return [];
+    rememberDir('quickload', r.filePaths[0]!);
+    // read only: the imported load is saved as a new .grtload, never back into the QuickLOAD file
+    return r.filePaths.map(readQuickLoad);
+  });
   ipcMain.handle('report:pdf', (_e, report: ReportPayload, mode: ReportMode) => exportPdf(report, mode));
   ipcMain.on('app:dirty', (_e, value: boolean) => (dirty = value));
   ipcMain.handle('app:notices', () => {
@@ -211,7 +230,8 @@ function registerIpc() {
  * pictures of the documentation). Settings stay in memory; the files of the last session are not reopened.
  * `--clean` starts from the default settings (default units, light theme) instead of the user's,
  * `--lang de|en` sets the language, `--dark` the dark theme, `--scale 2` renders at twice the resolution,
- * `--name-only` shows the opened files by their name, not by their full path.
+ * `--name-only` shows the opened files by their name, not by their full path, `--import <file.dat>` imports a
+ * QuickLOAD file as the import button does.
  */
 async function screenshotMode(args: string[]) {
   const arg = (name: string) => (args.includes(name) ? args[args.indexOf(name) + 1] : undefined);
@@ -242,6 +262,9 @@ async function screenshotMode(args: string[]) {
     }
     if (args.includes('--compare')) await win.webContents.executeJavaScript('window.__compareForCheck()');
   }
+  // --import <file.dat> (repeatable): QuickLOAD files as by the import button, without its file dialog
+  const imports = args.flatMap((a, i) => (a === '--import' && args[i + 1] ? [readQuickLoad(args[i + 1]!)] : []));
+  if (imports.length) await win.webContents.executeJavaScript(`window.__importForCheck(${JSON.stringify(imports)})`);
   await new Promise((r) => setTimeout(r, 1500));
   const image = await win.webContents.capturePage();
   writeFileSync(out, image.toPNG());

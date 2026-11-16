@@ -4,12 +4,14 @@ import { completeFields, fromSI, newGrtLoad, parseGrtLoad, serializeGrtLoad, toS
 import type { ComponentKind, DbRecord, LibraryEntry, ListItem, OpenedFile } from '../../../shared/api';
 import { applyCaliber, applyProjectile, applyPropellant, minTwistOf, recordNotes, syncSeatingDepth } from '../lib/components';
 import { compute, type Computation, type Step } from '../lib/compute';
+import { loadFromQuickLoad, type QuickLoadLoad } from '../lib/quickload';
+import type { QuickLoadImport } from '../../../shared/quickload';
 import type { Section } from '../lib/fields';
 
 /** Origin of a component taken into a load: master data with its source, or an own component. */
 export interface ComponentOrigin {
-  from: 'master' | 'own';
-  /** master: name of the source; own: the component it was copied from */
+  from: 'master' | 'own' | 'quickload';
+  /** master: name of the source; own: the component it was copied from; quickload: the imported file */
   name?: string;
   /** i18n keys of notes on the taken record (estimated bulk density, bullet length from JBM or missing, …) */
   notes?: string[];
@@ -115,6 +117,27 @@ export const useLoads = defineStore('loads', () => {
     }
   }
 
+  /**
+   * A QuickLOAD file as a new, not yet saved load (saving asks for a .grtload file); returns what was taken from
+   * where, for the import summary.
+   */
+  function importQuickLoad(q: QuickLoadImport): QuickLoadLoad {
+    const imported = loadFromQuickLoad(q);
+    const added = add(imported.file, null, imported.name);
+    // the reactive copy in the store, so that the panels and the dirty state follow
+    const doc = docs.value.find((d) => d.id === added.id)!;
+    for (const [kind, c] of Object.entries(imported.components) as [ComponentKind, QuickLoadLoad['components'][ComponentKind]][]) {
+      if (c.from === 'master') doc.sources[kind] = { from: 'master', name: c.source, notes: [...c.notes, 'source.quickloadValues'] };
+      else if (c.from === 'quickload') doc.sources[kind] = { from: 'quickload', name: `${imported.name}.dat` };
+      else doc.notes[kind] = ['source.quickloadPowderMissing'];
+    }
+    doc.minTwist = imported.minTwist;
+    doc.powderRecord = imported.powderRecord;
+    // not saved yet: closing asks
+    doc.dirty = true;
+    return imported;
+  }
+
   function newLoad(name: string) {
     return add(newGrtLoad(), null, name);
   }
@@ -187,5 +210,5 @@ export const useLoads = defineStore('loads', () => {
     return true;
   }
 
-  return { docs, activeId, active, dbVersion, units, componentLists, setUnit, openFile, newLoad, close, raw, valueSI, setRaw, setSI, applyComponent, save };
+  return { docs, activeId, active, dbVersion, units, componentLists, setUnit, openFile, importQuickLoad, newLoad, close, raw, valueSI, setRaw, setSI, applyComponent, save };
 });

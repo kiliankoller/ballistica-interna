@@ -1,9 +1,11 @@
 # BallisticaInterna — interior ballistics for reloaders
 
 A cross-platform desktop application (Electron, Vue 3, TypeScript) for the interior ballistics of
-rifle handloads. It opens and saves `.grtload` files.
+rifle handloads. It opens and saves `.grtload` files and imports QuickLOAD load files (`.dat`, read only: the
+imported load is saved as a `.grtload`; QuickLOAD's burn values are not used, the powder keeps BallisticaInterna's fit).
 
-Compatible with the .grtload file format of Gordon's Reloading Tool (not affiliated with, not checked by GRT).
+Compatible with the .grtload file format of Gordon's Reloading Tool (not affiliated with, not checked by GRT). Not
+affiliated with QuickLOAD either.
 
 ![BallisticaInterna: load editor with caliber, bullet and powder, results, ladder test and pressure/velocity curves](docs/images/screenshot.png)
 

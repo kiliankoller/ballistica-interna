@@ -18,6 +18,7 @@ const api: Api = {
   openLoad: () => ipcRenderer.invoke('load:open'),
   readLoad: (path) => ipcRenderer.invoke('load:read', path),
   saveLoad: (path, content, name) => ipcRenderer.invoke('load:save', path, content, name),
+  importQuickLoad: () => ipcRenderer.invoke('quickload:import'),
   exportPdf: (report, mode) => ipcRenderer.invoke('report:pdf', report, mode),
   setDirty: (dirty) => ipcRenderer.send('app:dirty', dirty),
   thirdPartyNotices: () => ipcRenderer.invoke('app:notices'),
