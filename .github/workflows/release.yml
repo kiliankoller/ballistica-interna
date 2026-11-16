@@ -1,5 +1,6 @@
-# Builds the installers for macOS, Windows and Linux: on a version tag (v*) they are attached to a GitHub release,
-# when started by hand they are kept as workflow artifacts. Installers have no certificate (macOS: ad hoc signature).
+# Builds the installers for macOS, Windows and Linux: on a version tag (v*), once all three builds are green, they are
+# attached to a draft release (title and text are entered by hand, then the release is published); when started by
+# hand they are kept as workflow artifacts. Installers have no certificate (macOS: ad hoc signature).
 name: Installers
 
 on:
@@ -76,12 +77,29 @@ jobs:
             apps/desktop/dist/SHA256SUMS-*.txt
           if-no-files-found: error
 
-      - name: Release
-        if: startsWith(github.ref, 'refs/tags/v')
-        uses: softprops/action-gh-release@v3
+  # one job after all three builds: a release appears only with every installer, and as a draft, so it is not public
+  # before its text is in
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v7
         with:
-          files: |
-            apps/desktop/dist/*.dmg
-            apps/desktop/dist/*.exe
-            apps/desktop/dist/*.AppImage
-            apps/desktop/dist/SHA256SUMS-*.txt
+          path: dist
+          merge-multiple: true
+
+      - uses: softprops/action-gh-release@v3
+        with:
+          draft: true
+          files: dist/*
+
+      - name: Next step
+        run: |
+          {
+            echo "### Draft release ${GITHUB_REF_NAME} created"
+            echo
+            echo "Not public yet. Enter title and text (docs/RELEASE.md) and publish:"
+            echo "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases"
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "::notice title=Draft release ${GITHUB_REF_NAME}::Not public yet: enter title and text (docs/RELEASE.md), then publish."

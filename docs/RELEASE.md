@@ -18,9 +18,11 @@ Published: the repository is public; v0.2.0 (2026-10-23) was the first release, 
 - [ ] `git status` is clean, `main` equals `origin/main`.
 - [ ] The version in `apps/desktop/package.json` is the one to tag (the tag is `v` plus that version).
 - [ ] The tag starts the Installers workflow (`.github/workflows/release.yml`: checks, installers for macOS,
-      Windows and Linux, SHA-256 files, release with the files attached). Wait until all three are green.
-- [ ] Edit the release on GitHub: title and text (warning, what is new, known limitations with the issue numbers,
-      checksum note). The workflow creates the release without a text.
+      Windows and Linux, SHA-256 files). Only when all three are green, it creates a **draft** release with all files
+      attached; the run's summary says so.
+- [ ] Open the draft on GitHub (Releases), enter title ("BallisticaInterna <version>") and text (warning, what is
+      new, known limitations with the issue numbers, checksum note; the draft below), then **Publish release**.
+      Until then the release is not public.
 - [ ] Download the installers from the release, compare the SHA-256 value with the checksum file
       (`shasum -a 256 <file>` on macOS, `sha256sum <file>` on Linux, `certutil -hashfile <file> SHA256` on
       Windows) and start each once on its platform ([WINDOWS-TEST.md](WINDOWS-TEST.md) for Windows): the app opens,
