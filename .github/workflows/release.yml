@@ -15,8 +15,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # windows-2022: node-gyp 9 (inside pnpm 8) found Visual Studio 2022 but not 2026, which windows-latest has;
-        # not yet tried with pnpm 10
+        # windows-2022 (Visual Studio 2022): on windows-latest (Visual Studio 2026) pnpm install fails, with pnpm 8 and
+        # still with pnpm 10 (run 43836294979, 2026-11-16)
         os: [macos-latest, windows-2022, ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
